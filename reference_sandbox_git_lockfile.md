@@ -1,6 +1,6 @@
 ---
 name: reference_sandbox_git_lockfile
-description: "sandboxed `git add` can leave `.git/index.lock` behind → the NEXT commit's pre-commit hook dies on \"File exists\"; re-run unsandboxed"
+description: "a sandboxed `git add` can strand `.git/index.lock` → the NEXT commit's pre-commit hook dies on \"File exists\"/\"Another git process\"; retry unsandboxed before suspecting the hook"
 metadata: 
   node_type: memory
   type: reference

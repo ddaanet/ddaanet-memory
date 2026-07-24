@@ -1,6 +1,6 @@
 ---
 name: reference-cc-hook-reload
-description: "CC re-reads hook config from settings(.local).json mid-session, but NOT a plugin's hooks.json — there, script bodies are live while event registration is frozen at session start"
+description: "CC re-reads hook config from settings.local.json mid-session, but NOT a plugin's hooks.json (even under `--plugin-dir .`): script bodies are live per invocation, event registration is frozen at session start — so a just-moved hook gets the OLD event's payload and silently no-ops; don't debug it, restart"
 metadata:
   node_type: memory
   type: reference

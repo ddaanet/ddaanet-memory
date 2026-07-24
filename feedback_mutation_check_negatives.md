@@ -1,6 +1,6 @@
 ---
 name: feedback_mutation_check_negatives
-description: an exemption test passes vacuously against code that does not exist; break the guard deliberately and watch it go red before counting it
+description: "an exemption/\"stays silent\" test passes vacuously against code that doesn't exist; break the guard it protects and watch that test go red before counting it"
 metadata: 
   node_type: memory
   type: feedback

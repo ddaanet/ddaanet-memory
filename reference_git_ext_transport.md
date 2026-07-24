@@ -1,6 +1,6 @@
 ---
 name: reference-git-ext-transport
-description: "git refuses the ext:: transport by default (protocol.ext.allow=never) — a submodule clone dies with `fatal: transport 'ext' not allowed`; the injection needs a loosened config, so check the policy before ranking an ext:: finding"
+description: "`protocol.ext.allow=never` is the default, so a submodule clone of `ext::sh -c …` dies with \"transport 'ext' not allowed\"; an ext:: injection finding needs a loosened config — probe the policy, and separate shell injection from transport selection"
 metadata: 
   node_type: memory
   type: reference

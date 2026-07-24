@@ -1,6 +1,6 @@
 ---
 name: reference-cc-worktree-memory-freeze
-description: "CC in-process EnterWorktree moves cwd but freezes the launch env (PATH/autoMemoryDirectory/CLAUDE_PROJECT_DIR); auto-memory strands on the launch repo; PostToolUse cwd vs CLAUDE_PROJECT_DIR is the drift signal (D15 basis)"
+description: "in-process EnterWorktree moves cwd but freezes launch env (PATH/autoMemoryDirectory/CLAUDE_PROJECT_DIR); auto-memory strands on launch repo; cwd≠CLAUDE_PROJECT_DIR is the D15 drift signal; Enter/Exit confirmed to fire PostToolUse (targeted matcher)"
 metadata:
   node_type: memory
   type: reference

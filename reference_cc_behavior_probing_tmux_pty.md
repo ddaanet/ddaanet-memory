@@ -1,6 +1,6 @@
 ---
 name: cc-behavior-probing-tmux-pty
-description: "How to probe interactive-only CC behavior (that --print can't reach) — tmux PTY harness + session transcript JSONL inspection + --disallowedTools tool-gating"
+description: "drive interactive claude in a bash tmux pane + inspect transcript JSONL; --disallowedTools tool-gating; --settings overrides gitlore hook"
 metadata: 
   node_type: memory
   type: reference

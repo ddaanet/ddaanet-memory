@@ -1,6 +1,6 @@
 ---
 name: reference_hook_cannot_inject_tool_calls
-description: "no hook output field can force a tool call; `additionalContext` is the substitute — the hook reads the files itself and injects the bytes"
+description: "no `injectToolCall`/`forceRead` field exists (grepped 2.1.217); have the hook read the files and emit the bytes as `additionalContext` instead"
 metadata: 
   node_type: memory
   type: reference
