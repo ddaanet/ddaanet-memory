@@ -115,3 +115,4 @@ the project's own memory store.
 - [verify hook threshold claims](feedback_verify_hook_threshold_claims.md) — verify a hook-cited numeric limit against the tool's own source before complying at scale, especially for a broad mechanical edit
 - [gitlore Bash-edit desync](reference_gitlore_bash_edit_desync.md) — compose/sync hooks only fire on Write|Edit tool_name; a Bash-applied MEMORY.md edit desyncs root vs. tier index until the next Write/Edit touch
 - [memory index lines are functional](feedback_memory_index_lines_functional.md) — index lines serve agent-matching AND ambient awareness, not just a pointer; don't mechanically shorten them to hit a byte target, especially an advisory one
+- [bundle memory with source](feedback_bundle_memory_with_source.md) — always commit a memory update in the same parent commit as the source change it documents, not as a separate commit; don't over-apply to unrelated pending work
