@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 45acd379-a2c1-4cfc-8f7b-e506ad744d38
+  modified: 2026-07-24T17:52:59.750Z
 ---
 
 When a design doc's rationale for a past decision looks thin on
@@ -51,4 +52,5 @@ code-quality framing was correct — the fix went in as commit
 `7c0471b`.
 
 Related: [[harness-over-agent]] (another design principle whose
-*application* can shift even though the principle holds).
+*application* can shift even though the principle holds). [[feedback_design_doc_structure]]
+(the six-section template this immutability rule applies within).

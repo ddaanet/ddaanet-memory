@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 94e0a066-a634-4a25-a32d-b0f53b992c25
-  modified: 2026-07-20T17:41:15.578Z
+  modified: 2026-07-24T17:52:41.201Z
 ---
 
 Do not restate a memory's **status claim** as current fact without checking it.
@@ -34,4 +34,6 @@ repeat it. Prefer writing status with its evidence ("released in v0.9.0,
 verified via `git merge-base …`") over bare assertions.
 
 Related: [[feedback_verify_review_findings]] (same reflex, applied to a
-subagent's claims rather than a memory's).
+subagent's claims rather than a memory's). [[feedback-verify-handoff-pending]]
+is the same reflex applied specifically to a handoff narrative's pending-work
+claims.

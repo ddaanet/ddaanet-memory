@@ -1,5 +1,10 @@
 ---
-description: "Cross-project facts shared by all ddaanet repositories"
+name: ""
+description: Cross-project facts shared by all ddaanet repositories
+metadata: 
+  node_type: memory
+  originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
+  modified: 2026-07-24T17:56:48.554Z
 ---
 
 # ddaanet tier index
@@ -15,7 +20,6 @@ the project's own memory store.
 - [mutation-check negative assertions](feedback_mutation_check_negatives.md) — an exemption/"stays silent" test passes vacuously against code that doesn't exist; break the guard it protects and watch that test go red before counting it
 - [shell-gotchas before reviewing shell](feedback_shell_gotchas_on_review.md) — load `/shell-scripting:shell-gotchas` before reviewing `.sh`/`.bats`/hook diffs, not only before writing them; shellcheck cannot see the BSD/`set -e`/hook-env class, and the skill's "audit the whole touched script" changes the unit of review
 - [living design doc structure](feedback_design_doc_structure.md) — six-section pattern for docs/design.md
-- [agent executes, scripts decide](feedback_agent_executes.md) — detection logic in shell scripts, not agent reasoning
 - [skill vs command](feedback_skill_vs_command.md) — self-triggering skill when condition is mechanical/detectable; command only for explicit user-initiated actions
 - [fact-check before incorporating](feedback_fact_check.md) — verify user corrections against training knowledge, don't just defer
 - [examine evidence for drift direction](feedback_examine_evidence_drift.md) — when two co-maintained artifacts diverge, get the drift direction from git history, don't assume a source of truth
@@ -81,7 +85,6 @@ the project's own memory store.
 - [Design doc immutability](feedback_design_doc_immutability.md) — design docs capture thinking at write-time, not current best answer; when rationale looks thin, re-examine and be willing to invert
 - [Test automation 80/20](feedback_test_automation_8020.md) — if you've spent 80% writing tests, the 20% to automate is a small markup; default to assertion-based shell tests, not agent-driven
 - [TDD red/green separation](feedback_tdd_red_green_separation.md) — in subagent plan execution, never bundle a red-task into a green-task subagent; the red-phase review is what proves the test exercises the change
-- [git status unsandboxed](feedback_git_status_unsandboxed.md) — sandbox materializes home dotfiles into cwd; run `git status`/`diff` with `dangerouslyDisableSandbox: true` so the output isn't 14 lines of noise
 - [JSONL slash-command shape](reference_jsonl_slash_command_shape.md) — slash commands are a `<command-name>/foo:bar</command-name>` wrapper string in a user entry (not literal text or a Skill tool_use); agent-invoked skills are Skill tool_use blocks; skill *bodies* inject as `isMeta:true` user entries on both paths — `isMeta` is the structural flag for all harness-injected content
 - [bg session no /dev/tty](feedback_bg_session_no_tty.md) — background sessions can't launch interactive TUIs (revdiff: no /dev/tty); have the user run them and read the history/output instead of retrying the launcher
 - [CLAUDE_PROJECT_DIR over cwd](feedback_claude_project_dir.md) — hook scripts must use CLAUDE_PROJECT_DIR for project root, not payload cwd; cwd drifts with shell cd and /add-dir
@@ -98,7 +101,6 @@ the project's own memory store.
 - [Skill description: purpose first](feedback_skill_description_purpose_first.md) — skill `description:` frontmatter is TUI-visible; lead with what the skill does, then triggers/"Use when", then exclusions; never a bare trigger list; drop stale implementation-detail tails
 - [Skill bundled-script invocation](reference_skill_bundled_scripts.md) — CLAUDE_PLUGIN_ROOT is UNSET in agent Bash (hooks only); every *enabled* plugin's bin/ is on PATH (cross-plugin bare-name invocation works; disabled = absent); skill body invokes bundled scripts by bare-name bin/ shim, no hook needed
 - [Precommit before commit](feedback_precommit_before_commit.md) — run `just precommit` unprompted before committing; it's required, never an optional suggestion
-- [Prose over modals in design](feedback_prose_over_modals_design.md) — AskUserQuestion modals fine ~75% of the time, but never foreclose prose for clarification, correcting assumptions, or adjusting; ask in prose when proposing architecture
 - [Session JSONL schema reference](reference_session_jsonl_schema.md) — no official schema (docs say internal/unstable); claude-dev.tools doc + simonw/claude-code-transcripts are the maintained references; structural flags over content heuristics
 - [Compact prose in design discussions](feedback_compact_prose.md) — cut connective wordage (transitions, framing, re-summaries), keep the substance; compactness ≠ dropping content
 - [Supersede without museum narrative](feedback_design_supersede_no_museum.md) — when reversing a design decision, keep the load-bearing incident/rationale but cut deletion inventories, "no longer does X" framing, and change-bookkeeping; git diff already records what was cut

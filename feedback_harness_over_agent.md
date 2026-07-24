@@ -1,23 +1,17 @@
 ---
-name: First rule of skill design — harness over agent
-description: For mechanical, deterministic work in this plugin, prefer hooks over instructions in the skill body — agent compliance is a weaker guarantee than a hook
-type: feedback
-originSessionId: de10cc41-7b54-42ff-a641-b371a3b7ed4e
+name: feedback_harness_over_agent
+description: "Detection, branching, and decision logic belongs in a script or hook, not in agent reasoning — agent compliance with instructions is a weaker guarantee than deterministic code"
+metadata: 
+  node_type: memory
+  type: feedback
+  originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
+  modified: 2026-07-24T17:52:14.545Z
 ---
-First rule of skill design: don't make the agent do what the harness
-can do.
 
-**Why:** The user pushed back when I proposed an in-skill `rm -f` step
-for cleanup, then explicitly stated this rule. Hooks are
-deterministic; agent compliance with skill text is not. Splitting
-mechanical logic between the skill body and the harness also obscures
-the mechanism — keeping it in the harness puts each piece in one
-place.
+Detection logic, branching, and decision-making should live in a script or hook. The agent reads structured output and acts on it — it does not reason its way to a decision when a mechanical check would do. First rule of skill design: don't make the agent do what the harness can do.
 
-**How to apply:** When writing or editing a skill in this plugin
-(`skills/handoff/SKILL.md`), reach for `hooks/hooks.json` +
-`scripts/*.sh` first for anything that can be expressed as a
-deterministic file operation, path check, or trigger. Skill body is
-for the parts that require judgement (deciding what to write, what
-the residual is). If a step boils down to "always run this command",
-that's a hook, not a skill instruction.
+**Why:** Scripts/hooks are deterministic and testable; agent compliance with skill-body instructions is not, and doesn't vary with model version or context pressure. Applies to hook-manager detection, remote-provider detection, merge-state checks, worktree detection, and any "always run this command" step. In one incident the user pushed back when an in-skill `rm -f` cleanup step was proposed, then stated the rule directly: splitting mechanical logic between the skill body and the harness also obscures the mechanism — keeping it in the harness puts each piece in one place.
+
+**How to apply:** When implementing any detection or decision flow, write a script/hook that outputs a structured result; the skill or agent acts on that output rather than inspecting files and deciding itself. When writing or editing a skill, reach for hooks + scripts first for anything expressible as a deterministic file operation, path check, or trigger — reserve the skill body for parts that require judgement (deciding what to write, what the residual is).
+
+Related: [[feedback_test_automation_8020]] (same principle, applied to test coverage).

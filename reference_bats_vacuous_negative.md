@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 94e0a066-a634-4a25-a32d-b0f53b992c25
-  modified: 2026-07-20T17:41:01.100Z
+  modified: 2026-07-24T17:52:49.992Z
 ---
 
 A bats assertion of the shape
@@ -33,4 +33,5 @@ including `run !` forms.
 
 Related: [[reference_shellcheck_lints_bats]] (ShellCheck catches the adjacent
 bug — a bare `! cmd` mid-body does not fail a bats test at all),
-[[reference_bats_errexit]].
+[[reference_bats_errexit]], [[feedback_mutation_check_negatives]] (the general
+principle this is a specific instance of).

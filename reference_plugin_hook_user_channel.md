@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: f781c2e5-7dc1-474b-818d-0ba97fea0231
+  modified: 2026-07-24T17:52:29.901Z
 ---
 
 Claude Code hook output channels, by destination (verified 2026-06-10):
@@ -64,4 +65,4 @@ transcript, with full stderr to the debug log. Possibly a CC behavior change, or
 change the conclusion — `systemMessage` + `exit 0` is correct under **both**
 readings — but the stderr claim itself is stale-suspect.
 
-See [[feedback_agent_executes]], [[feedback_verify_delegated_citations]].
+See [[feedback_harness_over_agent]], [[feedback_verify_delegated_citations]].

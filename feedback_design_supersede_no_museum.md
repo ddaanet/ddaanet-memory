@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 77fc3f96-023a-482a-be11-301d61bd7f4a
+  modified: 2026-07-24T17:53:04.952Z
 ---
 
 When writing a dated section that reverses an earlier design decision,
@@ -27,4 +28,5 @@ motivating fact, then the positive design and its reasoning. Put the
 the prose. Refines [[feedback_design_doc_immutability]] (keep old
 sections, add superseding note) and shares the spirit of
 [[feedback_compact_prose]] (cut connective/re-summary wordage, keep
-substance).
+substance). See also [[feedback_design_doc_structure]] (the changelog section
+this dated entry belongs in).

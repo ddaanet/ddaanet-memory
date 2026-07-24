@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: a133f610-ff3a-43b5-8aca-054482eb372f
-  modified: 2026-07-23T09:35:33.679Z
+  modified: 2026-07-24T17:52:46.053Z
 ---
 
 A test that asserts something *does not* happen passes before the feature
@@ -28,3 +28,7 @@ red. Restore and re-run. One targeted mutation per negative assertion, not a
 general mutation sweep; the point is to name which line the test is watching.
 Cheap enough to do inline (copy the file, patch, run, restore) and it belongs
 in the same pass as writing the test, not a later audit.
+
+Related: [[reference_bats_vacuous_negative]] — the specific bats mechanism
+(`run missing_function` exits 127, satisfying `-ne 0` before the code exists)
+that makes this failure mode concrete in that framework.

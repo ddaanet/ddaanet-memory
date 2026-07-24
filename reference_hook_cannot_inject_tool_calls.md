@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 9eca9443-3081-46d5-a1d8-7f881c0f4d41
-  modified: 2026-07-22T06:33:07.511Z
+  modified: 2026-07-24T17:52:26.028Z
 ---
 
 No Claude Code hook can inject a `tool_use`, force a `Read`, or enqueue a tool
@@ -27,7 +27,7 @@ deterministically, don't try to make the agent Read them — have the hook read
 them and emit the bytes as `additionalContext`. That is strictly better than a
 forced Read: one round trip instead of two, no tool-permission surface, and the
 selection stays in a script rather than in agent judgement
-([[feedback_agent_executes]]). `additionalContext` is honoured at `PreToolUse`
+([[feedback_harness_over_agent]]). `additionalContext` is honoured at `PreToolUse`
 as well as `PostToolUse` and arrives even when the tool call fails
 ([[reference_plugin_hook_user_channel]]), so a deny-reason and the injected
 bodies can land in the same turn.
