@@ -1,6 +1,6 @@
 ---
 name: reference_hook_cannot_inject_tool_calls
-description: "no `injectToolCall`/`forceRead` field exists (grepped 2.1.217); have the hook read the files and emit the bytes as `additionalContext` instead"
+description: "no `injectToolCall`/`forceRead`/`requestTool`/`forceToolUse` field exists (grepped 2.1.217); a hook can only block, `updatedInput`, `updatedToolOutput`, `additionalContext` — to make the agent see a file, read it in the hook and emit the bytes"
 metadata: 
   node_type: memory
   type: reference
@@ -29,7 +29,7 @@ forced Read: one round trip instead of two, no tool-permission surface, and the
 selection stays in a script rather than in agent judgement
 ([[feedback_harness_over_agent]]). `additionalContext` is honoured at `PreToolUse`
 as well as `PostToolUse` and arrives even when the tool call fails
-([[reference_plugin_hook_user_channel]]), so a deny-reason and the injected
+([[reference-hook-output-channels]]), so a deny-reason and the injected
 bodies can land in the same turn.
 
 The complement — *obliging* the agent to reach the checkpoint at all — is a

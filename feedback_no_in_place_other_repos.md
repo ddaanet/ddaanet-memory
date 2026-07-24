@@ -16,7 +16,7 @@ and *propose*; he applies it himself.
 its own release discipline, its own in-flight work, and its own review path; a
 drive-by edit lands uncommitted changes in a tree he did not open. Being right
 about the fix does not authorize the edit. Note this is a *broader* rule than
-[[reference-cross-repo-push-auth]] (which is about push auth being
+[[reference-sandbox-effects]] (which is about push auth being
 classifier-denied): the boundary starts at the working tree, not at the push.
 
 **How to apply:** stay read-only on the *code* of the other tree — no edits to

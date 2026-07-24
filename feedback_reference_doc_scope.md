@@ -28,5 +28,5 @@ reference read as a stale one-off and won't transfer.
 When a multi-stage research→review→audit pipeline is requested, the
 research/review stages feed the *general* doc; only the audit stage is
 repo-specific. Confirm intended scope (general vs. project-specific)
-before delegating research. Related: [[feedback_design_doc_immutability]],
+before delegating research. Related: [[feedback-design-doc-writing]],
 [[feedback_subagents_over_applied]].

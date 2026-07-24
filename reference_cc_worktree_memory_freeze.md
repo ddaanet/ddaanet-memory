@@ -1,6 +1,6 @@
 ---
 name: reference-cc-worktree-memory-freeze
-description: "in-process EnterWorktree moves cwd but leaves the launch env (PATH/autoMemoryDirectory/CLAUDE_PROJECT_DIR) alone; auto-memory strands on launch repo; cwd≠CLAUDE_PROJECT_DIR is the D15 drift signal; Enter/Exit fire PostToolUse (targeted matcher)"
+description: "in-process `EnterWorktree` chdirs but never moves projectRoot, so `CLAUDE_PROJECT_DIR`/`PATH`/`autoMemoryDirectory` stay at the launch repo and auto-memory strands there; cwd≠`CLAUDE_PROJECT_DIR` is the D15 drift signal"
 metadata:
   node_type: memory
   type: reference
@@ -43,7 +43,7 @@ empirically 2026-06-10 (CC 2.1.170); re-verified against the 2.1.219 bundle 2026
   `discardedFiles`/`discardedCommits` depending on branch). `action` (`keep`/`remove`)
   is an ExitWorktree **tool_input** parameter, not a response field. The
   Enter-warns/Exit-silent asymmetry falls out of the predicate for free.
-  See [[reference_cc_hook_reload]].
+  See [[reference-stale-plugin-code]].
 - **Conversation namespace is per sanitized cwd**, so CC worktrees get their own
   `~/.claude/projects/<encoded>/` (worktrees live under `.claude/worktrees/<name>`).
   `--continue`/`-c` is cwd-project-scoped (won't find a parent-dir session from a
@@ -56,4 +56,4 @@ empirically 2026-06-10 (CC 2.1.170); re-verified against the 2.1.219 bundle 2026
   See [[reference-hook-input-schema]].
 
 See [[reference_cc_project_dir_encoding]], [[reference_auto_memory_directory]],
-[[reference_plugin_hook_user_channel]].
+[[reference-hook-output-channels]].

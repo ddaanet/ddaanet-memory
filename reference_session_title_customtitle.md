@@ -1,6 +1,6 @@
 ---
 name: session-title-via-custom-title-transcript-entry
-description: "how CC stores/sets a session title; hooks set it with hookSpecificOutput.sessionTitle on SessionStart + UserPromptSubmit only; storage is a custom-title jsonl transcript entry"
+description: "hooks set it via `hookSpecificOutput.sessionTitle` — `SessionStart` (in-memory only) and `UserPromptSubmit` (persists) ONLY; storage is a last-wins `custom-title` jsonl entry; `/rename`, `-n`, ctrl+R write the same"
 metadata: 
   node_type: memory
   type: reference

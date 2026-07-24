@@ -1,11 +1,11 @@
 ---
 name: reference-bats-shellcheck-gotchas
-description: "bats/shellcheck gotchas: SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit (1.11.1); shellcheck lints .bats (0.10.0); a `# shellcheck` comment is a directive"
+description: "SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:20:42.738Z
+  modified: 2026-07-24T19:41:07.332Z
 ---
 
 Independent mechanical facts sharing one trigger surface: writing or reviewing
@@ -77,7 +77,7 @@ produces them.
 
 Context: a code-quality review subagent flagged every non-final assertion in a
 converted suite as a correctness HIGH ("masked failures"); a 5-line bats probe
-disproved it. See [[feedback-verify-review-findings]],
+disproved it. See [[feedback-verify-at-source]],
 [[project-test-suite-framework-port]].
 
 ## ShellCheck lints `.bats` natively

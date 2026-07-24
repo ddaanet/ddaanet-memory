@@ -25,7 +25,7 @@ missed the point: the topic file being intact doesn't help if the
 shortened index line no longer contains what a future recall pass would
 match on, or what I'd recognize ambiently without going to read the file.
 Caught by the user; the index was restored to full original text (see
-[[feedback_verify_hook_threshold_claims]] for the companion lesson about the
+[[feedback-verify-at-source]] for the companion lesson about the
 unverified-threshold half of this mistake).
 
 **Two budgets, and only one of them is advisory.** gitlore's own check

@@ -29,6 +29,6 @@ general mutation sweep; the point is to name which line the test is watching.
 Cheap enough to do inline (copy the file, patch, run, restore) and it belongs
 in the same pass as writing the test, not a later audit.
 
-Related: [[reference_bats_vacuous_negative]] — the specific bats mechanism
+Related: [[reference-bats-shellcheck-gotchas]] — the specific bats mechanism
 (`run missing_function` exits 127, satisfying `-ne 0` before the code exists)
 that makes this failure mode concrete in that framework.

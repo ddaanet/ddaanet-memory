@@ -108,9 +108,9 @@ content; ddaa reads fast and challenges substance directly. State claims
 and their grounds directly; drop transitional sentences and hedged
 framings. **Compactness is cutting connectives, not dropping content** —
 completeness of substance stays. Same instinct applied to hook output:
-[[feedback-systemmessage-style]].
+[[reference-hook-output-channels]].
 
 Related: [[harness-over-agent]] (a design principle whose *application*
 can shift even though the principle holds),
-[[feedback-examine-evidence-drift]], [[feedback-fact-check]],
+[[feedback-examine-evidence-drift]], [[feedback-verify-at-source]],
 [[feedback-loose-generation]].

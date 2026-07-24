@@ -1,11 +1,11 @@
 ---
 name: feedback-verify-at-source
-description: "verify any claim against its own source before acting — subagent findings, delegated citations, hook-cited limits, handoff/memory status claims, user corrections, spec symbols"
+description: "verify any claim against its own source before acting: subagent findings, delegated citations, hook-cited limits, handoff/memory status claims, user corrections, spec symbols"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:22:55.397Z
+  modified: 2026-07-24T19:41:05.222Z
 ---
 
 Before acting on a claim, check it against the thing that would falsify it —
@@ -42,7 +42,7 @@ can't be reproduced or confirmed, downgrade it and say so to the user rather
 than silently complying. When the stale claim lives in a file you own (memory,
 spec, handoff), fix the file in the same turn; prefer status written with its
 evidence ("released in v0.9.0, verified via `git merge-base …`") over bare
-assertions. Related: [[feedback-design-doc-immutability]] (don't trust
+assertions. Related: [[feedback-design-doc-writing]] (don't trust
 write-time claims — re-examine), [[feedback-plan-late]] (don't carry forward
 prior-session assumptions about what's pending),
 [[feedback-no-handrun-tests]] (evidence over assertion).

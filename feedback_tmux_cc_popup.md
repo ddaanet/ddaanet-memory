@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 7bed82ba-de53-4fd5-9e88-49823dea7260
+  modified: 2026-07-24T19:43:16.500Z
 ---
 
 When launching interactive TUI tools (revdiff, lazygit, etc.) from
@@ -24,5 +25,3 @@ iTerm2 tab; in classic mode it's reachable via `Ctrl-b w/n`.
 Confirm CC mode with `$TERM_PROGRAM=tmux` while `$TMUX` is set; the
 underlying terminal (e.g. iTerm.app) is hidden from env vars in
 this state.
-
-Related: [[revdiff-plugin]] for the revdiff-specific launcher path.

@@ -23,4 +23,4 @@ not a museum of guards against its return.
 — helpers, constants, fixtures, tests, docs, recipes — and cut each;
 convert any absence-guard into the positive contract of what remains.
 Shares the spirit of [[feedback_no_compat_aliases]] (no compat shims)
-and [[feedback_design_supersede_no_museum]] (the docs analogue).
+and [[feedback-design-doc-writing]] (the docs analogue).

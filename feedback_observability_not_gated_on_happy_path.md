@@ -26,7 +26,7 @@ paths and ask who learns about each one, instead of reasoning from how the
 happy path looked. Rank them: silent-to-everyone is the one that must be
 fixed; visible-to-the-user-but-not-the-agent is weaker; and a path where the
 signal would be inferred rather than observed is worth leaving silent if
-inferring it produces false alarms. Related: [[feedback_verify_review_findings]]
+inferring it produces false alarms. Related: [[feedback-verify-at-source]]
 (reproduce before churning) is the mirror case — that one says don't act on a
 weak signal, this one says don't decline to act because the signal is absent
 by construction.
