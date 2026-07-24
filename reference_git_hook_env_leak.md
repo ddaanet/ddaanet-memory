@@ -1,6 +1,6 @@
 ---
 name: git-hook-env-leak
-description: "hooks inherit repo-local `GIT_*`; clear the full set via `unset $(git rev-parse --local-env-vars)`, except `GIT_INDEX_FILE`, which a staging hook must restore for its `git add`"
+description: "`index file open failed: Not a directory` inside a hook = leaked repo-local `GIT_*`; clear all of them via `unset $(git rev-parse --local-env-vars)`, but save and restore `GIT_INDEX_FILE` for a staging `git add` or it dies on `Unable to create '.git/index.lock': File exists`"
 metadata: 
   node_type: memory
   type: reference

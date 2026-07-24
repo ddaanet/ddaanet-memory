@@ -1,6 +1,6 @@
 ---
 name: session-jsonl-schema-reference
-description: "no official schema (docs say internal/unstable); claude-dev.tools doc + simonw/claude-code-transcripts are the maintained references; structural flags over content heuristics"
+description: "no official schema (docs: internal/unstable); refs claude-dev.tools/docs/jsonl-format + simonw/claude-code-transcripts; key on `isMeta`/`isSidechain`/`isCompactSummary`, never content"
 metadata: 
   node_type: memory
   type: reference

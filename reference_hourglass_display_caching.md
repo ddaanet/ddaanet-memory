@@ -1,6 +1,6 @@
 ---
 name: reference_hourglass_display_caching
-description: CC hourglass/idle display time = last API call + 1h; stopped states are empirically cached for 60 min
+description: "displayed time = last API call + 1h, and a stopped state is cached ~60 min so a re-check inside that window sees the cache; both figures user-reported, never cross-checked against source"
 metadata: 
   node_type: memory
   type: reference

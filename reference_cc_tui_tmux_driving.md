@@ -1,11 +1,11 @@
 ---
 name: reference-cc-tui-tmux-driving
-description: "mid-turn input has FOUR classes (TUI-local intercepted / harness-action queued / plugin-command own-turn / **prose injected into the running turn**); Stop + SessionStart(compact) are the authoritative gates; Stop doesn't fire on Esc (verified v2.1.215)"
+description: "mid-turn input has FOUR classes — TUI-local / harness-action queued / plugin-command own-turn / **prose injected into the running turn**; `Stop` + `SessionStart(compact)` are the authoritative gates; `Stop` doesn't fire on Esc (v2.1.215)"
 metadata:
   node_type: memory
   type: reference
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-20T19:05:43.571Z
+  modified: 2026-07-24T19:24:10.273Z
 ---
 
 Verified 2026-07-19 against Claude Code v2.1.215 (Opus 4.8, tmux 3.5a) by
@@ -62,5 +62,15 @@ coarse — it holds only for slash commands, not prose.
   project without touching global enablement. Note the command registers
   unnamespaced (`/handoff`, not `/handoff:handoff`).
 
-Empirical basis for [[project_precompact_drive]]. Sibling of
-[[feedback_tmux_cc_popup]].
+## `/compact` is double-recorded in the transcript — one submission, two entries
+
+A report that "`/compact` was posted twice" is Claude Code's own bookkeeping, not
+a driver defect. Every `/compact` — manual ones included, verified in sessions
+predating any automation — logs a RAW prompt entry **plus** a `<command-name>`
+record about 30ms apart, and both render. One submission, double-recorded.
+
+This matters to anything that counts submissions in a transcript to confirm a
+keystroke landed: the count is inflated by one per slash command, so key such a
+check on a structural signal rather than on "how many entries appeared".
+
+Sibling of [[feedback_tmux_cc_popup]].

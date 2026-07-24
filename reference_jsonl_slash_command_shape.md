@@ -1,6 +1,6 @@
 ---
 name: reference-jsonl-slash-command-shape
-description: "slash commands are a `<command-name>/foo:bar</command-name>` wrapper string in a user entry (not literal text or a Skill tool_use); agent-invoked skills are Skill tool_use blocks; skill *bodies* inject as `isMeta:true` user entries on both paths — `isMeta` is the structural flag for all harness-injected content"
+description: "slash commands log as a `<command-name>/foo:bar</command-name>` string in a `type:\"user\"` entry — not literal text, no `Skill` tool_use; agent-invoked skills ARE `Skill` tool_use; skill bodies inject as `isMeta:true` user entries on both paths; `/compact` double-records"
 metadata: 
   node_type: memory
   type: reference

@@ -1,10 +1,11 @@
 ---
 name: session-title-via-custom-title-transcript-entry
-description: "how CC stores/sets a session title; no hook-output field exists, but a hook can write the transcript"
+description: "how CC stores/sets a session title; hooks set it with hookSpecificOutput.sessionTitle on SessionStart + UserPromptSubmit only; storage is a custom-title jsonl transcript entry"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: a7e28213-e5b0-4230-a6b4-882fe813e66e
+  modified: 2026-07-24T19:23:15.135Z
 ---
 
 A Claude Code session's title is the `customTitle`, persisted as a line in the session transcript `.jsonl`:
@@ -13,8 +14,8 @@ A Claude Code session's title is the `customTitle`, persisted as a line in the s
 {"type":"custom-title","customTitle":"my title","sessionId":"<id>","uuid":"<uuid>","timestamp":"<iso>"}
 ```
 
-`/rename <name>` writes exactly this (binary fn appends the entry, sets in-memory `currentSessionTitle`, emits `tengu_session_renamed`). On load/resume CC derives the title by scanning the transcript for the last `type:"custom-title"` entry. CLI flag `-n <name>` sets it at startup; picker rename is Ctrl+R.
+`/rename <name>` (alias `/name`) writes exactly this (appends the entry, sets in-memory `currentSessionTitle`, emits `tengu_session_renamed` with a `source`). On load/resume CC derives the title by scanning the transcript for the last `type:"custom-title"` entry (last-wins). CLI flag `-n, --name <name>` sets it at startup; picker rename is Ctrl+R. A sibling `type:"ai-title"` entry carries CC's own generated title; `customTitle` takes precedence over it.
 
-**No hook *output* field exists** — there is no `sessionName`/`sessionTitle` in any `hookSpecificOutput` (`SessionStart` outputs are only `additionalContext`/`initialUserMessage`/`watchPaths`). The feature was requested and closed `not_planned` (issue #21859, via #24119/#24872). Confirmed both from docs and by grepping the v2.1.150 binary: `customTitle` appears only in session-storage/transcript/resume code, never near hook-output parsing.
+**A hook sets the title with `hookSpecificOutput.sessionTitle`** (a string), available on **`SessionStart` and `UserPromptSubmit` only** — no other event's output schema declares the field (`PostToolUse` carries `additionalContext` / `updatedToolOutput` / `updatedMCPToolOutput`). The value has control characters stripped and is truncated to 200 chars; it is ignored when it matches the current title and when the hook fires from a subagent or child session. The two events differ in durability: `UserPromptSubmit` **persists** it — appends the `custom-title` entry and updates the live title — while `SessionStart` only **caches** it into the in-memory `currentSessionTitle`, which the session-storage flush later writes out as a `custom-title` entry. Hooks also *receive* the current title: `session_title` is a base hook-input field (see [[reference-hook-input-schema]]).
 
-**Obscure mechanism (the "hook can set the title" trick):** every hook receives `session_id` + `transcript_path` on stdin, so a hook script can append a `custom-title` line to `transcript_path` to set the title programmatically. It takes effect on the next read/resume (appending does not mutate the live in-memory `currentSessionTitle` the way `/rename` does). Transcript path follows the [[reference_cc_project_dir_encoding]] mangling under `~/.claude/projects/<encoded>/<session-id>.jsonl`. Verified against CC 2.1.150 via `claude-code-guide` + binary inspection, 2026-05-25.
+Every hook gets `session_id` + `transcript_path` on stdin, so a hook script can also append a `custom-title` line to `transcript_path` itself; that route takes effect on the next read/resume rather than live, and is only worth it from an event without the `sessionTitle` field. Transcript path follows the [[reference_cc_project_dir_encoding]] mangling under `~/.claude/projects/<encoded>/<session-id>.jsonl`. Transcript mechanism first verified on CC 2.1.150, 2026-05-25; re-verified plus the `sessionTitle` hook field on CC 2.1.219 by binary inspection, 2026-07-24.

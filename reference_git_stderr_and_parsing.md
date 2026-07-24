@@ -1,6 +1,6 @@
 ---
 name: reference_git_stderr_and_parsing
-description: "which git queries are silent on normal-absence (delete the redirect) vs noisy; `(fetch first)`/`(non-fast-forward)` = divergence vs `(pre-receive hook declined)` = policy; `-z --get-regexp` for whitespace-safe enumeration; `--git-common-dir` is relative in a main worktree → CDPATH trap; `-q` is ASYMMETRIC — `push -q` still names its rejection reason but `fetch -q` prints NOTHING on a non-fast-forward, so never classify a fetch rejection under `-q`; discriminator pinned by tests/push_rejection_discriminator.bats"
+description: "which git queries are silent on normal-absence (drop the redirect); `(fetch first)`/`(non-fast-forward)` = divergence vs `(pre-receive hook declined)` = policy; `fetch -q` prints NOTHING on rejection while `push -q` still reports — never classify under `-q`; `--git-common-dir` is relative in a main worktree → CDPATH trap; `-z --get-regexp` for whitespace-safe values"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: reference_bang_shell_shared_cwd
-description: "the user's `!`-prefixed shell and the agent's Bash tool share one working directory; a lingering agent `cd` silently relocates the user's command"
+description: "the user's `!` shell and the agent's Bash share one cwd, so a stale agent `cd` relocates the command; symptom: a push reports `Everything up-to-date` from inside a submodule. Make `!` commands cwd-independent (`git -C <abs>`)"
 metadata: 
   node_type: memory
   type: reference

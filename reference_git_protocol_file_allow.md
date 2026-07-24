@@ -1,6 +1,6 @@
 ---
 name: reference_git_protocol_file_allow
-description: "a local-path `submodule add` dies with \"transport 'file' not allowed\"; repo config can't fix it because the CLONE reads the policy — use `-c`, or `GIT_CONFIG_COUNT/KEY_0/VALUE_0` when you don't own the command line (survives a hook's local-env-vars unset)"
+description: "`fatal: transport 'file' not allowed`; the child *clone* reads `protocol.file.allow`, so repo config can't fix it — use `git -c` or `GIT_CONFIG_COUNT/KEY_0/VALUE_0`"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: reference-cc-project-dir-encoding
-description: "How Claude Code encodes a project's filesystem path into its ~/.claude/projects/<name>/ directory name"
+description: "`~/.claude/projects/<name>/` = abs path with `[^A-Za-z0-9]`→`-`; to find a transcript search `<session-id>.jsonl`, don't apply the rule; edify's impl incomplete"
 metadata: 
   node_type: memory
   type: reference

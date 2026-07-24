@@ -1,6 +1,6 @@
 ---
 name: token-counting
-description: "Token counting in Claude Code plugin contexts — Anthropic has no exact offline tokenizer for Claude 3+, count_tokens API is the only precise path, cc-token is the maturest CLI"
+description: "no exact offline tokenizer for Claude 3+ (offline BPE is approximate); `messages.count_tokens` or the `cc-token` CLI; for small artifacts report bytes, not tokens"
 metadata: 
   node_type: memory
   type: reference

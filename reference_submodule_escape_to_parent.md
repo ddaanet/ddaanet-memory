@@ -1,6 +1,6 @@
 ---
 name: reference-submodule-escape-to-parent
-description: git -C / cd into an unchecked-out submodule silently escapes to the parent repo; how to detect linked worktrees
+description: "`git -C`/`cd` into a submodule with no `.git` silently operates on the **parent** — symptom: a bogus 160000 gitlink, or a `git branch` landing in the parent; guard `[ -e \"$sub/.git\" ]`; linked worktree = `--git-dir` ≠ `--git-common-dir`"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: reference-todo-tool-flag-gated
-description: "TodoWrite superseded (not removed) by TaskCreate/Get/List/Update, killed server-side by `tengu_vellum_ash`; the affordance can vanish between sessions with no changelog entry — never name a todo tool in a plugin step"
+description: "`TodoWrite` has no tool definition in 2.1.217; `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` replace it, gated by server-side `tengu_vellum_ash` — never name a todo tool in a plugin step"
 metadata: 
   node_type: memory
   type: reference

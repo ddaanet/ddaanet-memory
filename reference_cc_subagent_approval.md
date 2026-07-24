@@ -1,6 +1,6 @@
 ---
 name: cc-subagent-approval
-description: "Sub-agent approval gates should use a two-turn return → SendMessage(approval) pattern, not SendMessage-to-parent — sub-agents have no addressable parent in one-shot dispatch"
+description: "`No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to SendMessage; gate approvals by returning, then parent `SendMessage(agentId, …)`"
 metadata: 
   node_type: memory
   type: reference

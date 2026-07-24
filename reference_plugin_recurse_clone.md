@@ -1,6 +1,6 @@
 ---
 name: plugin-recurse-clone-submodule
-description: "/plugin install clones a plugin repo with --recurse-submodules; any committed submodule must have an absolute, publicly-fetchable url or install aborts"
+description: "`/plugin install` clones with `--recurse-submodules`, so a relative submodule url resolves against the remote → `not a valid repository name` and install aborts; the url must be absolute and public. `--plugin-dir` does not recurse, so dogfooding cannot catch it"
 metadata: 
   node_type: memory
   type: reference
