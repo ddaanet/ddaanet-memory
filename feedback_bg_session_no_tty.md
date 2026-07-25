@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 6afc4947-de16-4c6c-9503-de03977fa611
+  modified: 2026-07-25T11:49:31.463Z
 ---
 
 In a background Claude Code session (`CLAUDE_JOB_DIR` set), there is no

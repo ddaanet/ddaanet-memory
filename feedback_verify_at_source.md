@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:41:05.222Z
+  modified: 2026-07-25T12:08:18.055Z
 ---
 
 Before acting on a claim, check it against the thing that would falsify it —
@@ -105,3 +105,20 @@ prior-session assumptions about what's pending),
   in a `> **Architectural correction:**` block. See
   [[feedback-outside-in-tdd]] — black-box tests survive refactors only if the
   box's interface matches reality.
+- **Subagent memory-duplicate audit (2026-07-25).** A general-purpose agent
+  tasked with auditing `memory/` for duplicate/mergeable entries reported six
+  findings; a separate integrity check it ran (do all `MEMORY.md` links
+  resolve, are there orphan files) was accurate. But 5 of the 6 duplicate
+  pairs cited at least one file that did not exist on disk — plausible
+  filenames matching the repo's naming convention (`feedback_git_status_
+  unsandboxed.md`, `feedback_agent_executes.md`, `feedback_verify_handoff_
+  pending.md`, `feedback_memory_status_claims_rot.md`,
+  `reference_bats_vacuous_negative.md`, three `feedback_design_doc_*.md`
+  variants, `feedback_prose_over_modals_design.md`) that were invented
+  wholesale, not typos of real ones. In most cases the real file existed
+  singly and the agent fabricated a second file to pair it with. Caught by
+  `ls`/`test -f` on every cited path before acting — a whole-report
+  fan-out task (119 files read) can have one accurate sub-check (existence
+  scan) sitting next to comprehensively fabricated comparative claims (file
+  A duplicates file B); accuracy on one part of a subagent's report is not
+  evidence for another part.
