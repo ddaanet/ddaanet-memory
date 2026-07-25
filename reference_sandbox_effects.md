@@ -1,11 +1,11 @@
 ---
 name: reference-sandbox-effects
-description: "index.lock/\"Another git process\", phantom dotfiles, sibling worktree \"Read-only file system\", --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
+description: "index.lock/\"Another git process\", phantom dotfiles, sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard/atomic mv), --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:21:55.566Z
+  modified: 2026-07-25T15:07:18.771Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -104,6 +104,30 @@ or that writes to a sibling worktree, with `dangerouslyDisableSandbox: true`.
 Cues: phantom `.bashrc`/`.zshrc` in a listing; `Read-only file system` from a
 `git -C <other-worktree>` op. Relevant to [[finishing-a-development-branch]] when
 merging a worktree branch into main.
+
+## Harness-mounted config paths are busy/read-only (sandbox breaks it)
+
+The harness mounts certain paths as busy/read-only/char-devices:
+`.claude/settings.json`, `.claude/settings.local.json`, `.git/config`,
+`.mcp.json`, `.gitconfig`, `.gitmodules` and similar. The sandbox additionally
+denies writes to `.claude/settings.json` outright. Any operation that unlinks or
+rewrites one of them *in place* fails under the sandbox with **"Device or
+resource busy"** or **"Read-only file system"**:
+
+- `git checkout <branch>` and `git reset --hard` — they cannot unlink or
+  overwrite the protected files.
+- `git branch -d` — warns "could not write `.git/config`"; the branch is deleted
+  anyway.
+- Tools doing an atomic `mktemp` + `mv` into these paths (e.g.
+  `claude-plugin-dev`'s `install.sh` settings-merge), because the `mktemp`
+  lands on a different device.
+
+**How to apply:** run those operations with `dangerouslyDisableSandbox: true`.
+When `checkout` + `merge` choke on the protected files, a plain `git reset --hard
+<branchtip>` unsandboxed completes the fast-forward cleanly. Note that the
+harness `Edit` tool *can* write `.claude/settings.json` even though a raw git
+unlink cannot — but the classifier still refuses `enabledPlugins`
+([[feedback_settings_enabledplugins_blocked]]).
 
 ## `$TMPDIR` is unset when unsandboxed (cost of taking the escape)
 
