@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-25T15:06:08.571Z
+  modified: 2026-07-25T19:04:55.464Z
 ---
 
 # ddaanet tier index
@@ -94,3 +94,5 @@ the project's own memory store.
 - [CC strips terminal-provenance env](reference_cc_env_strip_tmux.md) — TMUX/TMUX_PANE/TERM_PROGRAM/TERM_PROGRAM_VERSION/SSH_CONNECTION are dropped from the session env (rest inherits), so hook-driven send-keys finds no pane; `tmux display -p` guesses the wrong one — capture via a launcher shim under a custom name
 - [settings.json enabledPlugins edit blocked](feedback_settings_enabledplugins_blocked.md) — classifier blocks Claude editing enabledPlugins even after approval; give user a !-command instead
 - [Validate non-TDD tests by mutation](feedback_test_validation_by_mutation.md) — tests written after the code must each be turned red by a deliberate fault to prove they bite
+- [directive states acts only](feedback_directive_states_acts.md) — strip mechanism, re-stated orderings, and literalized meta-notes from agent-facing directives; unactionable detail gets verified and narrated
+- [withhold, don't forbid](feedback_withhold_dont_forbid.md) — naming an identifier to prohibit it supplies the string; say nothing when the reader has no other source
