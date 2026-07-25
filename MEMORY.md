@@ -24,11 +24,9 @@ the project's own memory store.
 - [verify claims at their source](feedback_verify_at_source.md) — verify any claim against its own source before acting: subagent findings, delegated citations, hook-cited limits, handoff/memory status claims, user corrections, spec symbols
 - [examine evidence for drift direction](feedback_examine_evidence_drift.md) — when two co-maintained artifacts diverge, get the drift direction from git history, don't assume a source of truth
 - [loose generation + post-hoc fix](feedback_loose_generation.md) — let generator scaffold freely, constrain at artifact boundary
-- [user: technical depth on LLM mechanism](user_technical_depth.md) — expects rigorous attention/cost/training claims, not hand-waving
 - [decide/plan as late as possible, but not later](feedback_plan_late.md) — defer until evidence arrives, act before inaction decides by default
 - [CC project-dir encoding](reference_cc_project_dir_encoding.md) — `~/.claude/projects/<name>/` = abs path with `[^A-Za-z0-9]`→`-`; to find a transcript search `<session-id>.jsonl`, don't apply the rule; edify's impl incomplete
 - [outside-in TDD when architecture is fixed](feedback_outside_in_tdd.md) — red e2e first, drive units by failure; black-box tests survive refactors
-- [dogfood early](feedback_dogfood_early.md) — run new code on the actual production target the day it ships; fixtures miss real-world bugs
 - [default to automation](feedback_automate_default.md) — automated tests by default; when a manual check is justified
 - [self-contained directives](feedback_self_contained_directives.md) — emit absolute paths + explicit cd; never rely on sub-agent's env or CWD
 - [CC agent discovery](reference_cc_agent_discovery.md) — `Agent type not found`: dispatch needs `<plugin>:<agent>`, never the bare name, and the plugin must be marketplace-installed or `--plugin-dir`-loaded (cwd `agents/` is not auto-discovered); defs cached per-session, so a contract change needs a restart
@@ -91,3 +89,5 @@ the project's own memory store.
 - [gitlore Bash-edit desync](reference_gitlore_bash_edit_desync.md) — `index-compose.sh`/`index-sync-post.sh` fire only on `Write`|`Edit` tool_name, so a `sed`-applied `MEMORY.md` edit desyncs root vs. tier index and later refuses with "duplicate pointer path"
 - [memory index lines are functional](feedback_memory_index_lines_functional.md) — index lines serve agent-matching AND ambient awareness, not just a pointer; don't mechanically shorten them to hit a byte target, especially an advisory one
 - [bundle memory with source](feedback_bundle_memory_with_source.md) — always commit a memory update in the same parent commit as the source change it documents, not as a separate commit; don't over-apply to unrelated pending work
+- [user: technical depth on LLM mechanism](user_technical_depth.md) — expects rigorous attention/cost/training claims, not hand-waving
+- [dogfood early](feedback_dogfood_early.md) — run new code on the actual production target the day it ships; fixtures miss real-world bugs
