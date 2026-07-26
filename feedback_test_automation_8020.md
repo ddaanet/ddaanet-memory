@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 45acd379-a2c1-4cfc-8f7b-e506ad744d38
+  modified: 2026-07-25T12:38:58.433Z
 ---
 
 If you've already spent the effort to write test cases (80%), the
@@ -32,4 +33,6 @@ markup on test-writing time, not a separate undertaking.
   okay — they're documenting reality, not asserting it).
 
 Related: [[harness-over-agent]] (same principle, broader scope —
-deterministic work belongs in the harness, not the agent).
+deterministic work belongs in the harness, not the agent);
+[[feedback_no_handrun_tests]] (same preference, dev-time verification
+rather than spec Testing sections).

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:21:51.382Z
+  modified: 2026-07-26T11:07:59.441Z
 ---
 
 ## Channel mechanics (verified 2026-06-10; PreToolUse additions 2026-07-17)
@@ -69,6 +69,23 @@ channel, or it redundantly verifies with `ls`/`cat`. Observed live: handoff's
 wiping prior handoff files; the wipe ran correctly but the agent then ran
 `ls .claude/handoff-task.md .claude/handoff.md` to check — exactly the wasted
 work the hook existed to avoid.
+
+**That redundant verification is the norm, not an anecdote, and it is worth
+about two round trips per event.** Measured 2026-07-26 over ~2179 transcripts,
+grouping `type:"assistant"` entries by `message.id` first: gitlore's
+`memory-commit-batch.sh` commits the memory submodule on a file trigger and
+reports success only on `systemMessage`. The agent then re-checked the outcome
+after **62 of 68** successful commits (91%) — `ls` the IPC files, then
+`git -C memory log`/`status` — costing a mean 1.97 extra assistant messages and
+a median 6.4 s (quartiles 4.7 / 6.4 / 9.6) each. The control is the same repo's
+other commit path, where the outcome comes back inside a Bash tool result the
+model reads: **5 of 14** (35%). Rate tracks the channel, not the prompt — the
+handoff directive that mentions checking was present for 58/64 of the blind
+cases and absent for 4/4, with no difference. So when a hook acts on the agent's
+behalf, pair the channels and **state the outcome as authoritative**; a blind
+agent does not wait quietly, it goes looking. A hook's *instructional* branches
+are worse than wasteful on the wrong channel — they are dead text: the same
+script's deferred-retry branch fired 144 times and the agent never learned.
 
 Per event: `UserPromptSubmit` → `additionalContext`. `PreToolUse` →
 `additionalContext` or `permissionDecisionReason` (on deny); stderr + exit 2 also

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8cd21851-d241-49bf-afaf-b4baf0c4f311
-  modified: 2026-07-25T19:03:45.029Z
+  modified: 2026-07-26T12:06:08.706Z
 ---
 
 A directive emitted to an agent (hook output, probe stdout, skill step) carries
@@ -25,8 +25,13 @@ answer is narration. Both show up as an agent reporting superfluous checks.
 
 **How to apply:** write the acts, then delete every sentence that explains why
 they work. Keep a consequence clause only where its absence would read as a
-failure worth recovering from ("this turn's commit carries the memory"). When a
+failure worth recovering from ("the commit that lands these changes carries the
+memory" — say it that way, not "this turn's commit", which is false wherever the
+commit arrives in a later turn; see [[feedback_turn_call_terminology]]). When a
 rule is an ordering between the *caller's own steps*, it belongs where the steps
 are described — see [[feedback_prohibition_vs_procedure]] on placement, and
 [[feedback_withhold_dont_forbid]] for the case where the right amount of text is
-none.
+none. [[feedback_directive_acts_not_mechanism]] records the same rule from the
+originating incident — the handoff `with-commit` directive — with the user's own
+words and the negative test to write; this entry is the shorter taxonomy of what
+to cut.

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-25T15:07:18.771Z
+  modified: 2026-07-26T12:05:54.545Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -102,8 +102,13 @@ unsandboxed tree had only the build artifact, nothing to commit.
 **How to apply:** run any *other* sandboxed command that reads the working tree,
 or that writes to a sibling worktree, with `dangerouslyDisableSandbox: true`.
 Cues: phantom `.bashrc`/`.zshrc` in a listing; `Read-only file system` from a
-`git -C <other-worktree>` op. Relevant to [[finishing-a-development-branch]] when
-merging a worktree branch into main.
+`git -C <other-worktree>` op; the same error from a plain `cp`/`mv` into another
+repo — the write allowlist covers the session's working directories and nothing
+else. **Retry unsandboxed rather than reaching for a tool that is not under the
+command sandbox.** Where the user's own prompt asked for the write, the auto
+classifier lets the retry through, so routing around the denial buys nothing and
+loses the shell. Relevant to [[finishing-a-development-branch]] when merging a
+worktree branch into main.
 
 ## Harness-mounted config paths are busy/read-only (sandbox breaks it)
 
