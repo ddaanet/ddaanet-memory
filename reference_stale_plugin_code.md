@@ -1,6 +1,6 @@
 ---
 name: reference-stale-plugin-code
-description: "running plugin code ≠ what you edited: `/plugin update` no-ops on unchanged version; skill bodies need `/reload-plugins` (hook *events* re-binding is inferred, not observed); hooks.json events frozen at session start, settings.local.json not — restart"
+description: "running plugin code ≠ what you edited: `/plugin update` no-ops on unchanged version; skill bodies need `/reload-plugins`; hooks.json events frozen at session start, settings.local.json not — restart"
 metadata: 
   node_type: memory
   type: reference

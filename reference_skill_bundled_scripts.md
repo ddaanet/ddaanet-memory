@@ -1,6 +1,6 @@
 ---
 name: reference-skill-bundled-scripts
-description: "CLAUDE_PLUGIN_ROOT is UNSET in agent Bash (hooks only); every *enabled* plugin's bin/ is on PATH (cross-plugin bare-name invocation works; disabled = absent); skill body invokes bundled scripts by bare-name bin/ shim, no hook needed"
+description: "CLAUDE_PLUGIN_ROOT is UNSET in agent Bash (hooks only); every *enabled* plugin's bin/ is on PATH (cross-plugin bare-name invocation works; disabled = absent), so invoke bundled scripts by bare name"
 metadata:
   node_type: memory
   type: reference

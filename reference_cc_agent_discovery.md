@@ -1,6 +1,6 @@
 ---
 name: cc-agent-discovery
-description: "cwd `agents/` not auto-loaded; plugin must be marketplace-installed OR `--plugin-dir`-loaded for sub-agent dispatch; address as `<plugin>:<agent>`; defs cached per-session"
+description: "`Agent type not found`: dispatch needs `<plugin>:<agent>`, never the bare name, and the plugin must be marketplace-installed or `--plugin-dir`-loaded (cwd `agents/` is not auto-discovered); defs cached per-session"
 metadata: 
   node_type: memory
   type: reference

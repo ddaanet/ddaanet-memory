@@ -1,6 +1,6 @@
 ---
 name: reference_gitlore_memory_commit_routing
-description: "the TRIGGER file is what makes memory commit standalone; withholding it defers to the next parent commit, saving a call but NOT fixing history (the parent stages the gitlink either way); dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes — the store's push rides the parent PUSH, so check `origin/live`"
+description: "the TRIGGER file makes a memory commit standalone; withholding it defers to the next parent commit; dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes — the store's push rides the parent PUSH, so check `origin/live`"
 metadata: 
   node_type: memory
   type: reference

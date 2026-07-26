@@ -1,6 +1,6 @@
 ---
 name: feedback-test-the-invocation-path
-description: "assert discovery, `[ -x ]`, and that the suite is listed in `make test`; the 100644 hook and 5 unlisted suites"
+description: "assert discovery, `[ -x ]`, and that the suite is listed in `make test`"
 metadata: 
   node_type: memory
   type: feedback

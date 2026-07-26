@@ -1,6 +1,6 @@
 ---
 name: feedback-memory-index-lines-functional
-description: "MEMORY.md index lines aren't disposable summaries — they're what the agent matches against for recall AND what it holds ambiently in context; don't mechanically shorten them to hit a byte target"
+description: "index lines serve agent-matching AND ambient awareness; don't mechanically shorten them to hit a byte target, especially an advisory one"
 metadata: 
   node_type: memory
   type: feedback

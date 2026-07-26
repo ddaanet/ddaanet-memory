@@ -1,6 +1,6 @@
 ---
 name: feedback-verify-at-source
-description: "verify any claim against its own source before acting: subagent findings, delegated citations, hook-cited limits, handoff/memory status claims, user corrections, spec symbols"
+description: "verify any claim against its own source before acting: subagent findings, delegated citations, hook-cited limits, handoff/memory status, user corrections"
 metadata: 
   node_type: memory
   type: feedback

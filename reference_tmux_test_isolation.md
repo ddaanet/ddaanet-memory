@@ -1,6 +1,6 @@
 ---
 name: reference-tmux-test-isolation
-description: "`TMUX=fake` does NOT isolate a test: tmux falls back to the default socket `/tmp/tmux-$UID/default`, so a hardcoded `%0` is a live pane and `send-keys` types into it; stub the `tmux` binary on `PATH` instead"
+description: "`TMUX=fake` does NOT isolate: tmux falls back to `/tmp/tmux-$UID/default`, so a hardcoded `%0` is a live pane; stub the `tmux` binary on `PATH`"
 metadata: 
   node_type: memory
   type: reference
