@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 7affbb95-e26e-4294-8835-9c686a979955
+  modified: 2026-07-26T18:59:58.557Z
 ---
 
 To test Claude Code behavior that `--print` can't reach (interactive-only recall, UI affordances like "Recalled 1 memory"), drive a real interactive `claude` in a tmux pane and read the ground truth from the session transcript.
@@ -19,4 +20,5 @@ To test Claude Code behavior that `--print` can't reach (interactive-only recall
 - `--disallowedTools "Read,Grep,Glob,Bash,…"` hard-disables tools to test whether a behavior is tool-gated. **Comma-separated, placed LAST** on the line — it's variadic and will otherwise swallow the prompt as tool names. Invalid names (LS, NotebookRead) warn but don't abort.
 - `--settings '{"autoMemoryDirectory":"<scratch>"}'` cleanly **overrides gitlore's own session-start hook** (verified: the active index was the scratch fixtures despite the "memory ready" banner), so you can probe throwaway fixtures with zero real-memory contact.
 
-Related tmux-under-CC gotchas: [[zellij-ipc-sandbox]], [[revdiff-iterm-tmux-cc]].
+Related tmux-under-CC gotchas: [[reference_sandbox_effects]] (its zellij-IPC
+section), [[feedback_tmux_cc_popup]].
