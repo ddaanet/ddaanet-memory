@@ -96,3 +96,4 @@ the project's own memory store.
 - [Validate non-TDD tests by mutation](feedback_test_validation_by_mutation.md) — tests written after the code must each be turned red by a deliberate fault to prove they bite
 - [directive states acts only](feedback_directive_states_acts.md) — strip mechanism, re-stated orderings, and literalized meta-notes from agent-facing directives; unactionable detail gets verified and narrated
 - [withhold, don't forbid](feedback_withhold_dont_forbid.md) — naming an identifier to prohibit it supplies the string; say nothing when the reader has no other source
+- [checkout clears merge state](reference_git_checkout_clears_merge_state.md) — `git checkout` silently unlinks MERGE_HEAD/MERGE_MSG (`remove_branch_state`), so a *clean* `merge --no-commit` dies on any later re-checkout while its index survives; recover by restoring both pointers after `write-tree` == `merge-tree --write-tree`
