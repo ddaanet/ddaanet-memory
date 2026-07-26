@@ -103,3 +103,4 @@ the project's own memory store.
 - [errexit is off inside a condition](reference_errexit_suspended_in_condition.md) — `set -e` is suspended for anything reached from `if x=$(f)`/`while`/`&&`/`!`, subshells included, so a mid-function failure neither aborts nor shows; fail each step with `|| exit 1`/`|| return 1` (pipefail and nounset are NOT suspended)
 - [a correction applies to what it names](feedback_correction_scope.md) — don't demolish the general claim the corrected instance belonged to; quote the scope back, ask if the general claim survives, and say what you are NOT changing
 - [loose generation + post-hoc fix](feedback_loose_generation.md) — let generator scaffold freely, constrain at artifact boundary
+- [a memory is not a skill's job](feedback_memory_not_skill_job.md) — "when using <skill>, do X" is a category error; delete it and fix the skill, accuracy is not the test
