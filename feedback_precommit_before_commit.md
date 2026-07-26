@@ -1,6 +1,6 @@
 ---
 name: feedback_precommit_before_commit
-description: "Always run `just precommit` before committing — never offer it as an optional suggestion"
+description: "run `just precommit` unprompted before committing; required, never optional"
 metadata: 
   node_type: memory
   type: feedback

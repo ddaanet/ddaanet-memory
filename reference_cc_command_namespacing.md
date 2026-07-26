@@ -1,6 +1,6 @@
 ---
 name: cc-command-namespacing
-description: plugin slash-command name = /<plugin>:<path-under-commands>; nesting commands/<subdir>/x.md double-prefixes to /<plugin>:<subdir>:x — keep commands flat
+description: "`/<plugin>:<path-under-commands>`, so `commands/gitlore/install.md` becomes `/gitlore:gitlore:install`; keep commands flat; watch for a skill colliding on the same name"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: feedback-verify-session-root
-description: "after a compaction, check PWD / CLAUDE_PROJECT_DIR / gitStatus before acting; the 2026-07-20 wrong-root incident"
+description: "after a compaction, check PWD / CLAUDE_PROJECT_DIR / gitStatus before acting"
 metadata: 
   node_type: memory
   type: feedback

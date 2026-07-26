@@ -1,6 +1,6 @@
 ---
 name: feedback_turn_call_terminology
-description: "\"turn\" means a user turn — not an API round-trip, not a tool call; \"call\" means an API call or a tool call, and that ambiguity is usually moot"
+description: "\"turn\" = a *user* turn, not an API round-trip and not a tool call; \"call\" = an API or tool call"
 metadata: 
   node_type: memory
   type: feedback

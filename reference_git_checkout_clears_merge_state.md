@@ -1,6 +1,6 @@
 ---
 name: reference-git-checkout-clears-merge-state
-description: "git checkout silently deletes MERGE_HEAD/MERGE_MSG (remove_branch_state), destroying a prepared --no-commit merge; recover by restoring both and verifying the index against `git merge-tree --write-tree`"
+description: "`git checkout` silently unlinks MERGE_HEAD/MERGE_MSG, so a *clean* `merge --no-commit` dies on any later re-checkout while its index survives; recover by restoring both pointers after `write-tree` == `merge-tree --write-tree`"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: claude-plugin-dev toolkit
-description: Shared release infrastructure for ddaanet's Claude Code plugins, vendored via git subtree at plugin-dev/. Self-versioned via VERSION file. Latest tag v0.2.0.
+description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump in consumer release"
 type: project
 originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
 ---
