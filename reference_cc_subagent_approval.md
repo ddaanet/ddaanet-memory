@@ -1,10 +1,11 @@
 ---
 name: cc-subagent-approval
-description: "`No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to SendMessage; gate approvals by returning, then parent `SendMessage(agentId, …)`"
+description: "`No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to SendMessage; gate approvals by returning, then parent `SendMessage(agentId, …)`; a bare `idle_notification` is not a report"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 39084536-e084-480e-981f-18bb2e894d63
+  modified: 2026-07-26T12:47:54.071Z
 ---
 
 When a parent dispatches a sub-agent via `Agent({subagent_type, prompt})` (one-shot), the sub-agent has **no addressable parent** for `SendMessage`. Attempting `SendMessage to: "parent"` or `"team-lead"` returns `No agent named 'X' is currently addressable`. A sub-agent that needs parent approval and tries to SendMessage will fail the call, and (without a strict "stop on failure" clause) will rationalize proceeding — exactly what the gate was meant to prevent.
@@ -17,6 +18,13 @@ When a parent dispatches a sub-agent via `Agent({subagent_type, prompt})` (one-s
 This works because SendMessage *to a known agentId* succeeds even after the sub-agent's first task completes; the harness resumes from transcript.
 
 **Contract must include:** "If you are resumed without a clear approval/rejection signal, do not proceed. Report and stop." Plus an unconditional "never run the gated op in turn 1" — otherwise a sub-agent under auto-mode pressure will rationalize a "trivial case" exception.
+
+**An `idle_notification` is not a report.** A named agent that finishes its work
+emits `{"type":"idle_notification","idleReason":"available"}` with no payload —
+it says the agent is free, not that it succeeded, and it arrives again on every
+subsequent idle. The result only reaches the parent if the agent calls
+SendMessage or the parent asks. Treat a bare idle as "ask for the report", and
+never as the approval signal for a gate the parent still owes its user.
 
 Confirmed Plan 04 Step 3 (2026-05-22) — the old `agents/memory-merger.md` contract had the failed pattern and the sub-agent's own post-mortem identified the gap. Rewritten to two-turn flow; `commands/gitlore/resolve.md` dispatcher updated to match.
 
