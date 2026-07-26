@@ -1,6 +1,6 @@
 ---
 name: reference_git_replay_hooks
-description: "`rebase --continue` does NOT fire `pre-commit` (2.47.3) but cherry-pick/revert `--continue` and a hand commit/`--amend` at the stop DO; a non-zero exit aborts the REBASE, not a commit; detect via `--git-path rebase-merge|rebase-apply|CHERRY_PICK_HEAD|REVERT_HEAD`; `MERGE_HEAD` is not a replay"
+description: "`rebase --continue` does NOT fire `pre-commit`, but cherry-pick/revert `--continue` and a hand commit/`--amend` at the stop DO; non-zero aborts the REBASE; detect via `--git-path rebase-merge|rebase-apply|CHERRY_PICK_HEAD|REVERT_HEAD`; `MERGE_HEAD` is not a replay"
 metadata: 
   node_type: memory
   type: reference

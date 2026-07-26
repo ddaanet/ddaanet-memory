@@ -1,6 +1,6 @@
 ---
 name: test-automation-8020
-description: "If you've spent 80% writing tests, the marginal 20% to automate them is small — don't propose agent-driven tests when assertion-based shell tests work"
+description: "if you've spent 80% writing tests, the 20% to automate is a small markup; default to assertion-based shell tests"
 metadata: 
   node_type: memory
   type: feedback

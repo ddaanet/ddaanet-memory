@@ -1,6 +1,6 @@
 ---
 name: feedback_remove_cleanly_no_vestigial
-description: "cut all machinery in one pass; no absence-tests, no vestigial fixtures/scaffolding, inline a collapsed script; if a design proved harmful the cleanup is total"
+description: "cut all machinery in one pass; no absence-tests, no vestigial fixtures; if a design proved harmful the cleanup is total"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: jsonl-sidechain-segregation
-description: Claude Code main-session JSONLs do not interleave sidechain entries; sub-agent rollups live in separate per-agent files
+description: "main session JSONLs don't interleave sidechains; sub-agents live in `archived/agent-*.jsonl`"
 metadata: 
   node_type: memory
   type: project

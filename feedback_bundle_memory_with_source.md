@@ -1,6 +1,6 @@
 ---
 name: feedback-bundle-memory-with-source
-description: "always bundle a memory update into the same commit as the source change it documents, rather than committing them separately"
+description: "commit a memory update in the same parent commit as the source change it documents, not separately"
 metadata: 
   node_type: memory
   type: feedback
