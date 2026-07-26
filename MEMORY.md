@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-26T13:23:42.247Z
+  modified: 2026-07-26T14:06:00.746Z
 ---
 
 # ddaanet tier index
@@ -17,7 +17,7 @@ the project's own memory store.
 - [bats + shellcheck gotchas](reference_bats_shellcheck_gotchas.md) — SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive
 - [git refuses ext:: by default](reference_git_ext_transport.md) — `fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` injection finding isn't exploitable on default git — probe the policy first
 - [protocol.file.allow blocks submodule clones](reference_git_protocol_file_allow.md) — `fatal: transport 'file' not allowed`; the child *clone* reads `protocol.file.allow`, so repo config can't fix it — use `git -c` or `GIT_CONFIG_COUNT/KEY_0/VALUE_0`
-- [mutation-check assertions](feedback_mutation_check_negatives.md) — a "stays silent" test, or a positive match on a shared output channel, passes vacuously; mutate the guard and watch that test go red before counting it
+- [mutation-check negative assertions](feedback_mutation_check_negatives.md) — an exemption/"stays silent" test passes vacuously against code that doesn't exist; break the guard it protects and watch that test go red before counting it
 - [shell-gotchas before reviewing shell](feedback_shell_gotchas_on_review.md) — load `/shell-scripting:shell-gotchas` before reviewing `.sh`/`.bats`/hook diffs, not only before writing them; shellcheck cannot see the BSD/`set -e`/hook-env class, and the skill's "audit the whole touched script" changes the unit of review
 - [design-doc writing](feedback_design_doc_writing.md) — dated design entries are write-time records (keep rationale); memory/docs/comments state present-tense truth; six-section doc: FR, NFR, architecture, decisions, rejected alternatives, changelog
 - [skill vs command](feedback_skill_vs_command.md) — self-triggering skill when condition is mechanical/detectable; command only for explicit user-initiated actions
@@ -32,6 +32,7 @@ the project's own memory store.
 - [default to automation](feedback_automate_default.md) — automated tests by default; when a manual check is justified
 - [self-contained directives](feedback_self_contained_directives.md) — emit absolute paths + explicit cd; never rely on sub-agent's env or CWD
 - [CC agent discovery](reference_cc_agent_discovery.md) — `Agent type not found`: dispatch needs `<plugin>:<agent>`, never the bare name, and the plugin must be marketplace-installed or `--plugin-dir`-loaded (cwd `agents/` is not auto-discovered); defs cached per-session, so a contract change needs a restart
+- [large docs review](feedback_large_docs_review.md) — for big plan/spec docs, flag high-risk sections explicitly rather than asking for full eyeball pass
 - [plan length matches work](feedback_plan_length_matches_work.md) — plan doc length tracks the executable work, not the topic
 - [git hook env leak](reference_git_hook_env_leak.md) — `index file open failed: Not a directory` inside a hook = leaked repo-local `GIT_*`; clear all of them via `unset $(git rev-parse --local-env-vars)`, but save and restore `GIT_INDEX_FILE` for a staging `git add` or it dies on `Unable to create '.git/index.lock': File exists`
 - [submodule escape to parent](reference_submodule_escape_to_parent.md) — `git -C`/`cd` into a submodule with no `.git` silently operates on the **parent** — symptom: a bogus 160000 gitlink, or a `git branch` landing in the parent; guard `[ -e "$sub/.git" ]`; linked worktree = `--git-dir` ≠ `--git-common-dir`
@@ -100,3 +101,4 @@ the project's own memory store.
 - [no speculative rules or anti-patterns](feedback_no_speculative_rules.md) — an anti-pattern records a defect that happened; no incident, no entry — and when a rule must exist, state it positively in the step where it acts rather than as a prohibition on the agent
 - [turn vs call](feedback_turn_call_terminology.md) — "turn" = a *user* turn, not an API round-trip and not a tool call; "call" = an API or tool call, and that ambiguity is usually moot
 - [checkout clears merge state](reference_git_checkout_clears_merge_state.md) — `git checkout` silently unlinks MERGE_HEAD/MERGE_MSG (`remove_branch_state`), so a *clean* `merge --no-commit` dies on any later re-checkout while its index survives; recover by restoring both pointers after `write-tree` == `merge-tree --write-tree`
+- [detect liveness, not presence](feedback_detect_liveness_not_presence.md) — a foreign tool's state file needs the *current* layout plus an identity marker inside it: layouts move (the old path becomes a declared stray) and abandoned files are never cleaned up, so `[ -f known/path ]` false-positives; fail open, pick newest, stay read-only
