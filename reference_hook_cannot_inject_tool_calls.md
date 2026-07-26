@@ -1,6 +1,6 @@
 ---
 name: reference_hook_cannot_inject_tool_calls
-description: "no `injectToolCall`/`forceRead`/`requestTool`/`forceToolUse` field exists (grepped 2.1.217); a hook can only block, `updatedInput`, `updatedToolOutput`, `additionalContext` — to make the agent see a file, read it in the hook and emit the bytes"
+description: "no `injectToolCall`/`forceRead`/`requestTool` field exists; a hook can only block, `updatedInput`, `updatedToolOutput`, `additionalContext` — to make the agent see a file, emit its bytes"
 metadata: 
   node_type: memory
   type: reference

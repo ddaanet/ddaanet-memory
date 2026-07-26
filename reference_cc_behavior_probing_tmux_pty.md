@@ -1,6 +1,6 @@
 ---
 name: cc-behavior-probing-tmux-pty
-description: "drive interactive `claude` in a **bash** tmux pane (`-x 400`; fish mangles `send-keys`) and read ground truth from the transcript JSONL, not the pane scrape; `--disallowedTools` is variadic so place it LAST or it swallows the prompt; `--settings` overrides gitlore's session-start hook"
+description: "drive `claude` in a **bash** tmux pane (`-x 400`; fish mangles `send-keys`), read truth from the transcript JSONL not the pane; `--disallowedTools` is variadic — place it LAST; `--settings` overrides gitlore's session-start hook"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: feedback_settings_enabledplugins_blocked
-description: Claude cannot edit ~/.claude/settings.json enabledPlugins; the auto-mode classifier blocks it as self-modification of startup config
+description: "classifier blocks Claude editing enabledPlugins even after approval; give the user a !-command"
 metadata: 
   node_type: memory
   type: feedback

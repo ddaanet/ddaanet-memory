@@ -1,6 +1,6 @@
 ---
 name: feedback_review_model_selection
-description: Use Sonnet (not Haiku) for code review agents — weak models miss subtle issues
+description: "use Sonnet (min) for reviewer subagents; Haiku misses subtle issues"
 metadata: 
   node_type: memory
   type: feedback

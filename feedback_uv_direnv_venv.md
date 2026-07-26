@@ -1,6 +1,6 @@
 ---
 name: feedback-uv-direnv-venv
-description: "don't use `uv run` with Claude (sandbox/permission pain); use `uv sync` only + direnv-activated venv on PATH"
+description: "no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`"
 metadata: 
   node_type: memory
   type: feedback

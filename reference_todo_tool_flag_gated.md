@@ -1,6 +1,6 @@
 ---
 name: reference-todo-tool-flag-gated
-description: "`TodoWrite` has no tool definition in 2.1.217; `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` replace it, gated by server-side `tengu_vellum_ash` — never name a todo tool in a plugin step"
+description: "`TodoWrite` has no tool definition; `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` replace it, gated by `tengu_vellum_ash` — never name a todo tool in a plugin step"
 metadata: 
   node_type: memory
   type: reference

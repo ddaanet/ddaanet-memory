@@ -1,6 +1,6 @@
 ---
 name: feedback-skill-description-purpose-first
-description: "skill `description:` frontmatter is TUI-visible; lead with what the skill does, then triggers/\"Use when\", then exclusions; never a bare trigger list; drop stale implementation-detail tails"
+description: "skill `description:` frontmatter is TUI-visible; lead with what it does, then triggers/\"Use when\", then exclusions; never a bare trigger list"
 metadata: 
   node_type: memory
   type: feedback
