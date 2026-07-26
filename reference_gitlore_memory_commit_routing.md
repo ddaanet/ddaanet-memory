@@ -1,11 +1,11 @@
 ---
 name: reference_gitlore_memory_commit_routing
-description: "gitlore: the commit TRIGGER file is what makes memory commit standalone — writing the approved summary alone lets the next parent commit bundle memory with the source it documents; summary mtime must be newer than every memory file or the parent commit aborts"
+description: "the TRIGGER file is what makes memory commit standalone; withholding it defers to the next parent commit, saving a call but NOT fixing history (the parent stages the gitlink either way); dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 86760b03-2500-4f78-85bd-7e921b6bffaf
-  modified: 2026-07-25T14:51:27.929Z
+  modified: 2026-07-26T10:28:21.458Z
 ---
 
 gitlore routes a memory commit down one of two paths, and the only thing that
@@ -20,9 +20,12 @@ is written:
   (`gitlore_sync_memory_to_live`, `scripts/lib/resolve.sh`) commits the
   submodule and stages the moved gitlink **into that same parent commit**.
 
-So bundling memory with the source it documents ([[feedback_bundle_memory_with_source]])
-is not a matter of ordering two commits — it is a matter of not writing the
-trigger.
+Both paths bundle in the parent. The pre-commit hook stages the moved gitlink
+unconditionally (`scripts/git-hooks/pre-commit`), so a memory commit made
+earlier by the trigger is still recorded by the next parent commit alongside its
+source change — one parent commit either way, and
+[[feedback_bundle_memory_with_source]] is satisfied by both. Withholding the
+trigger is an economy, not a correctness fix: one call instead of two.
 
 Two consequences worth knowing before choosing the second path:
 

@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-24T19:42:38.471Z
+  modified: 2026-07-25T20:36:59.334Z
 ---
 
 # ddaanet tier index
@@ -80,7 +80,7 @@ the project's own memory store.
 - [Skill description: purpose first](feedback_skill_description_purpose_first.md) — skill `description:` frontmatter is TUI-visible; lead with what the skill does, then triggers/"Use when", then exclusions; never a bare trigger list; drop stale implementation-detail tails
 - [Skill bundled-script invocation](reference_skill_bundled_scripts.md) — CLAUDE_PLUGIN_ROOT is UNSET in agent Bash (hooks only); every *enabled* plugin's bin/ is on PATH (cross-plugin bare-name invocation works; disabled = absent); skill body invokes bundled scripts by bare-name bin/ shim, no hook needed
 - [Precommit before commit](feedback_precommit_before_commit.md) — run `just precommit` unprompted before committing; it's required, never an optional suggestion
-- [Session JSONL schema reference](reference_session_jsonl_schema.md) — no official schema (docs: internal/unstable); refs claude-dev.tools/docs/jsonl-format + simonw/claude-code-transcripts; key on `isMeta`/`isSidechain`/`isCompactSummary`, never content
+- [Session JSONL schema reference](reference_session_jsonl_schema.md) — no official schema (docs: internal/unstable); refs claude-dev.tools/docs/jsonl-format + simonw/claude-code-transcripts; key on `isMeta`/`isSidechain`/`isCompactSummary`, never content; one assistant message = N entries sharing `message.id`, so group on it before asking what was batched
 - [Remove features cleanly](feedback_remove_cleanly_no_vestigial.md) — cut all machinery in one pass; no absence-tests, no vestigial fixtures/scaffolding, inline a collapsed script; if a design proved harmful the cleanup is total
 - [CC TUI tmux driving](reference_cc_tui_tmux_driving.md) — mid-turn input has FOUR classes — TUI-local / harness-action queued / plugin-command own-turn / **prose injected into the running turn**; `Stop` + `SessionStart(compact)` are the authoritative gates; `Stop` doesn't fire on Esc (v2.1.215)
 - [tmux test isolation](reference_tmux_test_isolation.md) — `TMUX=fake` does NOT isolate a test: tmux falls back to the default socket `/tmp/tmux-$UID/default`, so a hardcoded `%0` is a live pane and `send-keys` types into it; stub the `tmux` binary on `PATH` instead
@@ -92,4 +92,7 @@ the project's own memory store.
 - [memory index lines are functional](feedback_memory_index_lines_functional.md) — index lines serve agent-matching AND ambient awareness, not just a pointer; don't mechanically shorten them to hit a byte target, especially an advisory one
 - [bundle memory with source](feedback_bundle_memory_with_source.md) — always commit a memory update in the same parent commit as the source change it documents, not as a separate commit; don't over-apply to unrelated pending work
 - [CC strips terminal-provenance env](reference_cc_env_strip_tmux.md) — TMUX/TMUX_PANE/TERM_PROGRAM/TERM_PROGRAM_VERSION/SSH_CONNECTION are dropped from the session env (rest inherits), so hook-driven send-keys finds no pane; `tmux display -p` guesses the wrong one — capture via a launcher shim under a custom name
-- [gitlore memory commit routing](reference_gitlore_memory_commit_routing.md) — the TRIGGER file is what makes memory commit standalone; write the approved summary alone and the next parent commit bundles memory with its source; dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file
+- [gitlore memory commit routing](reference_gitlore_memory_commit_routing.md) — the TRIGGER file is what makes memory commit standalone; withholding it defers to the next parent commit, saving a call but NOT fixing history (the parent stages the gitlink either way); dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file
+- [directives state acts, not mechanism](feedback_directive_acts_not_mechanism.md) — script-emitted text an agent acts on carries only the acts; mechanism gets checked and narrated back, and "do NOT write `<path>`" hands over the string it forbids — silence guards better when the reader has no other source
+- [no speculative rules or anti-patterns](feedback_no_speculative_rules.md) — an anti-pattern records a defect that happened; no incident, no entry — and when a rule must exist, state it positively in the step where it acts rather than as a prohibition on the agent
+- [turn vs call](feedback_turn_call_terminology.md) — "turn" = a *user* turn, not an API round-trip and not a tool call; "call" = an API or tool call, and that ambiguity is usually moot
