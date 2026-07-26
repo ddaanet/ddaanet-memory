@@ -1,11 +1,11 @@
 ---
 name: reference-sandbox-effects
-description: "index.lock/\"Another git process\", phantom dotfiles, sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
+description: "index.lock/\"Another git process\", sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-26T12:05:54.545Z
+  modified: 2026-07-26T17:27:42.237Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -57,23 +57,14 @@ recorded under `$TMPDIR` below, strict mode was *not* in force and
 `dangerouslyDisableSandbox` worked normally; that is why the `just release` run
 there succeeded with it.
 
-## Phantom home dotfiles and sibling-worktree writes (sandbox breaks them)
+## Sibling-worktree writes are blocked (sandbox breaks them)
 
-In the gitlore repo the sandbox distorts some git/filesystem operations
-(verified 2026-07-17).
-
-1. **Phantom dotfiles.** A sandboxed working-tree read surfaces user-home
-   dotfiles absent from the repo — `.bashrc`, `.zshrc`, `.bash_profile`,
-   `.zprofile`, `.profile`, `.gitconfig`, `.ripgreprc`, `.idea`, `.vscode`,
-   `.mcp.json`. So a sandboxed `git status` reports spurious untracked files.
-   Ground truth: the repo's real dotfiles are only `.claude .claude-plugin
-   .editorconfig .envrc .git .gitignore .gitlore .gitmodules`.
-2. **Sibling-worktree writes blocked.** The sandbox grants write access only to
-   the current worktree (`.`) plus `.git`. From a linked worktree, a git op
-   writing a *sibling* path fails with `Read-only file system` — e.g. `git -C
-   <main-root> merge/push <branch>` (finishing a worktree branch into main) or
-   `git worktree remove <other>`. The merge half-prints "Updating …" then aborts
-   cleanly (no `MERGE_HEAD`), so retry unsandboxed.
+The sandbox grants write access only to the current worktree (`.`) plus `.git`.
+From a linked worktree, a git op writing a *sibling* path fails with `Read-only
+file system` — e.g. `git -C <main-root> merge/push <branch>` (finishing a
+worktree branch into main) or `git worktree remove <other>`. The merge
+half-prints "Updating …" then aborts cleanly (no `MERGE_HEAD`), so retry
+unsandboxed.
 
 `.envrc` vars pass through the sandbox: `MARKETPLACE_DIR` and the `DIRENV_*`
 vars are present in the sandboxed env (direnv runs in the launching shell), so
@@ -83,25 +74,12 @@ vars are present in the sandboxed env (direnv runs in the launching shell), so
 Bash hook) detects a `git status` command and flips `dangerouslyDisableSandbox`
 in place, so it runs unsandboxed transparently. Caveats: detection is
 best-effort (an unrecognised `git status` stays sandboxed), and it deliberately
-does NOT cover `git add -A` (also fails sandboxed, but too dangerous to
-auto-unsandbox). Its notice goes to `systemMessage` (user channel, not model
-context), so the agent may never learn a command was auto-unsandboxed — do NOT
-read a clean sandboxed `git status` as evidence the sandbox itself is clean.
+does NOT cover `git add -A` (too dangerous to auto-unsandbox). Its notice goes
+to `systemMessage` (user channel, not model context), so the agent may never
+learn a command was auto-unsandboxed.
 
-**Slash-command context is sandboxed too.** Commands like
-`/commit-commands:commit` auto-inject a `git status` into their `## Context`
-block — that injection runs sandboxed (the auto-unsandbox plugin doesn't reach
-it), so it lists the home dotfiles as untracked and can read as "nothing staged,
-untracked files present" when the tree is actually clean. Never act on that
-injected listing directly: re-run `git status` unsandboxed first. Never
-stage/commit the materialized dotfiles (`.bashrc`, `.gitconfig`, `.zshrc`, …) —
-committing them pollutes the repo with personal config. Confirmed 2026-05-24: a
-`/commit` context showed ~14 untracked dotfiles + `scripts/__pycache__/`; the
-unsandboxed tree had only the build artifact, nothing to commit.
-
-**How to apply:** run any *other* sandboxed command that reads the working tree,
-or that writes to a sibling worktree, with `dangerouslyDisableSandbox: true`.
-Cues: phantom `.bashrc`/`.zshrc` in a listing; `Read-only file system` from a
+**How to apply:** run any sandboxed command that writes to a sibling worktree
+with `dangerouslyDisableSandbox: true`. Cues: `Read-only file system` from a
 `git -C <other-worktree>` op; the same error from a plain `cp`/`mv` into another
 repo — the write allowlist covers the session's working directories and nothing
 else. **Retry unsandboxed rather than reaching for a tool that is not under the

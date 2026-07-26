@@ -13,7 +13,7 @@ Portable facts that hold across every ddaanet project — tooling behaviour,
 Claude Code mechanics, shell and git gotchas. Project-specific facts stay in
 the project's own memory store.
 
-- [sandbox effects](reference_sandbox_effects.md) — index.lock/"Another git process", phantom dotfiles, sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config, --resume "No conversation found…", $TMPDIR unset, zellij "no active session"; escapes: dangerouslyDisableSandbox, /add-dir, `!`
+- [sandbox effects](reference_sandbox_effects.md) — index.lock/"Another git process", sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config, --resume "No conversation found…", $TMPDIR unset, zellij "no active session"; escapes: dangerouslyDisableSandbox, /add-dir, `!`
 - [bats + shellcheck gotchas](reference_bats_shellcheck_gotchas.md) — SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive
 - [git refuses ext:: by default](reference_git_ext_transport.md) — `fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` finding isn't exploitable — probe the policy first
 - [protocol.file.allow blocks submodule clones](reference_git_protocol_file_allow.md) — `fatal: transport 'file' not allowed`; the child *clone* reads it, so repo config can't fix it — use `git -c` or `GIT_CONFIG_COUNT/KEY_0/VALUE_0`
@@ -98,5 +98,4 @@ the project's own memory store.
 - [no speculative rules or anti-patterns](feedback_no_speculative_rules.md) — an anti-pattern records a defect that happened; no incident, no entry; state a needed rule positively in the step where it acts
 - [turn vs call](feedback_turn_call_terminology.md) — "turn" = a *user* turn, not an API round-trip and not a tool call; "call" = an API or tool call
 - [checkout clears merge state](reference_git_checkout_clears_merge_state.md) — `git checkout` silently unlinks MERGE_HEAD/MERGE_MSG, so a *clean* `merge --no-commit` dies on any later re-checkout while its index survives; recover by restoring both pointers after `write-tree` == `merge-tree --write-tree`
-- [gate tree-hash dies under sandbox](reference_gate_hash_sandbox.md) — `can only add regular files, symbolic links or git-directories` on `.bash_profile`: phantom dotfiles break `git add -A` into a throwaway index, so a tree-hash gate never skips AND never records (stale sentinel mtime is the tell); hash `git ls-files -z --cached --others --exclude-standard <paths>` instead
 - [index compaction loses triggers](feedback_index_compaction_triggers.md) — trimming index lines keeps prescriptions and cuts symptoms/identifiers; count each literal index-wide before and after — falling to zero is unreachable, falling to one on another line MISROUTES; have someone else audit the diff
