@@ -1,6 +1,6 @@
 ---
 name: feedback-directive-states-acts
-description: "An agent-facing directive states only the acts its reader performs — no mechanism, no restating what earlier steps already settled"
+description: "the three things to cut from an agent-facing directive: mechanism, an ordering an earlier step already settled, and a meta-note about the constraint literalized into the text"
 metadata: 
   node_type: memory
   type: feedback

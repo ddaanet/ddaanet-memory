@@ -1,6 +1,6 @@
 ---
 name: feedback-withhold-dont-forbid
-description: "When a hazard is reachable only through an identifier the reader lacks, say nothing — a prohibition supplies the string it forbids"
+description: "naming an identifier in order to prohibit it supplies the string; ask who else could supply it, and when nobody can, say nothing instead of forbidding"
 metadata: 
   node_type: memory
   type: feedback
