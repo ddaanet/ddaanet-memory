@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-25T12:08:18.055Z
+  modified: 2026-07-26T13:29:15.496Z
 ---
 
 Before acting on a claim, check it against the thing that would falsify it —
@@ -65,13 +65,22 @@ prior-session assumptions about what's pending),
   re-run code an agent claims it verified — a substring bug in
   `is_explicit_approval` had been passed off as correct.
 - **Hook-cited numeric limit.** After routing 44 local facts into a newly
-  mounted gitlore tier, gitlore's PostToolBatch hook cited two budget
-  thresholds for the composed `MEMORY.md`: "25600-byte budget, 80% warn" and
-  a separate "24.4KB read limit — rewrite under 17.1KB". Grepping gitlore's
-  own `scripts/lib/index-sync.sh` confirmed only the first; `24.4`/`17.1`
-  appeared nowhere. Chasing the unsourced stricter number would have meant
-  mechanically gutting all ~115 index entries instead of trimming the dozen
-  needed to clear the real budget. The user caught it first.
+  mounted gitlore tier, two budget thresholds arrived for the composed
+  `MEMORY.md` in one turn: "25600-byte budget, 80% warn" and a separate
+  "24.4KB read limit — rewrite under 17.1KB". Chasing the stricter one would
+  have meant mechanically gutting all ~115 index entries instead of trimming
+  the dozen needed to clear the real budget. The user caught it first.
+  Re-checked 2026-07-26: they are **two independent emitters**, not one hook
+  citing two numbers. Only the first is gitlore's
+  (`GITLORE_INDEX_BUDGET_BYTES=25600` in `scripts/lib/index-sync.sh`, with
+  25 KiB sourced as a measured ceiling). `24.4`/`17.1` are in no gitlore
+  script and in no installed plugin's hooks — they come from the harness's own
+  auto-memory check on `PostToolUse(Edit)`, whose source is not readable, so
+  the figures can be neither confirmed nor refuted at source. Settle such a
+  claim by its *effect* instead: at 22690 bytes the index's last line arrived
+  intact in context, so nothing was being truncated and the stricter number
+  changed nothing. Two limits from two emitters do not need reconciling — find
+  which one owns the failure you can observe.
 - **Handoff "pending" note.** A handoff listed the user's "Wrong solution
   shape" message as the final prompt, implying the fix in `192d7e8` was
   rejected and un-revised. `192d7e8` *was* the corrected shape — the handoff
