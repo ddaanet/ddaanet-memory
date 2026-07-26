@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-26T12:05:46.662Z
+  modified: 2026-07-26T13:23:42.247Z
 ---
 
 # ddaanet tier index
@@ -17,7 +17,7 @@ the project's own memory store.
 - [bats + shellcheck gotchas](reference_bats_shellcheck_gotchas.md) — SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive
 - [git refuses ext:: by default](reference_git_ext_transport.md) — `fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` injection finding isn't exploitable on default git — probe the policy first
 - [protocol.file.allow blocks submodule clones](reference_git_protocol_file_allow.md) — `fatal: transport 'file' not allowed`; the child *clone* reads `protocol.file.allow`, so repo config can't fix it — use `git -c` or `GIT_CONFIG_COUNT/KEY_0/VALUE_0`
-- [mutation-check negative assertions](feedback_mutation_check_negatives.md) — an exemption/"stays silent" test passes vacuously against code that doesn't exist; break the guard it protects and watch that test go red before counting it
+- [mutation-check assertions](feedback_mutation_check_negatives.md) — a "stays silent" test, or a positive match on a shared output channel, passes vacuously; mutate the guard and watch that test go red before counting it
 - [shell-gotchas before reviewing shell](feedback_shell_gotchas_on_review.md) — load `/shell-scripting:shell-gotchas` before reviewing `.sh`/`.bats`/hook diffs, not only before writing them; shellcheck cannot see the BSD/`set -e`/hook-env class, and the skill's "audit the whole touched script" changes the unit of review
 - [design-doc writing](feedback_design_doc_writing.md) — dated design entries are write-time records (keep rationale); memory/docs/comments state present-tense truth; six-section doc: FR, NFR, architecture, decisions, rejected alternatives, changelog
 - [skill vs command](feedback_skill_vs_command.md) — self-triggering skill when condition is mechanical/detectable; command only for explicit user-initiated actions
@@ -36,7 +36,7 @@ the project's own memory store.
 - [plan length matches work](feedback_plan_length_matches_work.md) — plan doc length tracks the executable work, not the topic
 - [git hook env leak](reference_git_hook_env_leak.md) — `index file open failed: Not a directory` inside a hook = leaked repo-local `GIT_*`; clear all of them via `unset $(git rev-parse --local-env-vars)`, but save and restore `GIT_INDEX_FILE` for a staging `git add` or it dies on `Unable to create '.git/index.lock': File exists`
 - [submodule escape to parent](reference_submodule_escape_to_parent.md) — `git -C`/`cd` into a submodule with no `.git` silently operates on the **parent** — symptom: a bogus 160000 gitlink, or a `git branch` landing in the parent; guard `[ -e "$sub/.git" ]`; linked worktree = `--git-dir` ≠ `--git-common-dir`
-- [CC sub-agent approval](reference_cc_subagent_approval.md) — `No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to SendMessage; gate approvals by returning, then parent `SendMessage(agentId, …)`; a bare `idle_notification` is not a report
+- [CC sub-agent approval](reference_cc_subagent_approval.md) — `No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to SendMessage; gate approvals by returning, then parent `SendMessage(agentId, …)`
 - [no hand-run tests](feedback_no_handrun_tests.md) — encode behavior in the bats suite; manual runs are for dogfooding the real product
 - [harden human gates, not controlled channels](feedback_harden_human_gates.md) — apply word-boundary/escape recognition where a human types free-text, not on channels whose producer you control
 - [CC command namespacing](reference_cc_command_namespacing.md) — `/<plugin>:<path-under-commands>`, so `commands/gitlore/install.md` becomes the double-prefixed `/gitlore:gitlore:install`; keep commands flat, and watch for a skill colliding on the same `<plugin>:<name>`
@@ -80,7 +80,7 @@ the project's own memory store.
 - [Skill description: purpose first](feedback_skill_description_purpose_first.md) — skill `description:` frontmatter is TUI-visible; lead with what the skill does, then triggers/"Use when", then exclusions; never a bare trigger list; drop stale implementation-detail tails
 - [Skill bundled-script invocation](reference_skill_bundled_scripts.md) — CLAUDE_PLUGIN_ROOT is UNSET in agent Bash (hooks only); every *enabled* plugin's bin/ is on PATH (cross-plugin bare-name invocation works; disabled = absent); skill body invokes bundled scripts by bare-name bin/ shim, no hook needed
 - [Precommit before commit](feedback_precommit_before_commit.md) — run `just precommit` unprompted before committing; it's required, never an optional suggestion
-- [Session JSONL schema reference](reference_session_jsonl_schema.md) — no official schema (docs: internal/unstable); refs claude-dev.tools/docs/jsonl-format + simonw/claude-code-transcripts; key on `isMeta`/`isSidechain`/`isCompactSummary`, never content; one assistant message = N entries sharing `message.id`, so group on it before asking what was batched
+- [Session JSONL schema reference](reference_session_jsonl_schema.md) — no official schema (docs: internal/unstable); refs claude-dev.tools/docs/jsonl-format + simonw/claude-code-transcripts; key on `isMeta`/`isSidechain`/`isCompactSummary`, never content
 - [Remove features cleanly](feedback_remove_cleanly_no_vestigial.md) — cut all machinery in one pass; no absence-tests, no vestigial fixtures/scaffolding, inline a collapsed script; if a design proved harmful the cleanup is total
 - [CC TUI tmux driving](reference_cc_tui_tmux_driving.md) — mid-turn input has FOUR classes — TUI-local / harness-action queued / plugin-command own-turn / **prose injected into the running turn**; `Stop` + `SessionStart(compact)` are the authoritative gates; `Stop` doesn't fire on Esc (v2.1.215)
 - [tmux test isolation](reference_tmux_test_isolation.md) — `TMUX=fake` does NOT isolate a test: tmux falls back to the default socket `/tmp/tmux-$UID/default`, so a hardcoded `%0` is a live pane and `send-keys` types into it; stub the `tmux` binary on `PATH` instead
@@ -94,9 +94,10 @@ the project's own memory store.
 - [CC strips terminal-provenance env](reference_cc_env_strip_tmux.md) — TMUX/TMUX_PANE/TERM_PROGRAM/TERM_PROGRAM_VERSION/SSH_CONNECTION are dropped from the session env (rest inherits), so hook-driven send-keys finds no pane; `tmux display -p` guesses the wrong one — capture via a launcher shim under a custom name
 - [settings.json enabledPlugins edit blocked](feedback_settings_enabledplugins_blocked.md) — classifier blocks Claude editing enabledPlugins even after approval; give user a !-command instead
 - [Validate non-TDD tests by mutation](feedback_test_validation_by_mutation.md) — tests written after the code must each be turned red by a deliberate fault to prove they bite
-- [directive states acts only](feedback_directive_states_acts.md) — the three things to cut from an agent-facing directive: mechanism, an ordering an earlier step already settled, and a meta-note about the constraint literalized into the text
-- [withhold, don't forbid](feedback_withhold_dont_forbid.md) — naming an identifier in order to prohibit it supplies the string; ask who else could supply it, and when nobody can, say nothing instead of forbidding
+- [directive states acts only](feedback_directive_states_acts.md) — strip mechanism, re-stated orderings, and literalized meta-notes from agent-facing directives; unactionable detail gets verified and narrated
+- [withhold, don't forbid](feedback_withhold_dont_forbid.md) — naming an identifier to prohibit it supplies the string; say nothing when the reader has no other source
 - [gitlore memory commit routing](reference_gitlore_memory_commit_routing.md) — the TRIGGER file is what makes memory commit standalone; withholding it defers to the next parent commit, saving a call but NOT fixing history (the parent stages the gitlink either way); dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes — the store's push rides the parent PUSH, so check `origin/live`
 - [directives state acts, not mechanism](feedback_directive_acts_not_mechanism.md) — script-emitted text an agent acts on carries only the acts; mechanism gets checked and narrated back, and "do NOT write `<path>`" hands over the string it forbids — silence guards better when the reader has no other source
 - [no speculative rules or anti-patterns](feedback_no_speculative_rules.md) — an anti-pattern records a defect that happened; no incident, no entry — and when a rule must exist, state it positively in the step where it acts rather than as a prohibition on the agent
 - [turn vs call](feedback_turn_call_terminology.md) — "turn" = a *user* turn, not an API round-trip and not a tool call; "call" = an API or tool call, and that ambiguity is usually moot
+- [checkout clears merge state](reference_git_checkout_clears_merge_state.md) — `git checkout` silently unlinks MERGE_HEAD/MERGE_MSG (`remove_branch_state`), so a *clean* `merge --no-commit` dies on any later re-checkout while its index survives; recover by restoring both pointers after `write-tree` == `merge-tree --write-tree`
