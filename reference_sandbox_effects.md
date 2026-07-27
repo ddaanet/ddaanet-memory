@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-26T12:05:54.545Z
+  modified: 2026-07-27T07:23:10.573Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -132,7 +132,7 @@ When `checkout` + `merge` choke on the protected files, a plain `git reset --har
 <branchtip>` unsandboxed completes the fast-forward cleanly. Note that the
 harness `Edit` tool *can* write `.claude/settings.json` even though a raw git
 unlink cannot — but the classifier still refuses `enabledPlugins`
-([[feedback_settings_enabledplugins_blocked]]).
+([[feedback_classifier_denied_self_config]]).
 
 ## `$TMPDIR` is unset when unsandboxed (cost of taking the escape)
 
@@ -164,7 +164,7 @@ sandboxed returned `subtype: success` unsandboxed.
 shell). A single-turn connectivity **probe cannot detect this** — it never
 resumes, so it passes sandboxed while the real flow cannot. gitlore's
 `tests/evals/run-evals.sh` documents this in its header and its probe comment.
-Related: [[reference-memory-gate-commit-path]] (the gitdir is likewise
+Related: [[feedback_classifier_denied_self_config]] (the gitdir is likewise
 write-blocked, which is why the memory-message IPC file lives in the parent
 worktree).
 
