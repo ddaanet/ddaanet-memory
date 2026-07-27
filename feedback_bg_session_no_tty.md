@@ -1,6 +1,6 @@
 ---
 name: feedback-bg-session-no-tty
-description: "background sessions can't launch interactive TUIs (no /dev/tty); have the user run them and read the output"
+description: "background sessions can't launch interactive TUIs (revdiff: no /dev/tty); have the user run them and read the history/output, instead of retrying the launcher"
 metadata: 
   node_type: memory
   type: feedback

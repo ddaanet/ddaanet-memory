@@ -1,6 +1,6 @@
 ---
 name: feedback_no_speculative_rules
-description: "an anti-pattern records a defect that happened; no incident, no entry; state a needed rule positively in the step where it acts"
+description: "an anti-pattern records a defect that happened; no incident, no entry; state a needed rule positively in the step where it acts rather than as a prohibition on the agent"
 metadata: 
   node_type: memory
   type: feedback

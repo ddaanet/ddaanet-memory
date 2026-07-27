@@ -1,6 +1,6 @@
 ---
 name: reference-sandbox-effects
-description: "index.lock/\"Another git process\", sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
+description: "index.lock/\"Another git process\", sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard/atomic mv), --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
 metadata: 
   node_type: memory
   type: reference

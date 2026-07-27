@@ -1,6 +1,6 @@
 ---
 name: reference-cc-worktree-memory-freeze
-description: "`EnterWorktree` chdirs but never moves projectRoot, so `CLAUDE_PROJECT_DIR`/`PATH`/`autoMemoryDirectory` stay at the launch repo and auto-memory strands there; cwd≠`CLAUDE_PROJECT_DIR` is the drift signal"
+description: "in-process `EnterWorktree` chdirs but never moves projectRoot, so `CLAUDE_PROJECT_DIR`/`PATH`/`autoMemoryDirectory` stay at the launch repo and auto-memory strands there; cwd≠`CLAUDE_PROJECT_DIR` is the D15 drift signal"
 metadata:
   node_type: memory
   type: reference

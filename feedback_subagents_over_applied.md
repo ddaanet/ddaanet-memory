@@ -1,6 +1,6 @@
 ---
 name: feedback-subagents-over-applied
-description: "one-subagent-per-task is mis-granular; the axis is batching, not agents-vs-inline; a shared mutable file only rules out *parallel* agents"
+description: "one-subagent-per-task is mis-granular; the axis is batching (one agent for several small/mechanical/one-loop tasks to spare main-session context), not agents-vs-inline; a shared mutable file only rules out *parallel* agents (mechanical does not)"
 metadata: 
   node_type: memory
   type: feedback
