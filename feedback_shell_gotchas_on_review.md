@@ -1,6 +1,6 @@
 ---
 name: feedback_shell_gotchas_on_review
-description: "load `/shell-scripting:shell-gotchas` before *reviewing* `.sh`/`.bats`/hook diffs, not only before writing; shellcheck can't see the BSD/`set -e`/hook-env class"
+description: "load `/shell-scripting:shell-gotchas` before *reviewing* `.sh`/`.bats`/hook diffs, not only before writing; shellcheck can't see the BSD/`set -e`/hook-env class, and the skill's \"audit the whole touched script\" changes the unit of review"
 metadata: 
   node_type: memory
   type: feedback

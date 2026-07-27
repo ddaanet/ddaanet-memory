@@ -1,6 +1,6 @@
 ---
 name: reference-gitlore-bash-edit-desync
-description: "`index-compose.sh`/`index-sync-post.sh` fire only on `Write`|`Edit`, so a `sed`-applied `MEMORY.md` edit desyncs root vs. tier and later refuses with \"duplicate pointer path\""
+description: "`index-compose.sh`/`index-sync-post.sh` fire only on `Write`|`Edit` tool_name, so a `sed`-applied `MEMORY.md` edit desyncs root vs. tier and later refuses with \"duplicate pointer path\""
 metadata: 
   node_type: memory
   type: reference
