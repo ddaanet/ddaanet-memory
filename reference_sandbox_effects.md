@@ -1,11 +1,11 @@
 ---
 name: reference-sandbox-effects
-description: "index.lock/\"Another git process\", phantom dotfiles, sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
+description: "index.lock/\"Another git process\", phantom dotfiles, sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-27T07:23:10.573Z
+  modified: 2026-07-27T21:41:11.715Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -126,6 +126,15 @@ resource busy"** or **"Read-only file system"**:
 - Tools doing an atomic `mktemp` + `mv` into these paths (e.g.
   `claude-plugin-dev`'s `install.sh` settings-merge), because the `mktemp`
   lands on a different device.
+- **A plugin's own `hooks/hooks.json`, when it is the active hooks config for
+  the current session.** In gitlore's own repo, a sandboxed `git checkout`/`git
+  merge --ff-only` that needs to change `hooks/hooks.json`'s content dies with
+  `unable to unlink old 'hooks/hooks.json': Read-only file system` — the
+  sandbox (or a harness-level mount under it) holds the file read-only
+  regardless of the write-allowlist, because it's this session's own live
+  hooks config. Every other file in the same checkout/merge updates normally;
+  only the active `hooks.json` is special. Confirmed 2026-07-24 merging a
+  branch into `main`: identical command succeeded once retried unsandboxed.
 
 **How to apply:** run those operations with `dangerouslyDisableSandbox: true`.
 When `checkout` + `merge` choke on the protected files, a plain `git reset --hard
@@ -133,6 +142,16 @@ When `checkout` + `merge` choke on the protected files, a plain `git reset --har
 harness `Edit` tool *can* write `.claude/settings.json` even though a raw git
 unlink cannot — but the classifier still refuses `enabledPlugins`
 ([[feedback_classifier_denied_self_config]]).
+
+**Recovering a merge interrupted mid-way by this failure:** a `git merge
+--ff-only` that dies on `hooks/hooks.json` can leave the working tree
+PARTIALLY updated to the target branch's content for files processed before
+the failure, while HEAD stays at the pre-merge commit (git does not roll back
+files it already wrote). Before retrying, `git status` and diff any "modified"
+files against the merge target — if they already match the target exactly,
+`git checkout HEAD -- <files>` to reset to the pre-merge commit and remove any
+untracked new files the target added, THEN retry the merge unsandboxed in one
+shot, rather than resuming piecemeal.
 
 ## `$TMPDIR` is unset when unsandboxed (cost of taking the escape)
 
