@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: f816f5f1-5339-4cd9-964a-75fe6f06682a
+  modified: 2026-07-27T21:41:40.185Z
 ---
 
 When deciding what an always-on context channel (SessionStart additionalContext, a system prompt, a standing reminder) should carry, split the content by *timing need*, not by topic:
@@ -14,4 +15,4 @@ When deciding what an always-on context channel (SessionStart additionalContext,
 
 **Why:** the gitlore SessionStart disclosure front-loaded both the prohibition and the four-step persist procedure; the procedure distorted behavior (over-worrying about memory updates, ceremony before an ordinary edit). User: "why do you worry so much about memory updates all the time? The gitlore thing is intended to be mostly seamless."
 
-**How to apply:** keep the prohibition line in the always-on channel; replace a preloaded procedure with at most a one-line reassurance of the seamless happy path (which defuses over-worry rather than feeding it), and route the full recipe to the surface that fires when the action actually happens. Generalizes [[feedback_self_contained_directives]] and [[reference-hook-output-channels]]; precedent is gitlore's [[feedback_recall_checkpoints]] / surface-detail-when-trigger-fires pattern.
+**How to apply:** keep the prohibition line in the always-on channel; replace a preloaded procedure with at most a one-line reassurance of the seamless happy path (which defuses over-worry rather than feeding it), and route the full recipe to the surface that fires when the action actually happens. Generalizes [[feedback_self_contained_directives]] and [[reference-hook-output-channels]]; precedent is gitlore's own `CLAUDE.md` Recall section (prohibition front-loaded, checkpoint procedure surfaced only where recall is actually invoked).

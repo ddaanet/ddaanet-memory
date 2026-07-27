@@ -3,16 +3,24 @@ name: claude-plugin-dev toolkit
 description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump in consumer release"
 type: project
 originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
+modified: 2026-07-27T20:22:32.823Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev,
 latest tag `v0.2.0` shipped 2026-04-29) is the canonical release
 infrastructure for the user's Claude Code plugins (`handoff`,
 `gitmoji`, eventually others). Repo layout: `release.just` (consumer
-release recipe), `version-guard.sh` (PreToolUse hook), `install.sh`
-(one-shot vendor + wire), `tests/hook-test.sh` (version-guard
-scenarios), `justfile` (toolkit's own `precommit` AND self-`release`
-recipe), `VERSION` (plain text, last-released version),
-`DESIGN.md`, `CLAUDE.md`.
+release recipe), `version-guard.sh` (PreToolUse hook), `check-version.sh`
+(plugin.json vs marketplace.json drift check, `just check-version` +
+auto pre-flight in `release`), `install.sh` (one-shot vendor + wire),
+`tests/hook-test.sh` (version-guard + check-version scenarios),
+`justfile` (toolkit's own `precommit` AND self-`release` recipe),
+`VERSION` (plain text, last-released version), `DESIGN.md`, `CLAUDE.md`.
+`check-version.sh` was absorbed 2026-07-27 from a gitlore-local script
+(generalized: plugin name from `plugin.json`, marketplace path from
+`$MARKETPLACE_DIR`) — unreleased at this writing, so no consumer has
+adopted it yet. gitlore's own `scripts/check-version.sh` (hardcoded,
+buggy) still needs deleting once gitlore runs `just update-plugin-dev`
+to a tag that includes it.
 
 **Why:** Several plugins had diverged near-identical release recipes,
 and an agent-driven manual edit to `plugin.json` desynced the

@@ -1,10 +1,11 @@
 ---
 name: feedback-no-in-place-other-repos
-description: "other repos stay read-only: investigate and propose a patch; the consent boundary is the working tree"
+description: "other repos stay read-only: investigate and propose a patch; the consent boundary is the working tree; a brief dropped there leaves your task frame"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 7ffb103e-27dd-4424-9ec0-a51c5fe7d743
+  modified: 2026-07-27T15:39:53.283Z
 ---
 
 When a finding implicates one of David's *other* repos (e.g. `unsandbox-git-status`,
@@ -27,3 +28,9 @@ fix) so a session opened in *that* project handles it — the prohibition is on
 making the changes yourself, not on leaving a pointer there. Corollary: once he
 says "I'll take it from here," stop touching its code; leave what exists rather
 than reverting, and say what state it is in.
+
+The note or brief is the *end* of your involvement, not a ticket you hold open.
+Do not carry it in a task frame, a handoff, or a pending-work list — a brief
+dropped in another repo belongs to a session opened in that repo, and tracking
+it here reports work you have no standing to do and cannot observe finishing.
+Mention it once when you drop it, then drop it from your own list too.

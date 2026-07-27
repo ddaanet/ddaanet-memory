@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-26T13:29:15.496Z
+  modified: 2026-07-27T15:19:15.904Z
 ---
 
 Before acting on a claim, check it against the thing that would falsify it —
@@ -114,6 +114,23 @@ prior-session assumptions about what's pending),
   in a `> **Architectural correction:**` block. See
   [[feedback-outside-in-tdd]] — black-box tests survive refactors only if the
   box's interface matches reality.
+- **Inherited "unsettled" item, escalated to a finding (2026-07-27).** A
+  handoff listed "whether the `agents`/`commands`/`skills` exclusion from
+  `precommit_inputs` should stand" as an open decision. Asked to explain the
+  open decisions, I ranked it the worst of four — "the fourth is a hole" — and
+  when I later edited an `agents/` file I reported that the hole "just bit in
+  the same session". Nothing bit: the exclusion is documented in `justfile` as
+  a deliberate trade, in a comment block I had read in full minutes earlier,
+  and prose edits cannot regress a structural distribution guard. **Having read
+  the source is not the same as consulting it.** The check has to fire at the
+  moment of the *claim*, not once per session — a summary restating an earlier
+  frame never routes back through the file. Two compounding pressures worth
+  recognising: a rhetorical shape you authored yourself ("three are fine, the
+  fourth is a hole") recruits later events as confirmation, and flagging a risk
+  reads as diligence while costing the reader all the effort to rebut it, so
+  discount accordingly. More prose in the right file is *not* the fix — the
+  comment already existed and was already read; the fix is that the note
+  carrying the stale prior gets its resolution recorded.
 - **Subagent memory-duplicate audit (2026-07-25).** A general-purpose agent
   tasked with auditing `memory/` for duplicate/mergeable entries reported six
   findings; a separate integrity check it ran (do all `MEMORY.md` links

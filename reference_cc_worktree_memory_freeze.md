@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 6fdf0ecf-96bd-4ca8-aab2-d54dc98d915a
-  modified: 2026-07-24T19:23:58.021Z
+  modified: 2026-07-27T21:41:44.034Z
 ---
 
 Claude Code's in-process worktree feature (the `EnterWorktree` tool) is incompatible
@@ -55,5 +55,6 @@ empirically 2026-06-10 (CC 2.1.170); re-verified against the 2.1.219 bundle 2026
   reach the same in-process `chdir`, so the env-freeze above applies to every route.
   See [[reference-hook-input-schema]].
 
-See [[reference_cc_project_dir_encoding]], [[reference_auto_memory_directory]],
-[[reference-hook-output-channels]].
+See [[reference_cc_project_dir_encoding]], [[reference-hook-output-channels]];
+the launch-time `--settings autoMemoryDirectory` redirect itself is D10 in
+`docs/design.md`.

@@ -1,11 +1,11 @@
 ---
 name: reference-sandbox-effects
-description: "index.lock/\"Another git process\", sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard/atomic mv), --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
+description: "index.lock/\"Another git process\", phantom dotfiles, sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard/atomic mv), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-26T17:27:42.237Z
+  modified: 2026-07-27T22:19:29.306Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -57,14 +57,23 @@ recorded under `$TMPDIR` below, strict mode was *not* in force and
 `dangerouslyDisableSandbox` worked normally; that is why the `just release` run
 there succeeded with it.
 
-## Sibling-worktree writes are blocked (sandbox breaks them)
+## Phantom home dotfiles and sibling-worktree writes (sandbox breaks them)
 
-The sandbox grants write access only to the current worktree (`.`) plus `.git`.
-From a linked worktree, a git op writing a *sibling* path fails with `Read-only
-file system` — e.g. `git -C <main-root> merge/push <branch>` (finishing a
-worktree branch into main) or `git worktree remove <other>`. The merge
-half-prints "Updating …" then aborts cleanly (no `MERGE_HEAD`), so retry
-unsandboxed.
+In the gitlore repo the sandbox distorts some git/filesystem operations
+(verified 2026-07-17).
+
+1. **Phantom dotfiles.** A sandboxed working-tree read surfaces user-home
+   dotfiles absent from the repo — `.bashrc`, `.zshrc`, `.bash_profile`,
+   `.zprofile`, `.profile`, `.gitconfig`, `.ripgreprc`, `.idea`, `.vscode`,
+   `.mcp.json`. So a sandboxed `git status` reports spurious untracked files.
+   Ground truth: the repo's real dotfiles are only `.claude .claude-plugin
+   .editorconfig .envrc .git .gitignore .gitlore .gitmodules`.
+2. **Sibling-worktree writes blocked.** The sandbox grants write access only to
+   the current worktree (`.`) plus `.git`. From a linked worktree, a git op
+   writing a *sibling* path fails with `Read-only file system` — e.g. `git -C
+   <main-root> merge/push <branch>` (finishing a worktree branch into main) or
+   `git worktree remove <other>`. The merge half-prints "Updating …" then aborts
+   cleanly (no `MERGE_HEAD`), so retry unsandboxed.
 
 `.envrc` vars pass through the sandbox: `MARKETPLACE_DIR` and the `DIRENV_*`
 vars are present in the sandboxed env (direnv runs in the launching shell), so
@@ -74,12 +83,25 @@ vars are present in the sandboxed env (direnv runs in the launching shell), so
 Bash hook) detects a `git status` command and flips `dangerouslyDisableSandbox`
 in place, so it runs unsandboxed transparently. Caveats: detection is
 best-effort (an unrecognised `git status` stays sandboxed), and it deliberately
-does NOT cover `git add -A` (too dangerous to auto-unsandbox). Its notice goes
-to `systemMessage` (user channel, not model context), so the agent may never
-learn a command was auto-unsandboxed.
+does NOT cover `git add -A` (also fails sandboxed, but too dangerous to
+auto-unsandbox). Its notice goes to `systemMessage` (user channel, not model
+context), so the agent may never learn a command was auto-unsandboxed — do NOT
+read a clean sandboxed `git status` as evidence the sandbox itself is clean.
 
-**How to apply:** run any sandboxed command that writes to a sibling worktree
-with `dangerouslyDisableSandbox: true`. Cues: `Read-only file system` from a
+**Slash-command context is sandboxed too.** Commands like
+`/commit-commands:commit` auto-inject a `git status` into their `## Context`
+block — that injection runs sandboxed (the auto-unsandbox plugin doesn't reach
+it), so it lists the home dotfiles as untracked and can read as "nothing staged,
+untracked files present" when the tree is actually clean. Never act on that
+injected listing directly: re-run `git status` unsandboxed first. Never
+stage/commit the materialized dotfiles (`.bashrc`, `.gitconfig`, `.zshrc`, …) —
+committing them pollutes the repo with personal config. Confirmed 2026-05-24: a
+`/commit` context showed ~14 untracked dotfiles + `scripts/__pycache__/`; the
+unsandboxed tree had only the build artifact, nothing to commit.
+
+**How to apply:** run any *other* sandboxed command that reads the working tree,
+or that writes to a sibling worktree, with `dangerouslyDisableSandbox: true`.
+Cues: phantom `.bashrc`/`.zshrc` in a listing; `Read-only file system` from a
 `git -C <other-worktree>` op; the same error from a plain `cp`/`mv` into another
 repo — the write allowlist covers the session's working directories and nothing
 else. **Retry unsandboxed rather than reaching for a tool that is not under the
@@ -104,13 +126,32 @@ resource busy"** or **"Read-only file system"**:
 - Tools doing an atomic `mktemp` + `mv` into these paths (e.g.
   `claude-plugin-dev`'s `install.sh` settings-merge), because the `mktemp`
   lands on a different device.
+- **A plugin's own `hooks/hooks.json`, when it is the active hooks config for
+  the current session.** In gitlore's own repo, a sandboxed `git checkout`/`git
+  merge --ff-only` that needs to change `hooks/hooks.json`'s content dies with
+  `unable to unlink old 'hooks/hooks.json': Read-only file system` — the
+  sandbox (or a harness-level mount under it) holds the file read-only
+  regardless of the write-allowlist, because it's this session's own live
+  hooks config. Every other file in the same checkout/merge updates normally;
+  only the active `hooks.json` is special. Confirmed 2026-07-24 merging a
+  branch into `main`: identical command succeeded once retried unsandboxed.
 
 **How to apply:** run those operations with `dangerouslyDisableSandbox: true`.
 When `checkout` + `merge` choke on the protected files, a plain `git reset --hard
 <branchtip>` unsandboxed completes the fast-forward cleanly. Note that the
 harness `Edit` tool *can* write `.claude/settings.json` even though a raw git
 unlink cannot — but the classifier still refuses `enabledPlugins`
-([[feedback_settings_enabledplugins_blocked]]).
+([[feedback_classifier_denied_self_config]]).
+
+**Recovering a merge interrupted mid-way by this failure:** a `git merge
+--ff-only` that dies on `hooks/hooks.json` can leave the working tree
+PARTIALLY updated to the target branch's content for files processed before
+the failure, while HEAD stays at the pre-merge commit (git does not roll back
+files it already wrote). Before retrying, `git status` and diff any "modified"
+files against the merge target — if they already match the target exactly,
+`git checkout HEAD -- <files>` to reset to the pre-merge commit and remove any
+untracked new files the target added, THEN retry the merge unsandboxed in one
+shot, rather than resuming piecemeal.
 
 ## `$TMPDIR` is unset when unsandboxed (cost of taking the escape)
 
@@ -142,7 +183,7 @@ sandboxed returned `subtype: success` unsandboxed.
 shell). A single-turn connectivity **probe cannot detect this** — it never
 resumes, so it passes sandboxed while the real flow cannot. gitlore's
 `tests/evals/run-evals.sh` documents this in its header and its probe comment.
-Related: [[reference-memory-gate-commit-path]] (the gitdir is likewise
+Related: [[feedback_classifier_denied_self_config]] (the gitdir is likewise
 write-blocked, which is why the memory-message IPC file lives in the parent
 worktree).
 
