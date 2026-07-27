@@ -39,7 +39,7 @@ the project's own memory store.
 - [no hand-run tests](feedback_no_handrun_tests.md) — encode behavior in the bats suite; manual runs are for dogfooding the real product
 - [harden human gates, not controlled channels](feedback_harden_human_gates.md) — apply word-boundary/escape recognition where a human types free-text, not on channels whose producer you control
 - [CC command namespacing](reference_cc_command_namespacing.md) — `/<plugin>:<path-under-commands>`, so `commands/gitlore/install.md` becomes `/gitlore:gitlore:install`; keep commands flat; watch for a skill colliding on the same name
-- [don't edit another repo in place](feedback_no_in_place_other_repos.md) — other repos stay read-only: investigate and propose a patch; the consent boundary is the working tree
+- [don't edit another repo in place](feedback_no_in_place_other_repos.md) — other repos stay read-only: investigate and propose a patch; the consent boundary is the working tree; a brief dropped there leaves your task frame
 - [stale plugin code](reference_stale_plugin_code.md) — running plugin code ≠ what you edited: `/plugin update` no-ops on unchanged version; skill bodies need `/reload-plugins`; hooks.json events frozen at session start, settings.local.json not — restart
 - [plugin recurse-clone submodule](reference_plugin_recurse_clone.md) — `/plugin install` clones `--recurse-submodules`, so a relative submodule url → `not a valid repository name` and install aborts; url must be absolute+public; `--plugin-dir` can't catch it
 - [hourglass display + stopped-state caching](reference_hourglass_display_caching.md) — displayed time = last API call + 1h; a stopped state is cached ~60 min; both user-reported, never cross-checked against source
