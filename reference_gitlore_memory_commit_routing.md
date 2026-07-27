@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 86760b03-2500-4f78-85bd-7e921b6bffaf
-  modified: 2026-07-26T12:47:50.522Z
+  modified: 2026-07-27T22:19:56.187Z
 ---
 
 gitlore routes a memory commit down one of two paths, and the only thing that
@@ -52,4 +52,4 @@ Two consequences worth knowing before choosing the second path:
   after the summary file stales it and aborts the commit, so the summary is
   written last.
 
-Related: [[feedback_gitlore_memory]], [[reference_gitlore_bash_edit_desync]].
+Related: [[feedback_gitlore_memory]], [[reference_gitlore_tier_merge_direction]].

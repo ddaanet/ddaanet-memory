@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-27T20:42:51.592Z
+  modified: 2026-07-27T22:19:19.188Z
 ---
 
 # ddaanet tier index
@@ -13,7 +13,8 @@ Portable facts that hold across every ddaanet project — tooling behaviour,
 Claude Code mechanics, shell and git gotchas. Project-specific facts stay in
 the project's own memory store.
 
-- [sandbox effects](reference_sandbox_effects.md) — index.lock/"Another git process", sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config (blocks git checkout/reset --hard/atomic mv), --resume "No conversation found…", $TMPDIR unset, zellij "no active session"; escapes: dangerouslyDisableSandbox, /add-dir, `!`
+- [tier routing: plugin-shaped litmus test](feedback_tier_routing_plugin_shaped.md) — route an operational gotcha to ddaanet (not project memory) when its mechanism depends on the repo being plugin-shaped, not on this repo's own content
+- [sandbox effects](reference_sandbox_effects.md) — index.lock/"Another git process", phantom dotfiles, sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config (blocks git checkout/reset --hard/atomic mv), own hooks.json unlink EROFS, --resume "No conversation found…", $TMPDIR unset, zellij "no active session"; escapes: dangerouslyDisableSandbox, /add-dir, `!`
 - [bats + shellcheck gotchas](reference_bats_shellcheck_gotchas.md) — SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive
 - [git refuses ext:: by default](reference_git_ext_transport.md) — `fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` injection finding isn't exploitable on default git — probe the policy first
 - [protocol.file.allow blocks submodule clones](reference_git_protocol_file_allow.md) — `fatal: transport 'file' not allowed`; the child *clone* reads it, so repo config can't fix it — use `git -c` or `GIT_CONFIG_COUNT/KEY_0/VALUE_0`
@@ -23,7 +24,6 @@ the project's own memory store.
 - [skill vs command](feedback_skill_vs_command.md) — self-triggering skill when condition is mechanical/detectable; command only for explicit user-initiated actions
 - [verify claims at their source](feedback_verify_at_source.md) — verify any claim against its own source before acting: subagent findings, delegated citations, hook-cited limits, handoff/memory status, user corrections, spec symbols
 - [examine evidence for drift direction](feedback_examine_evidence_drift.md) — when two co-maintained artifacts diverge, get the drift direction from git history, don't assume a source of truth
-- [loose generation + post-hoc fix](feedback_loose_generation.md) — let generator scaffold freely, constrain at artifact boundary
 - [user: technical depth on LLM mechanism](user_technical_depth.md) — expects rigorous attention/cost/training claims, not hand-waving
 - [decide/plan as late as possible, but not later](feedback_plan_late.md) — defer until evidence arrives, act before inaction decides by default
 - [CC project-dir encoding](reference_cc_project_dir_encoding.md) — `~/.claude/projects/<name>/` = abs path with `[^A-Za-z0-9]`→`-`; to find a transcript search `<session-id>.jsonl`, don't apply the rule; edify's impl is incomplete
@@ -40,7 +40,7 @@ the project's own memory store.
 - [no hand-run tests](feedback_no_handrun_tests.md) — encode behavior in the bats suite; manual runs are for dogfooding the real product
 - [harden human gates, not controlled channels](feedback_harden_human_gates.md) — apply word-boundary/escape recognition where a human types free-text, not on channels whose producer you control
 - [CC command namespacing](reference_cc_command_namespacing.md) — `/<plugin>:<path-under-commands>`, so `commands/gitlore/install.md` becomes `/gitlore:gitlore:install`; keep commands flat; watch for a skill colliding on the same `<plugin>:<name>`
-- [don't edit another repo in place](feedback_no_in_place_other_repos.md) — other repos stay read-only: investigate and propose a patch; the consent boundary is the working tree
+- [don't edit another repo in place](feedback_no_in_place_other_repos.md) — other repos stay read-only: investigate and propose a patch; the consent boundary is the working tree; a brief dropped there leaves your task frame
 - [stale plugin code](reference_stale_plugin_code.md) — running plugin code ≠ what you edited: `/plugin update` no-ops on unchanged version; skill bodies need `/reload-plugins` (hook *events* re-binding is inferred, not observed); hooks.json events frozen at session start, settings.local.json not — restart
 - [plugin recurse-clone submodule](reference_plugin_recurse_clone.md) — `/plugin install` clones `--recurse-submodules`, so a relative submodule url → `not a valid repository name` and install aborts; url must be absolute+public; `--plugin-dir` does not recurse, so dogfooding can't catch it
 - [hourglass display + stopped-state caching](reference_hourglass_display_caching.md) — displayed time = last API call + 1h; a stopped state is cached ~60 min, so a re-check inside that window sees the cache; both user-reported, never cross-checked against source
@@ -74,7 +74,7 @@ the project's own memory store.
 - [Review model selection](feedback_review_model_selection.md) — use Sonnet (min) for reviewer subagents; Haiku misses subtle issues
 - [No compat aliases](feedback_no_compat_aliases.md) — when removing a constant, patch all consumers directly; compat aliases keep tech debt alive
 - [uv: sync only, direnv venv](feedback_uv_direnv_venv.md) — no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`
-- [Hook input schema](reference_hook_input_schema.md) — base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate
+- [Hook input schema](reference_hook_input_schema.md) — base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch — twice in one turn is normal
 - [Subagents over-applied](feedback_subagents_over_applied.md) — one-subagent-per-task is mis-granular; the axis is batching (one agent for several small/mechanical/one-loop tasks to spare main-session context), not agents-vs-inline; a shared mutable file only rules out *parallel* agents (mechanical does not)
 - [Reference doc scope](feedback_reference_doc_scope.md) — a lasting guideline stays general/reusable (neutral examples, version- not repo-grounded); repo-specific application goes in a separate point-in-time audit; confirm scope before delegating research
 - [Skill description: purpose first](feedback_skill_description_purpose_first.md) — skill `description:` frontmatter is TUI-visible; lead with what it does, then triggers/"Use when", then exclusions; never a bare trigger list; drop stale implementation-detail tails
@@ -88,11 +88,9 @@ the project's own memory store.
 - [Todo tool is flag-gated](reference_todo_tool_flag_gated.md) — `TodoWrite` has no tool definition; `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` replace it, gated by the server-side `tengu_vellum_ash` — never name a todo tool in a plugin step
 - [Reconstructable is two categories](feedback_reconstructable_two_categories.md) — by-harness (deterministic, free → drop it) vs by-model-inference from a paraphrase (lossy, fails silently → carry it); name the reconstructor first
 - [Imperative-form rule scope](feedback_imperative_form_scope.md) — the skill-development rule targets instruction subjects ("You should X"), not every pronoun; a bare grep for "you" over-reports; `your post-compaction self` is a deliberate keep
-- [gitlore Bash-edit desync](reference_gitlore_bash_edit_desync.md) — `index-compose.sh`/`index-sync-post.sh` fire only on `Write`|`Edit` tool_name, so a `sed`-applied `MEMORY.md` edit desyncs root vs. tier and later refuses with "duplicate pointer path"
 - [memory index lines are functional](feedback_memory_index_lines_functional.md) — index lines serve agent-matching AND ambient awareness; don't mechanically shorten them to hit a byte target, especially an advisory one
 - [bundle memory with source](feedback_bundle_memory_with_source.md) — commit a memory update in the same parent commit as the source change it documents, not separately; don't over-apply to unrelated pending work
 - [CC strips terminal-provenance env](reference_cc_env_strip_tmux.md) — TMUX/TMUX_PANE/TERM_PROGRAM/TERM_PROGRAM_VERSION/SSH_CONNECTION are dropped from the session env (rest inherits), so hook-driven send-keys finds no pane; `tmux display -p` guesses the wrong one — capture via a launcher shim under a custom name
-- [settings.json enabledPlugins edit blocked](feedback_settings_enabledplugins_blocked.md) — classifier blocks Claude editing enabledPlugins even after approval; give the user a !-command
 - [Validate non-TDD tests by mutation](feedback_test_validation_by_mutation.md) — tests written after the code must each be turned red by a deliberate fault to prove they bite
 - [directive states acts only](feedback_directive_states_acts.md) — cut from agent-facing and script-emitted directives: mechanism (verify it and narrate it back instead), orderings an earlier step settled, literalized meta-notes, and prohibitions naming the identifier they forbid — withhold instead
 - [gitlore memory commit routing](reference_gitlore_memory_commit_routing.md) — the TRIGGER file makes a memory commit standalone; withholding it defers to the next parent commit, saving a call but NOT fixing history (the parent stages the gitlink either way); dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes — the store's push rides the parent PUSH, so check `origin/live`
@@ -102,3 +100,9 @@ the project's own memory store.
 - [index compaction loses triggers](feedback_index_compaction_triggers.md) — trimming index lines keeps prescriptions and cuts symptoms/identifiers; count each literal index-wide before and after — falling to zero is unreachable, falling to one on another line MISROUTES; have someone else audit the diff
 - [detect liveness, not presence](feedback_detect_liveness_not_presence.md) — a foreign tool's state file needs the *current* layout plus an identity marker inside it: layouts move (the old path becomes a declared stray) and abandoned files are never cleaned up, so `[ -f known/path ]` false-positives; fail open, pick newest, stay read-only
 - [gitlore tier merge direction](reference_gitlore_tier_merge_direction.md) — a tier fast-forward is not a merge: root keeps its old wording, the resolver still says `state is healthy`, and the next edit to root makes composition revert every incoming line — symptom: a one-line edit diffs dozens of files vs `origin/live`; apply upstream tier lines UP into root, delete from carrier before root, correct wording only after propagating
+- [errexit is off inside a condition](reference_errexit_suspended_in_condition.md) — `set -e` is suspended for anything reached from `if x=$(f)`/`while`/`&&`/`!`, subshells included, so a mid-function failure neither aborts nor shows; fail each step with `|| exit 1`/`|| return 1` (pipefail and nounset are NOT suspended)
+- [a correction applies to what it names](feedback_correction_scope.md) — don't demolish the general claim the corrected instance belonged to; quote the scope back, ask if the general claim survives, and say what you are NOT changing
+- [loose generation + post-hoc fix](feedback_loose_generation.md) — let generator scaffold freely, constrain at artifact boundary
+- [a memory is not another owner's job](feedback_memory_not_other_owners_job.md) — "when using <skill>, do X", or a project memory logging design decisions the living design doc owns: category error; delete it, accuracy is not the test
+- [classifier denies self-config writes](feedback_classifier_denied_self_config.md) — auto-mode refuses agent writes that configure/audit the agent: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, same via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it and retrying through another tool reads as tunneling — hand it to the user via `!` or to a hook
+- [pipefail fallback appends](reference_pipefail_fallback_appends.md) — `x=$(pipeline || echo FALLBACK)` captures BOTH when a producer fails after the last stage printed (symptom: `invalid JSON text passed to --argjson`); put `||` outside, and `return 0` from a function ending in `grep`

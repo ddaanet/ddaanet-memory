@@ -1,11 +1,11 @@
 ---
 name: reference-hook-input-schema
-description: "base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate"
+description: "base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch — twice in one turn is normal"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 7a891994-6ca1-4ea3-a503-1259d89a76e2
-  modified: 2026-07-24T19:23:31.090Z
+  modified: 2026-07-27T22:19:38.374Z
 ---
 
 Verified against the Claude Code bundle (zod schemas) — first on 2.1.168,
@@ -32,6 +32,14 @@ Beyond the classic events the input union covers `WorktreeCreate {name}`,
 `PostToolBatch`, `PostToolUseFailure`, `PostCompact`, `Setup`, `SubagentStart`,
 `StopFailure`, `PermissionRequest`, `PermissionDenied`, `MessageDisplay`,
 `Elicitation`/`ElicitationResult`, `TaskCreated`/`TaskCompleted`.
+
+**`PostToolBatch` fires once per tool batch, not once per user turn.** A batch is
+one assistant message's worth of calls, so a turn in which the agent takes three
+batches fires it three times. Observed 2026-07-27 in gitlore: a `sed -i` in one
+message fired the batch hooks with that message's calls, and the very next
+message fired them again. A hook that stashes a pre-state at `PreToolUse` and
+consumes it at `PostToolBatch` therefore has a *per-batch* baseline — treating it
+as per-turn overstates how long a stash lives.
 
 **`CwdChanged` is observational only** — its `hookSpecificOutput` schema declares
 nothing but `watchPaths`, and its dispatcher reads back only `watchPaths[]` +

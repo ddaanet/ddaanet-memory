@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 4d44ae29-6174-4981-8edd-c8bc5e4cff28
-  modified: 2026-07-27T11:55:03.139Z
+  modified: 2026-07-27T22:19:50.104Z
 ---
 
 Root `MEMORY.md` is canonical over a tier's carrier index. Composition mirrors
@@ -23,10 +23,8 @@ commits are undone without a conflict ever being raised.
 
 **Apply the upstream tier lines up into root as part of the merge.** Rebuild
 root's tier block from the tier index (strip the carrier's bare paths, re-add
-the `<tier>/` prefix), keep root's own bare-path project lines, and write it
-with `Write`/`Edit` so the compose hooks fire — see
-[[reference_gitlore_bash_edit_desync]]. Then the two agree and composition is a
-no-op reorder.
+the `<tier>/` prefix), and keep root's own bare-path project lines. Then the
+two agree and composition is a no-op reorder.
 
 **Deleting a line needs both files.** A pointer removed from root alone comes
 back on the next compose, because it still exists in the carrier and counts as

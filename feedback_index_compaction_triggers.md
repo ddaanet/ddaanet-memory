@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-07-26T14:40:47.906Z
+  modified: 2026-07-27T21:41:30.642Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -13,6 +13,13 @@ has to fire on a string met **mid-task** — a git error, a flag, a filename, a
 symptom in a tool result. Shortening a line is therefore not a prose edit: if
 the distinctive string goes, the agent hits the error and never matches the
 line, and the memory is lost while the file still exists.
+
+**Why the pressure exists at all:** the binding constraint is bytes, not
+lines — the index blob loads verbatim into every session. Measured
+2026-07-22 on this store: one project-state line alone was 3.3KB (18% of
+the whole index) and the top five were 31%, while every behavioral
+directive line together was a small fraction. Curation effort belongs on
+the long state/reference lines, not on trimming everything uniformly.
 
 **The failure has a direction.** Trimming preserves PRESCRIPTIONS and cuts
 SYMPTOMS, CONTRASTS and IDENTIFIERS, because that is what reads well as prose.
@@ -49,4 +56,5 @@ about exactly this pressure and is the rule the warning itself pushed me to
 break.
 
 Related: [[feedback_verify_at_source]] (confirm a reported loss in the file
-before acting), [[reference_cc_memory_retrieval_agentic]].
+before acting); background on why the index is the only reliably-recalled
+surface in `docs/references/cc-memory-retrieval.md`.
