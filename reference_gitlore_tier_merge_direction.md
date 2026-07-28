@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 4d44ae29-6174-4981-8edd-c8bc5e4cff28
-  modified: 2026-07-27T22:19:50.104Z
+  modified: 2026-07-28T20:38:25.731Z
 ---
 
 Root `MEMORY.md` is canonical over a tier's carrier index. Composition mirrors
@@ -35,6 +35,12 @@ Delete from the carrier first, then root.
 "fixes" wording is indistinguishable from the revert above. Land upstream's
 lines first, then author corrections in root as their own change, which then
 mirrors down legitimately.
+
+*After* is the second step, not permission to skip it. Adoption is per line:
+taking upstream's version of the artifact settles the merge, not the merits of
+every line in it. A defect verified in an adopted line is the follow-up change
+this prescribes — deferring it to a later pass ships it, and the merge commit
+makes it look decided.
 
 Related: [[feedback_examine_evidence_drift]] (get the drift direction from git
 history — the longer text is not automatically the newer one),
