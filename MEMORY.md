@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-27T22:19:19.188Z
+  modified: 2026-07-28T10:24:01.303Z
 ---
 
 # ddaanet tier index
@@ -92,7 +92,6 @@ the project's own memory store.
 - [memory index lines are functional](feedback_memory_index_lines_functional.md) — index lines serve agent-matching AND ambient awareness; don't mechanically shorten them to hit a byte target, especially an advisory one
 - [bundle memory with source](feedback_bundle_memory_with_source.md) — commit a memory update in the same parent commit as the source change it documents, not separately; don't over-apply to unrelated pending work
 - [CC strips terminal-provenance env](reference_cc_env_strip_tmux.md) — TMUX/TMUX_PANE/TERM_PROGRAM/TERM_PROGRAM_VERSION/SSH_CONNECTION are dropped from the session env (rest inherits), so hook-driven send-keys finds no pane; `tmux display -p` guesses the wrong one — capture via a launcher shim under a custom name
-- [settings.json enabledPlugins edit blocked](feedback_settings_enabledplugins_blocked.md) — classifier blocks Claude editing enabledPlugins even after approval; give the user a !-command
 - [Validate non-TDD tests by mutation](feedback_test_validation_by_mutation.md) — tests written after the code must each be turned red by a deliberate fault to prove they bite
 - [directive states acts only](feedback_directive_states_acts.md) — cut from agent-facing and script-emitted directives: mechanism (verify it and narrate it back instead), orderings an earlier step settled, literalized meta-notes, and prohibitions naming the identifier they forbid — withhold instead
 - [gitlore memory commit routing](reference_gitlore_memory_commit_routing.md) — the TRIGGER file makes a memory commit standalone; withholding it defers to the next parent commit, saving a call but NOT fixing history (the parent stages the gitlink either way); dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes — the store's push rides the parent PUSH, so check `origin/live`
