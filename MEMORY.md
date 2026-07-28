@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-28T10:24:01.303Z
+  modified: 2026-07-28T20:09:12.474Z
 ---
 
 # ddaanet tier index
@@ -13,6 +13,7 @@ Portable facts that hold across every ddaanet project — tooling behaviour,
 Claude Code mechanics, shell and git gotchas. Project-specific facts stay in
 the project's own memory store.
 
+- [check parallelism assumption before perf fix](feedback_perf_fix_check_parallelism_assumption.md) — before proposing --jobs/-P/-j as the headline speed fix, confirm the target reliably has spare cores; otherwise cut per-unit work (cache/reuse) first
 - [sandbox effects](reference_sandbox_effects.md) — index.lock/"Another git process", sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config (blocks git checkout/reset --hard/atomic mv), --resume "No conversation found…", $TMPDIR unset, zellij "no active session"; escapes: dangerouslyDisableSandbox, /add-dir, `!`
 - [bats + shellcheck gotchas](reference_bats_shellcheck_gotchas.md) — SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive
 - [git refuses ext:: by default](reference_git_ext_transport.md) — `fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` injection finding isn't exploitable on default git — probe the policy first
@@ -105,3 +106,4 @@ the project's own memory store.
 - [a correction applies to what it names](feedback_correction_scope.md) — don't demolish the general claim the corrected instance belonged to; quote the scope back, ask if the general claim survives, and say what you are NOT changing
 - [a memory is not another owner's job](feedback_memory_not_other_owners_job.md) — "when using <skill>, do X", or a project memory logging design decisions the living design doc owns: category error; delete it, accuracy is not the test
 - [classifier denies self-config writes](feedback_classifier_denied_self_config.md) — auto-mode refuses agent writes that configure/audit the agent: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, same via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it and retrying through another tool reads as tunneling — hand it to the user via `!` or to a hook
+- [droplet CPU variability](project_droplet_cpu_variability.md) — shared ddaanet dev droplet is a VM David resizes 1↔2 vCPUs to save cost; currently 2; don't design a speedup that only pays off at 2
