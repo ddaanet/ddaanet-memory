@@ -1,6 +1,6 @@
 ---
 name: feedback-no-in-place-other-repos
-description: "other repos stay read-only: investigate and propose a patch; the consent boundary is the working tree; a brief dropped there leaves your task frame"
+description: "other repos stay read-only: investigate and propose a patch; the consent boundary is the working tree"
 metadata: 
   node_type: memory
   type: feedback
