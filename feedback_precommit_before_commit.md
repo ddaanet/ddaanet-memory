@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 494dfa09-70b5-4ef8-bc70-603573015c26
+  modified: 2026-07-29T13:42:48.917Z
 ---
 
 Always run `just precommit` before any commit in this repo, and run it
@@ -17,5 +18,5 @@ release recipe / gitlore precommitCommand depend on it passing anyway.
 
 **How to apply:** after finishing edits and before (or as part of)
 committing, just run `just precommit` and report the result. Same posture
-as [[feedback_update_design_doc]] — treat the obligatory step as part of
-the work, not a proposal.
+as updating a repo's design record when its conventions require it — treat
+the obligatory step as part of the work, not a proposal.
