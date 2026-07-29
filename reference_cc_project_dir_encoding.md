@@ -1,6 +1,6 @@
 ---
 name: reference-cc-project-dir-encoding
-description: "`~/.claude/projects/<name>/` = abs path with `[^A-Za-z0-9]`→`-`; to find a transcript search `<session-id>.jsonl`, don't apply the rule; edify's impl is incomplete"
+description: "`~/.claude/projects/<name>/` = abs path, `[^A-Za-z0-9]`→`-`; find transcript via `<session-id>.jsonl` instead; edify's impl incomplete"
 metadata: 
   node_type: memory
   type: reference

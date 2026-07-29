@@ -1,6 +1,6 @@
 ---
 name: feedback_perf_fix_check_parallelism_assumption
-description: "parallelism alone is not a sufficient perf fix — pair --jobs-style concurrency with cutting the actual per-unit work"
+description: "before proposing --jobs/-P/-j, confirm spare cores exist; otherwise cut per-unit work (cache/reuse) first"
 metadata: 
   node_type: memory
   type: feedback

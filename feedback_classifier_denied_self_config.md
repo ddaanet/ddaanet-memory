@@ -1,6 +1,6 @@
 ---
 name: feedback_classifier_denied_self_config
-description: "the auto-mode classifier refuses agent writes to paths that configure or audit the agent itself — hand the write to the user via `!` or to a hook, and never retry a denial through another tool"
+description: "auto-mode refuses agent writes that configure/audit itself: `enabledPlugins`, a gitdir file a hook consumes (heredoc→*Logging/Audit Tampering*, Write→*Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it, another tool reads as tunneling — hand to the user via `!` or a hook"
 metadata: 
   node_type: memory
   type: feedback

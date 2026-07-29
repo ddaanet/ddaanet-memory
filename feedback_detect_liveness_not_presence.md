@@ -1,6 +1,6 @@
 ---
 name: feedback_detect_liveness_not_presence
-description: "detecting another tool's state file needs a positive identity marker plus the current layout — presence at a path is not evidence, because layouts move and abandoned files are never cleaned up"
+description: "a foreign tool's state file needs the *current* layout + an identity marker: layouts move (old path = declared stray), abandoned files never get cleaned, so `[ -f known/path ]` false-positives; fail open, pick newest, stay read-only"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: reference-submodule-escape-to-parent
-description: "`git -C`/`cd` into a submodule with no `.git` silently operates on the **parent**; symptom: bogus 160000 gitlink or a stray `git branch`; guard `[ -e \"$sub/.git\" ]`; linked worktree = `--git-dir` ≠ `--git-common-dir`"
+description: "`git -C`/`cd` into a submodule with no `.git` hits the **parent**; symptom: bogus 160000 gitlink or stray `git branch`; guard `[ -e \"$sub/.git\" ]`; linked worktree: `--git-dir`≠`--git-common-dir`"
 metadata: 
   node_type: memory
   type: reference

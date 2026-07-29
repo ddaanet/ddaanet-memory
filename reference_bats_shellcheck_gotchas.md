@@ -1,6 +1,6 @@
 ---
 name: reference-bats-shellcheck-gotchas
-description: "SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive"
+description: "SC2314 bare `! cmd` asserts nothing (`run !`); `run missing_fn` exits 127 (vacuous negatives); @test runs under errexit; shellcheck lints .bats; `# shellcheck` = directive"
 metadata: 
   node_type: memory
   type: reference
