@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:23:07.887Z
+  modified: 2026-07-29T12:11:40.002Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections:
@@ -44,8 +44,10 @@ Inside a design doc the same split applies section by section:
 **rationale paragraphs** — preserve; **mechanism descriptions** (how the
 system behaves now, what happens in edge case X) — update. In the
 2026-05-19 v0.3.0 release two reviewers split on exactly this for
-`DESIGN.md`'s `## Activation` chosen-pattern bullet and
-`### Missing-extract edge case`, both still describing the abandoned
+handoff's `## Activation` chosen-pattern bullet and
+`### Missing-extract edge case` (now in
+`docs/changelog/2026-05-19-original-activation-and-loading.md`), both still
+describing the abandoned
 `@`-ref load chain. The spec reviewer wanted them left as history; the
 code-quality reviewer called them current-behavior descriptions. The
 code-quality framing was correct — fixed in commit `7c0471b`.
@@ -77,7 +79,9 @@ A past decision whose rationale looks thin on re-reading gets
 **re-examined, not treated as settled**; new context or fresh eyes can
 invert it. In the 2026-05-19 handoff brainstorm the user pushed back on
 the "no SessionStart hook, use `@`-ref instead" decision recorded in
-`DESIGN.md:288-304`. Its arguments ("no hook overhead", "no race
+handoff's `## Loading` section (now in
+`docs/changelog/2026-05-19-original-activation-and-loading.md`). Its
+arguments ("no hook overhead", "no race
 conditions") were both negligible in practice, while the cost of the
 chosen path (a whole user-facing setup skill, an entire silent-failure
 mode) was structural. The inversion produced a cleaner architecture.
