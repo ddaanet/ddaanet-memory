@@ -1,6 +1,6 @@
 ---
 name: reference-cc-env-strip-tmux
-description: "TMUX/TMUX_PANE/TERM_PROGRAM/TERM_PROGRAM_VERSION/SSH_CONNECTION are dropped from the session env (rest inherits), so hook-driven send-keys finds no pane; `tmux display -p` guesses the wrong one — capture via a launcher shim under a custom name"
+description: "TMUX/TMUX_PANE/TERM_PROGRAM/TERM_PROGRAM_VERSION/SSH_CONNECTION drop from session env (rest inherits) — send-keys finds no pane; `tmux display -p` guesses wrong; capture via a launcher shim under a custom name"
 metadata: 
   node_type: memory
   type: reference

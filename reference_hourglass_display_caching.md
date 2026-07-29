@@ -1,6 +1,6 @@
 ---
 name: reference_hourglass_display_caching
-description: "displayed time = last API call + 1h; a stopped state is cached ~60 min, so a re-check inside that window sees the cache; both user-reported, never cross-checked against source"
+description: "displayed time = last API call+1h; stopped state cached ~60min, so a re-check inside that window is stale; both user-reported, never cross-checked"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: test-automation-8020
-description: "if you've spent 80% writing tests, the 20% to automate is a small markup; default to assertion-based shell tests, not agent-driven"
+description: "if 80% of effort went into tests, automating the last 20% is a small markup; default to assertion-based shell tests, not agent-driven"
 metadata: 
   node_type: memory
   type: feedback

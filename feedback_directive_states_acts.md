@@ -1,6 +1,6 @@
 ---
 name: feedback-directive-states-acts
-description: "cut from agent-facing and script-emitted directives: mechanism (verify it and narrate it back instead), orderings an earlier step settled, literalized meta-notes, and prohibitions naming the identifier they forbid — withhold instead"
+description: "cut from agent-facing/script-emitted directives: mechanism (verify+narrate instead), orderings an earlier step settled, literalized meta-notes, prohibitions naming what they forbid — withhold instead"
 metadata: 
   node_type: memory
   type: feedback

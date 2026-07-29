@@ -1,6 +1,6 @@
 ---
 name: cc-subagent-approval
-description: "`No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to SendMessage; gate approvals by returning, then parent `SendMessage(agentId, …)`; a bare `idle_notification` is not a report"
+description: "`No agent named 'X' is currently addressable`: one-shot sub-agent has no parent to SendMessage; gate approvals by returning, parent `SendMessage(agentId, …)`; bare `idle_notification` ≠ a report"
 metadata: 
   node_type: memory
   type: reference

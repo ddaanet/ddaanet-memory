@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-07-27T21:41:30.642Z
+  modified: 2026-07-29T16:17:57.650Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -54,6 +54,27 @@ six more it had missed.
 trigger surface — see [[feedback_memory_index_lines_functional]], which warns
 about exactly this pressure and is the rule the warning itself pushed me to
 break.
+
+**A silent trim buried in an unrelated commit is not a divergence to weigh —
+just restore it.** Found two lost triggers (`phantom dotfiles`, `own hooks.json
+unlink EROFS`) whose removal wasn't mentioned in the commit message that carried
+it (that commit documented dropping two different, unrelated facts). Framing
+this as "should I fork away from upstream" is the wrong question when it's all
+one shared history with no actual conflict — restoring a token nobody
+deliberately removed is just the next commit, not a fork to justify.
+
+**Adversarial audit, confirmed working.** After a real compaction pass
+(23,874→22,193 bytes), a fresh non-fork agent independently re-derived the
+literal list from `git diff` rather than trusting the compacting agent's
+self-report, and confirmed 168/174 distinctive tokens survived with zero
+misrouted and the root/tier mirror still 1:1. Cheap enough to run every time —
+do not skip it because the self-report already claims a clean audit.
+
+**Compaction's real diff is wider than the index file.** Editing `MEMORY.md`
+triggers `index-compose`/`index-sync` to rewrite the `description:` frontmatter
+of every touched fact file to match — one 2-line index edit produced a 57-file
+diff (2 index files + 55 fact-file frontmatter updates). Review the whole
+submodule diff before committing a compaction, not just the index files.
 
 Related: [[feedback_verify_at_source]] (confirm a reported loss in the file
 before acting); background on why the index is the only reliably-recalled
