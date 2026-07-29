@@ -1,6 +1,6 @@
 ---
 name: feedback_mutation_check_negatives
-description: "a \"stays silent\" negative, or a positive match on a shared output channel, passes vacuously; mutate the guard and watch it go red before counting it"
+description: "a \"stays silent\" negative, or a positive match on a shared channel, passes vacuously; mutate the guard and watch it go red first"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: reference_gitlore_tier_merge_direction
-description: a tier fast-forward leaves the root index stale and the next edit silently reverts it — apply upstream tier lines UP into root MEMORY.md as part of the merge; a root-only line deletion returns from the carrier
+description: "a tier fast-forward ≠ merge: root keeps old wording, resolver says `state is healthy`, next root edit reverts every incoming line — symptom: one-line edit diffs dozens of files vs `origin/live`; apply upstream tier lines UP into root, delete from carrier before root, correct wording only after propagating"
 metadata: 
   node_type: memory
   type: reference

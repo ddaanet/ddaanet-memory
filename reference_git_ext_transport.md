@@ -1,6 +1,6 @@
 ---
 name: reference-git-ext-transport
-description: "`fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` injection finding isn't exploitable on default git — probe the policy first"
+description: "`fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never` — an `ext::sh -c` injection isn't exploitable by default; probe policy first"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: feedback-harden-human-gates
-description: "Apply input-recognition hardening (word-boundary/escape, negation handling) at human free-text gates, not on channels whose producer you control"
+description: "apply word-boundary/escape checks where a human types free-text, not on channels whose producer you control"
 metadata: 
   node_type: memory
   type: feedback
