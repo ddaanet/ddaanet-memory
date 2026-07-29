@@ -1,16 +1,18 @@
 ---
 name: feedback-design-doc-writing
-description: "dated design entries are write-time records (keep rationale); memory/docs/comments state present-tense truth; six-section doc: FR, NFR, architecture, decisions, rejected alternatives, changelog"
+description: "dated design entries are write-time records (keep rationale); memory/docs/comments state present-tense truth; six-section doc: FR, NFR, architecture, decisions, rejected alternatives, changelog — the changelog its own file, the design present-tense what/how/why; `(implemented <date>)` tags and status blobs are changelog material, prose subsections beat a big table"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:23:07.887Z
+  modified: 2026-07-29T08:57:28.191Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections:
 functional requirements, non-functional requirements, architecture,
-design decisions (with rationale), rejected alternatives, changelog.
+design decisions (with rationale), rejected alternatives, changelog —
+and the changelog is a **separate file** the doc points at
+(`docs/changelog.md` in gitlore) once it outgrows a short list.
 Plans go in `docs/plans/`; the spec/design doc is a **single living doc for the
 project** — `docs/design.md` in gitlore, `DESIGN.md` at the plugin root in
 handoff. The rule is one living doc, not one filename; check where the project
@@ -24,6 +26,36 @@ good reason.
 **How to apply:** when updating, add to the changelog and update the
 relevant section. Don't flatten or summarize decisions — preserve the
 rationale.
+
+## Two documents, two jobs
+
+The living design answers **what, how and why**, in the present tense: what
+the system does, how it is built, why it is built that way. The changelog
+answers **how we got here** — one dated entry per change, each a write-time
+record keeping the reasoning available at the time.
+
+That split decides where text goes when a doc is cleaned up. Implementation
+status ("slice 3-ii done 2026-07-21, 37 cases in …"), `(implemented
+2026-07-15)` tags stamped on a mechanism paragraph, and "this retired the
+two earlier point-fixes" narratives are all changelog material: in the
+design they are noise, and they rot. Dates that *ground a claim* stay
+wherever the claim is — "verified against CC 2.1.150", "measured over 76
+bullets", "eval over 528 transcripts" — because deleting them turns
+evidence into assertion.
+
+Prose beats a big table for anything with a paragraph's worth of reasoning
+in a cell: a rejected-alternatives or decisions table hides the rationale in
+one long cell and forces every entry into the same width. Subsections with a
+bolded lead-in read the same at a glance and let the argument breathe.
+Keep tables for genuinely tabular data — short, uniform, scannable cells.
+
+When a decision is superseded, the old section stays with a one-line
+superseding pointer, and every *mechanism* description elsewhere gets
+updated to the new truth. A stale architecture section outlives its
+decision otherwise: gitlore's branch model was rewritten by D17 in
+2026-07-18, and the Architecture "Branch Model" section, D2, D3 and four
+rejected-alternative rows still described named per-worktree branches ten
+days later.
 
 ## Write-time record vs. current truth
 
