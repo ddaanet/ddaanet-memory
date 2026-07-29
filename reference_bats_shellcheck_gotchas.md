@@ -1,11 +1,11 @@
 ---
 name: reference-bats-shellcheck-gotchas
-description: "SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; `grep -qF` matches any ONE line of a multi-line pattern; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive"
+description: "SC2314 bare `! cmd` asserts nothing (`run !`); `run missing_fn` exits 127 (vacuous negatives); `grep -qF` matches any ONE line of a multi-line pattern; @test runs under errexit; shellcheck lints .bats; `# shellcheck` = directive"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-29T17:12:34.473Z
+  modified: 2026-07-29T19:08:13.048Z
 ---
 
 Independent mechanical facts sharing one trigger surface: writing or reviewing

@@ -1,6 +1,6 @@
 ---
 name: token-counting
-description: "no exact offline tokenizer for Claude 3+ (offline BPE is approximate); use `messages.count_tokens` or `cc-token`; for small artifacts report bytes, not tokens"
+description: "no exact offline tokenizer for Claude 3+; use `messages.count_tokens` or `cc-token`; for small artifacts report bytes, not tokens"
 metadata: 
   node_type: memory
   type: reference

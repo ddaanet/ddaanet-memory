@@ -1,11 +1,11 @@
 ---
 name: feedback_classifier_denied_self_config
-description: "the auto-mode classifier refuses agent writes to paths that configure or audit the agent itself — hand the write to the user via `!` or to a hook, and never retry a denial through another tool"
+description: "auto-mode refuses agent writes that configure/audit itself: `enabledPlugins`, a gitdir file a hook consumes (heredoc→*Logging/Audit Tampering*, Write→*Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it, another tool reads as tunneling — hand to the user via `!` or a hook; that list is INCIDENTAL writes only, a user-named action is unobserved not known-denied"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 60632fa9-e3bb-4ae1-b906-ea0f0f727a6b
-  modified: 2026-07-28T06:17:50.754Z
+  modified: 2026-07-29T18:10:56.577Z
 ---
 
 The auto-mode classifier refuses agent writes to paths that configure or audit
@@ -28,6 +28,13 @@ Denials seen, with the verdict the classifier named:
 Other writes that have had to be handed to the user rather than performed:
 adding a git subtree, editing hook wiring in `settings.json`, and pushing
 another repository or a submodule.
+
+**That last list is incidental writes only.** Each entry is an action the agent
+reached for in service of its own task while the user had asked for something
+else. The classifier weighs whether an action is what the user asked for, so a
+user-named action — a submodule push behind an explicit `/gitlore:push` — is a
+different case: unobserved, not known-denied. Related:
+[[feedback_denial_cost_not_possibility]].
 
 **Resolution confirmed for the cross-repo case:** a release script (gitlore's
 own `plugin-dev/release.just`) needed to bump a sibling repo's file
