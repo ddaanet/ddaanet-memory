@@ -74,6 +74,7 @@ the project's own memory store.
 - [gitlore memory in git](feedback_gitlore_memory.md) — memory/ is tracked by gitlore; commit it with code changes, never gitignore it
 - [Review model selection](feedback_review_model_selection.md) — use Sonnet (min) for reviewer subagents; Haiku misses subtle issues
 - [No compat aliases](feedback_no_compat_aliases.md) — when removing a constant, patch all consumers directly; compat aliases keep tech debt alive
+- [no transition special cases](feedback_no_transition_special_cases.md) — user base of one ⇒ no branch or diagnostic narrative for a version transition in your own tooling; fix forward, one fact plus one recovery act
 - [uv: sync only, direnv venv](feedback_uv_direnv_venv.md) — no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`
 - [Hook input schema](reference_hook_input_schema.md) — base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch — twice in one turn is normal
 - [Subagents over-applied](feedback_subagents_over_applied.md) — one-subagent-per-task is mis-granular; the axis is batching (one agent for several small/mechanical/one-loop tasks to spare main-session context), not agents-vs-inline; a shared mutable file only rules out *parallel* agents (mechanical does not)
