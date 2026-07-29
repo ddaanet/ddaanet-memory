@@ -1,11 +1,11 @@
 ---
 name: feedback_memory_not_other_owners_job
-description: "a memory restating what a skill or a design doc already owns is a category error — delete it, don't refine it"
+description: "what a skill, design doc, code comment or CLAUDE.md already owns is a category error in memory; delete it, accuracy is not the test, and ask what the new learning is once the anecdote is stripped"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: b2e74378-5da1-458d-8e13-01ab5f03eebe
-  modified: 2026-07-26T20:06:36.242Z
+  modified: 2026-07-29T17:13:02.716Z
 ---
 
 A memory that repeats what another artifact already owns is in the wrong place.
@@ -14,7 +14,7 @@ its own trigger, a living design doc is read before structural work — while th
 memory copy drifts and pays index bytes every session to say the same thing
 worse.
 
-Two shapes seen so far:
+Shapes seen so far:
 
 - **A skill's job.** The body reduces to "when using <skill>, do X". Delete it
   and let the skill say X; if X is missing from the skill, fix the skill.
@@ -23,6 +23,18 @@ Two shapes seen so far:
   organized by subject, rationale preserved in dated entries, which is exactly
   the genre a memory must not adopt ([[feedback_design_doc_writing]]: memories
   state present-tense current truth; dated records belong to the doc).
+- **The code's job.** A rule about how one call site must behave belongs in a
+  comment there, where it is read by whoever edits that line. A memory saying
+  the same thing reaches a session that may never open the file.
+- **CLAUDE.md's job.** A convention binding on all work in one repo. CLAUDE.md
+  is loaded whole every session in that repo and nowhere else — exactly the
+  scope such a rule wants.
+
+The test that separates a memory from an anecdote: **what is the new
+learning?** Strip the incident and see what is left. A mechanism that holds
+wherever it is met is the memory; the story of meeting it is not, however
+instructive it felt at the time. If nothing generalizes, the fix already
+landed in the code, the doc or the skill, and there is nothing to write.
 
 **Why:** David, 2026-07-26. Two gitlore memories told the agent to write
 `.claude/handoff*.md` only through the handoff skill — "those two memories are

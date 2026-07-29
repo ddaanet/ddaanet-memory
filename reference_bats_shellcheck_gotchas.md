@@ -1,19 +1,20 @@
 ---
 name: reference-bats-shellcheck-gotchas
-description: "SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive"
+description: "SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; `grep -qF` matches any ONE line of a multi-line pattern; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:41:07.332Z
+  modified: 2026-07-29T17:12:34.473Z
 ---
 
 Independent mechanical facts sharing one trigger surface: writing or reviewing
 bats tests and shellchecking them.
 
-Two of them are ways a bats test can look green while testing nothing: a bare
-`!` asserts nothing, and a `run` of a missing function exits 127 so a negative
-assertion passes vacuously.
+Three of them are ways a bats test can look green while testing nothing: a bare
+`!` asserts nothing, a `run` of a missing function exits 127 so a negative
+assertion passes vacuously, and `grep -qF` over a multi-line pattern asserts
+only that some one line of it is present.
 
 The errexit fact points the **opposite** way and exists to refute the
 "masked failures" reading — a failing mid-body assertion *aborts* the test
@@ -59,6 +60,27 @@ the function were later deleted or renamed.
 Treat negative cases as refinements around it, not as coverage on their own.
 Same trap applies to any `run`-based check keyed on non-zero exit, including
 `run !` forms. General principle: [[feedback_mutation_check_negatives]].
+
+## `grep -qF "$multiline"` matches any ONE line of the pattern
+
+`grep` is line-oriented: a multi-line `-F` pattern is a *set* of fixed
+strings, and matching any one of them satisfies it. So
+`echo "$output" | grep -qF "$EXPECTED"` reads as "the whole thing is present"
+and asserts only that some single line of it is — it stays green when the
+text is reordered, split across the output, or has most of it dropped.
+`grep -q` (BRE) is line-oriented the same way and additionally re-reads the
+pattern as a regex; `-z` makes grep NUL-delimited rather than multi-line
+aware, so it is not the fix either.
+
+Bash substring matching is the assertion that means it:
+`[[ "$output" == *"$EXPECTED"* ]]` — contiguous and verbatim, newlines
+included. Frame it to assert structure:
+`[[ "$output" == *$'\n\n'"$EXPECTED"$'\n\n'* ]]` says the text stands as its
+own blank-line-delimited block rather than being spliced into a sentence.
+
+The fixture is half of it: a single-line stand-in for a value that is
+multi-line in production makes the two renderings indistinguishable, so
+there is no assertion to write. Shape the fixture after the real value.
 
 ## `@test` bodies run under errexit
 
