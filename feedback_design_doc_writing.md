@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-29T14:51:19.189Z
+  modified: 2026-07-29T17:12:50.344Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections:
@@ -96,6 +96,13 @@ and the temporal framing dates and rots. Git history already preserves
 what changed — the diff *is* the changelog. David flagged this twice in
 one session (a memory body and a code comment), explicitly extending it
 from memories to comments and docs.
+
+The vantage is the future reader's, not today's. That reader holds none of
+today's state: no pending action, no session about to end, no change halfway
+applied. So a body that says "needs a fresh session", "still to be applied",
+or "the new wording is going in" names nothing they can act on and is false
+as soon as the state moves. Write the standing fact and let the transient
+half go to the task file, the todo list or the commit message.
 
 Sanctioned exception: inoculating against a *live* wrong belief still in
 circulation — and even then one present-tense clause ("a widespread
