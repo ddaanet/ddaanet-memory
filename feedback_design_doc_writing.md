@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-29T14:28:43.740Z
+  modified: 2026-07-29T14:51:19.189Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections:
@@ -16,10 +16,9 @@ and the changelog is a **separate file** the doc points at
 certain size that file is only the index and each change gets its own dated
 file beside it — `docs/changelog/<date>-<title>.md` in handoff, one line per
 entry in the index.
-Plans go in `docs/plans/`; the spec/design doc is a **single living doc for the
-project** — `docs/design.md` in gitlore, `DESIGN.md` at the plugin root in
-handoff. The rule is one living doc, not one filename; check where the project
-actually keeps it before creating a second.
+Plans and specs go in a root `plans/`; the spec/design doc is a **single living
+doc for the project** — `docs/design.md`. The rule is one living doc, not one
+filename; check where the project actually keeps it before creating a second.
 
 **Why:** it captures the *why* alongside the *what*, so future sessions
 don't re-litigate settled decisions. The rejected-alternatives section

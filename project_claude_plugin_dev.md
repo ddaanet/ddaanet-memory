@@ -3,7 +3,7 @@ name: claude-plugin-dev toolkit
 description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump in consumer release"
 type: project
 originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-modified: 2026-07-27T20:22:32.823Z
+modified: 2026-07-29T14:51:29.243Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev,
 latest tag `v0.2.0` shipped 2026-04-29) is the canonical release
@@ -14,7 +14,7 @@ release recipe), `version-guard.sh` (PreToolUse hook), `check-version.sh`
 auto pre-flight in `release`), `install.sh` (one-shot vendor + wire),
 `tests/hook-test.sh` (version-guard + check-version scenarios),
 `justfile` (toolkit's own `precommit` AND self-`release` recipe),
-`VERSION` (plain text, last-released version), `DESIGN.md`, `CLAUDE.md`.
+`VERSION` (plain text, last-released version), `docs/design.md`, `CLAUDE.md`.
 `check-version.sh` was absorbed 2026-07-27 from a gitlore-local script
 (generalized: plugin name from `plugin.json`, marketplace path from
 `$MARKETPLACE_DIR`) — unreleased at this writing, so no consumer has
@@ -55,6 +55,6 @@ folds the marketplace bump into the same atomic release.
   and creates a GitHub release. No more manual `git tag` dance.
 - `VERSION` exists because subtree pulls don't propagate tags —
   consumers had no way to identify the toolkit version they vendored.
-  See toolkit `DESIGN.md` "Toolkit version source of truth".
+  See toolkit `docs/design.md` "Toolkit version source of truth".
 - `edify` is deliberately out of scope (hybrid Python+plugin shape
   with PyPI publish; keeps its bespoke recipe).
