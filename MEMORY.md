@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-29T19:08:38.520Z
+  modified: 2026-07-30T10:31:05.561Z
 ---
 
 # ddaanet tier index
@@ -105,7 +105,7 @@ the project's own memory store.
 - [gitlore tier merge direction](reference_gitlore_tier_merge_direction.md) — a tier fast-forward ≠ merge: root keeps old wording, resolver says `state is healthy`, next root edit reverts every incoming line — symptom: one-line edit diffs dozens of files vs `origin/live`; apply upstream tier lines UP into root, delete from carrier before root, correct wording only after propagating
 - [tier routing: plugin-shaped litmus test](feedback_tier_routing_plugin_shaped.md) — route an operational gotcha to ddaanet (not project memory) when its mechanism depends on the repo being plugin-shaped, not on this repo's own content
 - [a correction applies to what it names](feedback_correction_scope.md) — don't demolish the general claim the corrected instance belonged to; quote the scope back, ask if the general claim survives, and say what you are NOT changing
-- [a memory is not another owner's job](feedback_memory_not_other_owners_job.md) — what a skill, design doc, code comment or CLAUDE.md already owns is a category error in memory; delete it, accuracy is not the test, and ask what the new learning is once the anecdote is stripped
+- [a memory is not another owner's job](feedback_memory_not_other_owners_job.md) — "when using <skill>, do X", or a project memory logging design decisions the living design doc owns: category error; delete it, accuracy is not the test
 - [classifier denies self-config writes](feedback_classifier_denied_self_config.md) — auto-mode refuses agent writes that configure/audit itself: `enabledPlugins`, a gitdir file a hook consumes (heredoc→*Logging/Audit Tampering*, Write→*Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it, another tool reads as tunneling — hand to the user via `!` or a hook; that list is INCIDENTAL writes only, a user-named action is unobserved not known-denied
 - [denial cost, not denial possibility](feedback_denial_cost_not_possibility.md) — hook path when a denial strands something unrepeatable (an approved summary); direct agent call when it costs one turn
 - [droplet CPU variability](project_droplet_cpu_variability.md) — shared ddaanet dev droplet is a VM David resizes 1↔2 vCPUs to save cost; currently 2; don't design a speedup that only pays off at 2
