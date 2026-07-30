@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 246af36f-a1b2-4592-8c6f-7170974482af
+  modified: 2026-07-30T04:33:04.238Z
 ---
 
 A skill's `description:` frontmatter is shown verbatim in the Claude Code
@@ -26,3 +27,8 @@ for]`. Also drop overspecific or stale implementation detail from the
 tail (e.g. "writes a short markdown task file… otherwise leaves nothing
 in place") — mechanics aren't a useful TUI summary. Applies to all
 skills in a plugin, not just the headline one. See [[project_claude_plugin_dev]].
+
+Model guidance does not belong in a skill body either. Which model runs the
+work is an agent-frontmatter concern, so a skill that says "run this on Sonnet"
+is stating something it cannot enforce — put it on the agent definition
+instead. See [[feedback_review_model_selection]].

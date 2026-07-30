@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: be04fd4d-08b4-40e1-8af1-475ec36e19a2
+  modified: 2026-07-30T04:33:00.915Z
 ---
 
 David officially opted out of the `AskUserQuestion` tool (`#no-askuserquestion`,
@@ -22,4 +23,5 @@ number them, state your recommended default so the thread can proceed without a
 round-trip, and keep moving on the parts that are already settled. Reserve
 questions for forks only the user can resolve; decide the rest with sensible
 defaults and say what you assumed. See [[feedback_plan_late]] and
-[[feedback_self_contained_directives]].
+[[feedback_self_contained_directives]] — and [[dont-ask-for-obvious-fixes]],
+since an obvious in-mandate fix needs no question at all.
