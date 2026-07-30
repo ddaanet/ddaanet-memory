@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 2ab4326a-2ac4-4c90-9dd8-4da55efdf552
-  modified: 2026-07-23T13:39:59.399Z
+  modified: 2026-07-30T15:34:18.470Z
 ---
 
 Before planning a subproject that builds on an existing pipeline, run
@@ -40,5 +40,4 @@ half is proven. Measure distributions, not just "it ran" — the p50/p90/
 max of every quantity a downstream constant is supposed to bound.
 
 Related: [[tests-pass-for-the-wrong-reason]],
-[[ground-formulas-in-data]], [[mutate-code-to-test-the-tests]],
-[[ghmem-project]].
+[[ground-formulas-in-data]], [[mutate-code-to-test-the-tests]].

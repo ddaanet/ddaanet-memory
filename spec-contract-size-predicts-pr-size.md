@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: d015e0f1-8fa3-4170-9152-2c9265c45dfc
+  modified: 2026-07-30T15:34:31.691Z
 ---
 
 The 400-line cap on human-reviewed artifacts (plans, PRs) is a **soft**
@@ -23,4 +24,4 @@ it at PR-slicing time is expensive re-work.
 approaching 400 lines as the signal to **split that task** — weight
 contract length as a predictor of implementation length in the
 update-vs-split decision, don't judge the contract's size in isolation.
-See [[honest-line-count-caps]], [[ghmem-project]].
+See [[honest-line-count-caps]].

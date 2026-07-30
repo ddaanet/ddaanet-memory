@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: ca597732-d159-40c8-adc3-c5e8c88c1ec2
-  modified: 2026-07-25T19:45:46.097Z
+  modified: 2026-07-30T15:34:22.776Z
 ---
 
 Passing a custom `name` to the Agent tool **silently disables an agent
@@ -50,4 +50,4 @@ Beware the corroboration this hides in plain sight: a project's whole
 dispatch history can look uniform ("every custom-agent dispatch shares
 this shape") while the one differing field is the one that matters.
 Related: [[agent-hooks-need-exact-trust-key]] (a *separate* gate, also
-silent), [[transcripts-are-ground-truth]], [[ghmem-project]].
+silent) and [[transcripts-are-ground-truth]].

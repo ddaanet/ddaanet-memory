@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 2eeaac7d-8f74-4a8c-941d-66cd37826d27
+  modified: 2026-07-30T15:35:18.667Z
 ---
 
 In anything I author as myself — memory files, commit-gate summaries,
@@ -17,6 +18,6 @@ as peer-to-peer. He rejected a gitlore gate summary that named him
 
 **How to apply:** use "my human partner" (possessive: "my human
 partner's"). This does not apply to content written *in his name* for
-external audiences (GitHub comments, RFCs — see [[popup-layer-track]]
-for the voice card) or to git authorship, which carry his public
+external audiences (GitHub comments, RFCs — follow the project's own
+voice card there) or to git authorship, which carry his public
 identity by design.

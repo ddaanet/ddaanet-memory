@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 0e54e20b-7997-422c-b864-72737115682c
-  modified: 2026-07-25T19:45:54.062Z
+  modified: 2026-07-30T15:34:16.627Z
 ---
 
 Claude Code has **two different workspace-trust checks**, and they
@@ -59,5 +59,5 @@ hooks are still dead — an `echo` and a throwaway file, never real data.
 2026-07-24 check here was recorded as proving containment live; its
 transcript shows `echo hello && whoami` returning `hello / david`. The
 agent said contained, the tool result said executed, and the agent was
-believed. See [[verify-restart-before-structural-diagnosis]],
-[[guardrail-must-permit-real-commands]] and [[ghmem-project]].
+believed. See [[verify-restart-before-structural-diagnosis]] and
+[[guardrail-must-permit-real-commands]].

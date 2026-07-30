@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8bc34870-8b8c-49fa-85a0-4ad6d99085e8
-  modified: 2026-07-22T05:34:20.605Z
+  modified: 2026-07-30T15:34:20.850Z
 ---
 
 Across the five tasks of ghmem dispatch B1 (2026-07-21), **every single
@@ -53,5 +53,4 @@ and assert the actual write directly (`store.routes()`, the ledger's
 last event) instead. In subagent-driven development this is not an
 occasional risk — budget for one wrong-reason test per task and let the
 adversarial reviewer tier hunt it ([[sdd-reviewer-tiering]]). It pairs
-with the sibling lesson that briefs themselves misdescribe the code:
-[[ghmem-project]] records both.
+with the sibling lesson that briefs themselves misdescribe the code.

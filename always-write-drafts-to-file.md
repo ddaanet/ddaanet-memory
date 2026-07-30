@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 17ca47a5-15a1-403f-a87d-643c2fa3b3fd
+  modified: 2026-07-30T15:35:23.453Z
 ---
 
 When producing any draft (GitHub comment, email, message, document, marketing copy, etc.),
@@ -16,4 +17,4 @@ draft each turn, and a file is easier for my human partner to reference and reus
 **How to apply:** On the first draft, Write it to a sensible path (e.g. `drafts/<slug>.md`)
 and point my human partner at it. On revisions, Edit the file instead of pasting the full text again;
 in chat, describe just what changed. Keep a short header noting status (e.g. "DRAFT — awaiting
-review, do not send"). Related: [[micro-colwrap-project]]
+review, do not send").

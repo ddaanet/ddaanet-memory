@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 109169bb-771b-4bf9-9161-31c5e4dbb4ed
-  modified: 2026-07-24T17:49:17.489Z
+  modified: 2026-07-30T15:34:36.651Z
 ---
 
 When something that should work doesn't resolve mid-session — a PATH
@@ -15,7 +15,7 @@ harness (Claude Code session, subagent registry, shell environment)
 predates the change before concluding the mechanism is structurally
 broken.
 
-**Why:** during ghmem subproject 3 ([[ghmem-project]]), I diagnosed
+**Why:** during ghmem subproject 3, I diagnosed
 bare `ghmem` failing to resolve in a freshly spawned subagent as proof
 that `PATH_add` categorically cannot work for agent Bash calls — I
 built a whole story about `~/.bashrc` gating direnv's hook on
