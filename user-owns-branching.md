@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 61ab44b0-2348-4c1f-bf1d-0f91d7459009
+  modified: 2026-07-30T15:34:35.407Z
 ---
 
 Do not run `git checkout -b`, `git switch -c`, or otherwise create/switch
@@ -22,5 +23,4 @@ skip that step and proceed on the current branch; if isolation genuinely
 matters, ask rather than switch. Merging/finishing onto a base branch
 that the human explicitly chose (e.g. "merge to main") is fine — that's
 executing their instruction, not originating a branch switch. Relates to
-[[dont-ask-for-obvious-fixes]] (mandate boundaries) and the ghmem work
-[[ghmem-project]].
+[[dont-ask-for-obvious-fixes]] (mandate boundaries) and the ghmem work.

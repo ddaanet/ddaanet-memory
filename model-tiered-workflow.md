@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: a51ff8d4-df99-4c6a-be00-e4748ad9ef49
+  modified: 2026-07-30T16:00:52.247Z
 ---
 
 My human partner is cost-conscious about Fable. He wants Fable for high-level design and review
@@ -19,4 +20,4 @@ plan review costs a fraction of plan generation.
 **How to apply:** On any multi-stage task, keep Fable turns lean (design decisions,
 verdicts, fixes), delegate file-producing work to Opus/Sonnet subagents with
 self-contained prompts, and review their output against the spec instead of redoing it.
-See [[micro-colwrap-layout]] for where specs/plans live.
+Follow the project's own convention for where specs/plans live.

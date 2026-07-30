@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 66148f27-8da9-4889-9d90-b64538c0c955
+  modified: 2026-07-30T15:34:33.540Z
 ---
 
 Group code by purpose, not by type, and order it top to bottom: entry
@@ -39,6 +40,6 @@ evaluation allows — after the first function that needs it, not at the
 top of the section — and say so in a docstring, or the next reader will
 "fix" the order into a `NameError`.
 
-Confirmed twice on ghmem's `sync.py`: first as the rule ([[ghmem-project]]
-cleanup wave 1), then as a correction when I put the GraphQL literals
+Confirmed twice on ghmem's `sync.py`: first as the rule (cleanup wave
+1), then as a correction when I put the GraphQL literals
 *above* their functions and was told to invert it.

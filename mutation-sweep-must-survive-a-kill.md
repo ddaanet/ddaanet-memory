@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 57e023c7-06cb-48c0-afd2-2d4f1906467a
-  modified: 2026-07-25T19:29:21.899Z
+  modified: 2026-07-30T15:35:25.083Z
 ---
 
 A mutation sweep that mutates a source file, runs pytest, and restores in
@@ -36,4 +36,4 @@ writing, and **always** `git diff` the mutated paths after the sweep
 before trusting the tree. Related:
 [[mutate-code-to-test-the-tests]],
 [[unkillable-mutation-means-a-wrong-model]],
-[[sandbox-char-device-listings]].
+[[sandbox-effects]].
