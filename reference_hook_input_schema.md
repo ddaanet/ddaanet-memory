@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 7a891994-6ca1-4ea3-a503-1259d89a76e2
-  modified: 2026-07-27T22:19:38.374Z
+  modified: 2026-07-30T15:18:10.054Z
 ---
 
 Verified against the Claude Code bundle (zod schemas) — first on 2.1.168,
@@ -53,6 +53,16 @@ takes the worktree path from the hook's stdout (or from
 hook ran, when every hook exited non-zero, or when none returned a path. A hook
 refuses by failing — success is `exit status === 0`; `decision:"block"` plays no
 part.
+
+**`/clear` mints a new session, and `SessionStart(clear)` reports it.** Measured
+in a tmux pane 2026-07-30 with a hook logging the raw payload: the startup
+session was one id, the `clear` payload carried a different one, and a second
+`<session-id>.jsonl` appeared beside the first under the project directory. Its
+`transcript_path` is the **new** session's, and that file already exists when
+the hook runs — so a `SessionStart(clear)` hook can baseline a transcript count
+and confirm a prompt submitted into the fresh session, exactly as a
+`SessionStart(compact)` hook can. (That payload carried no `model`, which
+`startup` did; the field is optional in the base schema, so read it defensively.)
 
 **How to apply:** when a hook needs the project/worktree root, derive it from the
 on-disk `.git` linkage starting at `.cwd` — don't expect a root field in the
