@@ -109,3 +109,11 @@ the project's own memory store.
 - [classifier denies self-config writes](feedback_classifier_denied_self_config.md) — auto-mode refuses agent writes that configure/audit itself: `enabledPlugins`, a gitdir file a hook consumes (heredoc→*Logging/Audit Tampering*, Write→*Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it, another tool reads as tunneling — hand to the user via `!` or a hook; that list is INCIDENTAL writes only, a user-named action is unobserved not known-denied
 - [denial cost, not denial possibility](feedback_denial_cost_not_possibility.md) — hook path when a denial strands something unrepeatable (an approved summary); direct agent call when it costs one turn
 - [droplet CPU variability](project_droplet_cpu_variability.md) — shared ddaanet dev droplet is a VM David resizes 1↔2 vCPUs to save cost; currently 2; don't design a speedup that only pays off at 2
+- [No hand-editing subtrees](feedback_subtree_no_hand_edit.md) — never edit vendored plugin-dev/; change source, release, update-plugin-dev
+- [Gitlore hook refresh](feedback_gitlore_hook_refresh.md) — `claude -p ping` in a repo fixes a stale gitlore pre-push hook instead of --no-verify
+- [Confirm the brief's option](feedback_brief_confirm_option.md) — a brief's recommendation and constraints are input, not a decision; ask before implementing
+- [Ownership transferred](feedback_ownership_transferred.md) — "ownership transferred" means drop it entirely; don't list it as pending
+- [Tests must go red](feedback_tests_must_go_red.md) — an error isn't a red; mutation-validate anything error-at-first or green-at-first
+- [Subagent reports via file](feedback_subagent_report_via_file.md) — final messages vanish; have subagents write the report to a file and reply with a pointer
+- [No placeholder probing](feedback_no_placeholder_probing.md) — a tool call has no dry-run; a value that passes validation is applied
+- [Writing memories](feedback_memory_writing.md) — state what is true for a reader who wasn't there; cut the anecdote, the tense, and anything that belongs in CLAUDE.md
