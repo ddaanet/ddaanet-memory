@@ -110,6 +110,15 @@ classifier lets the retry through, so routing around the denial buys nothing and
 loses the shell. Relevant to [[finishing-a-development-branch]] when merging a
 worktree branch into main.
 
+For *read-only* inspection of local git state and adjacent filesystem probes —
+`git status`, `log`, `diff`, `show`, `branch`, `rev-parse`, `ls-files`,
+`blame`, `cat .gitconfig`, `ls .claude/`, reading dotfiles — reaching for
+`dangerouslyDisableSandbox: true` is a standing default David set explicitly,
+not a per-case approval to seek: call it directly, without pre-announcing or
+asking. Mutating operations (`git commit`, `push`, `reset`, `checkout -- …`,
+anything that writes) are NOT covered and still follow normal confirmation
+rules.
+
 ## Harness-mounted config paths are busy/read-only (sandbox breaks it)
 
 The harness mounts certain paths as busy/read-only/char-devices:
