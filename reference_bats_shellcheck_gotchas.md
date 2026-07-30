@@ -1,11 +1,11 @@
 ---
 name: reference-bats-shellcheck-gotchas
-description: "SC2314 bare `! cmd` asserts nothing (`run !`); `run missing_fn` exits 127 (vacuous negatives); `grep -qF` matches any ONE line of a multi-line pattern; @test runs under errexit; shellcheck lints .bats; `# shellcheck` = directive"
+description: "SC2314 bare `! cmd` asserts nothing (`run !`); `run missing_fn` exits 127 (vacuous negatives); `run` is a SUBSHELL so out-params are lost; `grep -qF` matches any ONE line of a multi-line pattern; @test runs under errexit; shellcheck lints .bats; `# shellcheck` = directive"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-29T19:08:13.048Z
+  modified: 2026-07-30T17:31:08.714Z
 ---
 
 Independent mechanical facts sharing one trigger surface: writing or reviewing
@@ -60,6 +60,31 @@ the function were later deleted or renamed.
 Treat negative cases as refinements around it, not as coverage on their own.
 Same trap applies to any `run`-based check keyed on non-zero exit, including
 `run !` forms. General principle: [[feedback_mutation_check_negatives]].
+
+## `run` is a subshell, so a function's out-params never reach the test
+
+`run` captures status and output by running the command in a **subshell**. Any
+variable the callee sets for its caller — the shell idiom for returning
+structured data, since a function's own exit status is one integer — is gone
+by the time the assertions run:
+
+```bash
+run parse_the_file "$f"      # sets PARSE_ERR for its caller
+[ "$status" -ne 0 ]          # fine
+[[ "$PARSE_ERR" == *"..."* ]]  # empty: the assignment died with the subshell
+```
+
+The symptom is specific and easy to misread: the status assertion passes and
+only the message assertion fails, so it looks like the *message* is wrong
+rather than unreachable. Two ways out, and a suite usually wants both — have
+a test helper print what the callee set and return its status, so `run helper`
+gives `$output` for the message; and call the function **bare** (not under
+`run`) in the tests that need the variables it populates, where bats' errexit
+makes a non-zero return the failure.
+
+Observed 2026-07-30 on a validator that reported through a `DRIVE_ERR`
+variable: eight shape-matrix tests asserted on `$output` and all eight failed
+with an empty one.
 
 ## `grep -qF "$multiline"` matches any ONE line of the pattern
 
