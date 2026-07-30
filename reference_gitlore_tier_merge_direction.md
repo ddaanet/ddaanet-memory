@@ -1,40 +1,31 @@
 ---
 name: reference_gitlore_tier_merge_direction
-description: "a tier fast-forward ≠ merge: root keeps old wording, resolver says `state is healthy`, next root edit reverts every incoming line — symptom: one-line edit diffs dozens of files vs `origin/live`; apply upstream tier lines UP into root, delete from carrier before root, correct wording only after propagating"
+description: "tiers are pinned: `/gitlore:merge`|`/gitlore:push` land the merge in the carrier, then adopt it UP into root's block — never rebuild root's block by hand; delete a pointer from root alone; correct wording only AFTER propagating, and a verified defect in an adopted line is the follow-up change"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 4d44ae29-6174-4981-8edd-c8bc5e4cff28
-  modified: 2026-07-28T20:38:25.731Z
+  modified: 2026-07-30T15:26:44.458Z
 ---
 
-Root `MEMORY.md` is canonical over a tier's carrier index. Composition mirrors
-root-authored tier lines **down**, and pulls up only lines missing from root —
-it never updates the text of a line root already has.
+A tier is pinned at the commit the memory tree records for it, so it advances
+only through `/gitlore:merge` or `/gitlore:push`. Both land the merge in the
+tier's carrier index and then adopt it **up** in the same pass: the merged
+carrier becomes root's block for that tier. **Adoption is the tooling's** —
+don't rebuild root's block from a tier index by hand. What it leaves behind is
+a dirty memory store, the moved gitlink and the recomposed root index, and
+those ride the next memory commit.
 
-**A tier fast-forward is therefore not a merge.** When the shared tier advances
-from another repo, the tier files move but root keeps its old wording. Nothing
-warns you: the resolver reports `state is healthy`, because tier and origin
-agree. The staleness is invisible until the next unrelated edit to root, at
-which point composition treats stale root as canonical and rewrites the tier
-back — silently reverting every incoming line. Symptom: a one-line edit
-produces a diff of dozens of files against `origin/live`, and upstream's
-commits are undone without a conflict ever being raised.
-
-**Apply the upstream tier lines up into root as part of the merge.** Rebuild
-root's tier block from the tier index (strip the carrier's bare paths, re-add
-the `<tier>/` prefix), and keep root's own bare-path project lines. Then the
-two agree and composition is a no-op reorder.
-
-**Deleting a line needs both files.** A pointer removed from root alone comes
-back on the next compose, because it still exists in the carrier and counts as
-a line root is missing. The `Edit` reports success and the line reappears.
-Delete from the carrier first, then root.
+In-session the projection runs the other way, root's lines for an active tier
+**down** into the carrier, and a carrier path root's working tree lacks is
+decided by root at `HEAD`: present there means root deleted it, absent means
+nobody authored it in root, so it is kept and reported. **Removing a pointer
+from root alone is therefore enough** — the carrier copy goes in the same pass.
 
 **Correct content *after* propagating it, never during.** A merge that also
-"fixes" wording is indistinguishable from the revert above. Land upstream's
-lines first, then author corrections in root as their own change, which then
-mirrors down legitimately.
+"fixes" wording is indistinguishable from reverting what upstream just sent.
+Land upstream's lines first, then author corrections in root as their own
+change, which then mirrors down legitimately.
 
 *After* is the second step, not permission to skip it. Adoption is per line:
 taking upstream's version of the artifact settles the merge, not the merits of
