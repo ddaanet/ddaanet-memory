@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-27T22:19:29.306Z
+  modified: 2026-07-30T19:42:52.393Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -76,8 +76,19 @@ In the gitlore repo the sandbox distorts some git/filesystem operations
    cleanly (no `MERGE_HEAD`), so retry unsandboxed.
 
 `.envrc` vars pass through the sandbox: `MARKETPLACE_DIR` and the `DIRENV_*`
-vars are present in the sandboxed env (direnv runs in the launching shell), so
-`.envrc`-dependent commands like `just release` work sandboxed.
+vars are present in the sandboxed env (direnv runs in the launching shell). The
+variable arriving does not make the path it names writable. A sandboxed `just
+release` gets through the bump, commit, tag, `git push` and `gh release create`,
+then dies on the marketplace step: `mv` of the `mktemp` file onto
+`$MARKETPLACE_DIR/.claude-plugin/marketplace.json` reports `inter-device move
+failed … unable to remove target: Read-only file system`. Every step before it
+is irreversible, so the plugin is left tagged and published against a stale
+marketplace entry (confirmed 2026-07-30, gitlore 0.4.4). Run the whole recipe
+unsandboxed. `just resume-release` (plugin-dev >= 0.5.0) recovers a half-landed
+one, but only unsandboxed: its `bump_marketplace` runs that `mv`
+unconditionally, before it compares local and remote heads, so inside the
+sandbox it cannot even reach the point of reporting the marketplace already
+correct.
 
 **`git status` is auto-handled.** The `unsandbox-git-status` plugin (a PreToolUse
 Bash hook) detects a `git status` command and flips `dangerouslyDisableSandbox`
