@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-29T19:08:38.520Z
+  modified: 2026-07-30T10:31:05.561Z
 ---
 
 # ddaanet tier index
@@ -90,7 +90,6 @@ the project's own memory store.
 - [Todo tool is flag-gated](reference_todo_tool_flag_gated.md) — `TodoWrite` has no tool def; `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` replace it, gated by server-side `tengu_vellum_ash` — never name a todo tool in a plugin step
 - [Reconstructable is two categories](feedback_reconstructable_two_categories.md) — by-harness (deterministic, free → drop it) vs by-model-inference from a paraphrase (lossy, fails silently → carry it); name the reconstructor first
 - [Imperative-form rule scope](feedback_imperative_form_scope.md) — the skill-development rule targets instruction subjects ("You should X"), not every pronoun; a bare grep for "you" over-reports; `your post-compaction self` is a deliberate keep
-- [gitlore Bash-edit desync](reference_gitlore_bash_edit_desync.md) — `index-compose.sh`/`index-sync-post.sh` fire only on `Write`|`Edit` tool_name; a `sed`-applied MEMORY.md edit desyncs root/tier, later refuses "duplicate pointer path"
 - [memory index lines are functional](feedback_memory_index_lines_functional.md) — index lines serve agent-matching AND ambient awareness; don't mechanically shorten them to hit a byte target, especially an advisory one
 - [bundle memory with source](feedback_bundle_memory_with_source.md) — commit a memory update in the same parent commit as the source change it documents, not separately; don't over-apply to unrelated pending work
 - [CC strips terminal-provenance env](reference_cc_env_strip_tmux.md) — TMUX/TMUX_PANE/TERM_PROGRAM/TERM_PROGRAM_VERSION/SSH_CONNECTION drop from session env (rest inherits) — send-keys finds no pane; `tmux display -p` guesses wrong; capture via a launcher shim under a custom name
@@ -102,10 +101,10 @@ the project's own memory store.
 - [checkout clears merge state](reference_git_checkout_clears_merge_state.md) — `git checkout` silently unlinks MERGE_HEAD/MERGE_MSG (`remove_branch_state`): a clean `merge --no-commit` dies on later re-checkout though its index survives; recover: restore both pointers after `write-tree`==`merge-tree --write-tree`
 - [index compaction loses triggers](feedback_index_compaction_triggers.md) — trimming index lines keeps prescriptions and cuts symptoms/identifiers; count each literal index-wide before and after — falling to zero is unreachable, falling to one on another line MISROUTES; have someone else audit the diff
 - [detect liveness, not presence](feedback_detect_liveness_not_presence.md) — a foreign tool's state file needs the *current* layout + an identity marker: layouts move (old path = declared stray), abandoned files never get cleaned, so `[ -f known/path ]` false-positives; fail open, pick newest, stay read-only
-- [gitlore tier merge direction](reference_gitlore_tier_merge_direction.md) — a tier fast-forward ≠ merge: root keeps old wording, resolver says `state is healthy`, next root edit reverts every incoming line — symptom: one-line edit diffs dozens of files vs `origin/live`; apply upstream tier lines UP into root, delete from carrier before root, correct wording only after propagating
+- [gitlore tier merge direction](reference_gitlore_tier_merge_direction.md) — tiers are pinned: `/gitlore:merge`|`/gitlore:push` land the merge in the carrier, then adopt it UP into root's block — never rebuild root's block by hand; delete a pointer from root alone; correct wording only AFTER propagating, and a verified defect in an adopted line is the follow-up change
 - [tier routing: plugin-shaped litmus test](feedback_tier_routing_plugin_shaped.md) — route an operational gotcha to ddaanet (not project memory) when its mechanism depends on the repo being plugin-shaped, not on this repo's own content
 - [a correction applies to what it names](feedback_correction_scope.md) — don't demolish the general claim the corrected instance belonged to; quote the scope back, ask if the general claim survives, and say what you are NOT changing
-- [a memory is not another owner's job](feedback_memory_not_other_owners_job.md) — what a skill, design doc, code comment or CLAUDE.md already owns is a category error in memory; delete it, accuracy is not the test, and ask what the new learning is once the anecdote is stripped
+- [a memory is not another owner's job](feedback_memory_not_other_owners_job.md) — "when using <skill>, do X", or a project memory logging design decisions the living design doc owns: category error; delete it, accuracy is not the test
 - [classifier denies self-config writes](feedback_classifier_denied_self_config.md) — auto-mode refuses agent writes that configure/audit itself: `enabledPlugins`, a gitdir file a hook consumes (heredoc→*Logging/Audit Tampering*, Write→*Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it, another tool reads as tunneling — hand to the user via `!` or a hook; that list is INCIDENTAL writes only, a user-named action is unobserved not known-denied
 - [denial cost, not denial possibility](feedback_denial_cost_not_possibility.md) — hook path when a denial strands something unrepeatable (an approved summary); direct agent call when it costs one turn
 - [droplet CPU variability](project_droplet_cpu_variability.md) — shared ddaanet dev droplet is a VM David resizes 1↔2 vCPUs to save cost; currently 2; don't design a speedup that only pays off at 2
