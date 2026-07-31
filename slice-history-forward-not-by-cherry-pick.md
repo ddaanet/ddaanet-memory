@@ -50,4 +50,4 @@ distinct arguments (what shape routing state is / how a live write
 avoids diverging from a replay) that read better apart.
 
 Related: [[honest-line-count-caps]],
-[[spec-contract-size-predicts-pr-size]], [[user-owns-branching]].
+[[spec-contract-size-predicts-pr-size]].

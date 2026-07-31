@@ -18,4 +18,4 @@ When presenting a large planning or design document for user review, do NOT just
 - Consider splitting structurally: spec → its own commit; implementation plan → its own commit. Smaller diffs review better than one large drop.
 - The brainstorming skill's "spec self-review" step exists for exactly this reason — actually do it with rigor, don't just tick the checkboxes.
 
-Related: [[verify-at-source]] (verify claims rather than assert), [[self-contained-directives]] (the same "be explicit" principle for sub-agent instructions).
+Related: [[verify-at-source]] (verify claims rather than assert).

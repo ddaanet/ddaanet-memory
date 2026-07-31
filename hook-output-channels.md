@@ -1,6 +1,6 @@
 ---
 name: hook-output-channels
-description: "systemMessage=user-visible; additionalContext=model-only (also at PreToolUse, even on failure); stderr only on non-zero exit/`--verbose`; ERROR=systemMessage+exit 0; only exit 2 blocks (PreToolUse only)"
+description: "systemMessage = user-visible; additionalContext = model-only, honoured at PreToolUse too (arrives even when the call fails); stderr only on non-zero exit or `--verbose`; hook ERROR = systemMessage + exit 0; only exit 2 blocks, PreToolUse only"
 metadata: 
   node_type: memory
   type: reference

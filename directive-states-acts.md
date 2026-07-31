@@ -1,11 +1,11 @@
 ---
 name: directive-states-acts
-description: "cut from agent-facing/script-emitted directives: mechanism (verify+narrate instead), orderings an earlier step settled, literalized meta-notes, prohibitions naming what they forbid — withhold instead"
+description: "cut from agent-facing and script-emitted directives: mechanism (verify it and narrate it back instead), orderings an earlier step settled, literalized meta-notes, and prohibitions naming the identifier they forbid — withhold instead"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 8cd21851-d241-49bf-afaf-b4baf0c4f311
-  modified: 2026-07-26T13:59:23.429Z
+  modified: 2026-07-31T18:59:35.448Z
 ---
 
 When authoring text a script emits *for an agent to act on* — a probe directive,
@@ -28,7 +28,7 @@ Keep one clause of reassurance where the absence of a visible result would
 otherwise read as failure ("the commit that lands these changes carries the
 memory") — that prevents an invented recovery. Make it true of every flow the
 mode covers: the first draft said "this turn's commit", false wherever the
-commit arrives in a later turn ([[turn-call-terminology]]).
+commit arrives in a later user turn.
 
 **Withhold, don't forbid.** When the only route to an unwanted action is an
 identifier — a filename, a flag, an endpoint — the reader has no other source
@@ -59,8 +59,8 @@ split the mode exists to prevent.
 **How to apply:** draft the directive, then delete every sentence that is not an
 act. Ask what a reader would *do* with each remaining line; if the answer is
 "check it" or "explain it back", cut it. Test the negatives on the whole word
-(`[[ "$output" != *"trigger"* ]]`) and mutation-check them per
-[[mutation-check-negatives]]. When a rule is an ordering between the
+(`[[ "$output" != *"trigger"* ]]`) and pair each with a positive over the same
+fixture per [[tests-must-go-red]]. When a rule is an ordering between the
 *caller's own steps*, it belongs where the steps are described — see
 [[prohibition-vs-procedure]] on placement. The split of judgement from
 mechanism is [[harness-over-agent]]; stating a rule positively in the

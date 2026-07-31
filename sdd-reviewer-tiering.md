@@ -1,10 +1,11 @@
 ---
 name: sdd-reviewer-tiering
-description: Model-tiering rule for subagent-driven-development — reviewer one tier above implementer
+description: "reviewer one rung above the implementer in SDD; Sonnet is the floor for any reviewer or claude-code-guide query, Haiku misses subtle issues and hallucinates; Fable designs, Opus drafts, Sonnet executes, keep Fable output short and code-free"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 0debf046-b60e-4aa0-ae82-36d3ef419595
+  modified: 2026-07-31T20:09:59.286Z
 ---
 
 When running `superpowers:subagent-driven-development`, pick the reviewer's model one
@@ -28,3 +29,19 @@ implementer used, especially for tasks involving dense pattern-matching/visual j
 (rendered output, generated data, large diffs) rather than pure mechanical transcription.
 Cheap/mechanical single-file fixes can still get a same-tier or even lighter review — the
 rule matters most when the implementation itself required real judgment.
+
+**Sonnet is the floor for judgment roles, whatever the tiering says.** Haiku is
+too weak to be a reliable reviewer: it misses subtle issues, and on
+`claude-code-guide` queries it also omits useful information and occasionally
+hallucinates. Dispatch every reviewer and every guide/research query at
+`model: sonnet` or higher — never let one default to a smaller model. Haiku
+remains fine for an implementer on mechanical, isolated tasks. My human partner
+corrected both of these explicitly mid-session.
+
+**The default shape of a multi-stage task**: Fable designs, Opus drafts, Sonnet
+executes. Keep Fable turns lean and code-free — design decisions, verdicts,
+fixes, prose outlines — because cheaper agents produce code fine from a prose
+outline and Fable tokens are expensive. Plan drafting goes to an Opus subagent
+with Fable reviewing the draft; execution goes to Sonnet in a later session.
+Delegate file-producing work to subagents with self-contained prompts and
+review their output against the spec instead of redoing it.

@@ -1,6 +1,6 @@
 ---
 name: no-stderr-suppression
-description: "drop `2>/dev/null`; prefer a guard, then capture-and-match, then a justified inline redirect; never guess in place of git's message"
+description: "drop `2>/dev/null`; prefer a guard, then capture-and-match, then a redirect justified inline; never guess in place of git's message"
 metadata: 
   node_type: memory
   type: feedback

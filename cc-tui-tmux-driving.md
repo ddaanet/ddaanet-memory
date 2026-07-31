@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-24T19:24:10.273Z
+  modified: 2026-07-31T20:52:41.245Z
 ---
 
 Verified 2026-07-19 against Claude Code v2.1.215 (Opus 4.8, tmux 3.5a) by
@@ -73,4 +73,5 @@ This matters to anything that counts submissions in a transcript to confirm a
 keystroke landed: the count is inflated by one per slash command, so key such a
 check on a structural signal rather than on "how many entries appeared".
 
-Sibling of [[tmux-cc-popup]].
+Sibling gotcha for interactive overlays: `tmux display-popup` is invisible under
+iTerm2's `-CC` control mode — use `tmux new-window` instead.
