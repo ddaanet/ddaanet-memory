@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 32f44f4e-e634-4e25-b276-e948b95f86ef
-  modified: 2026-07-29T16:08:10.977Z
+  modified: 2026-07-31T18:52:08.844Z
 ---
 
 Consumer plugins vendor claude-plugin-dev via `git subtree` under
@@ -23,5 +23,4 @@ subtree pull conflicts. The single source of truth is
 **How to apply:** treat a `plugin-dev/` path as unwritable, including for a
 one-line fix that "will be released later anyway". Always pin a tag, never
 `main`, so a consumer's old tags still resolve to the content vendored at the
-time. If the consumer-side push fails afterwards, see
-[[gitlore-hook-refresh]].
+time.

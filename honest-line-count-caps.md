@@ -23,8 +23,8 @@ clean seam if over (the ghmem corpus plan split three ways on its
 local-vs-network seam). Splitting is explicitly sanctioned by such
 caps ("anything longer gets split"). Preserve all information across
 the split — duplicated front matter (constraints, shared types) is
-fine; dropped content is not. See [[github-body-no-hard-wrap]] for the
-opposite case (GitHub bodies render markdown, so no hard wrap there).
+fine; dropped content is not. GitHub bodies are the opposite case: they render
+every newline as a break, so no hard wrap there.
 
 Cramming has a **second form** beyond long lines: conveying a full
 interface as a run-on paragraph (semicolon-chained methods, comma-run

@@ -1,6 +1,6 @@
 ---
 name: examine-evidence-drift
-description: "when two co-maintained artifacts diverge, get drift direction from git history, don't assume a source of truth"
+description: "when two co-maintained artifacts diverge, get the drift direction from git history, don't assume a source of truth"
 metadata: 
   node_type: memory
   type: feedback

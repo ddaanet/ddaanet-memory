@@ -41,5 +41,4 @@ never at an intermediate state. Verify after the fact with
 `git worktree add --detach <sha>`, running the main tree's venv against
 it: `(cd <wt>/tools/ghmem && PYTHONPATH=<wt>/tools/ghmem/src
 <main>/.venv/bin/python -m pytest)`. PYTHONPATH wins over the editable
-install, so the worktree's own sources are what get imported. Related:
-[[user-owns-branching]], [[never-no-verify]].
+install, so the worktree's own sources are what get imported.

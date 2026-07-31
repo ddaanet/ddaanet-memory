@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-07-31T09:34:14.504Z
+  modified: 2026-07-31T20:53:25.888Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -82,6 +82,35 @@ half a rule), never for headroom. Retiring a fact is what actually removes
 bytes, because its triggers go with it. A topic file left
 intact is no defence — an index line that no longer carries what a recall pass
 would match on is unreachable however complete the file behind it is.
+
+**Relocating a line to an always-loaded file is not compaction.** Moving an
+untriggerable standing rule out of the index and into `CLAUDE.md` or
+`ddaanet/shared-claude.md` is right in kind — that is where a rule that must act
+without being looked up belongs — but it buys no total headroom, because the
+destination loads whole every session too. Measured: 14 relocations cut 2,200 B
+of index and added 2,692 B of `shared-claude.md`. Relocate for correctness, and
+count the destination's growth in the same breath; only the index cap falls, and
+a bullet written from scratch can easily exceed the line it replaced.
+
+**A compressed rule must keep its exceptions.** Squeezing a fact into an
+always-on bullet drops the "how to apply" section, and carve-outs live in there:
+the scope limit, the permitted case, the "does not apply to X". A rule that lost
+its exception is not shorter, it is *wrong* — and wrong in always-on context,
+where nothing routes an agent to the file that would correct it. Six of those 14
+relocations dropped something that was not procedure; the GitHub-body rule kept
+"every newline renders as `<br>`" and lost "blank lines between paragraphs and
+list items are still correct", which inverts it.
+
+**Retiring a fact inverts this audit, and "that workstream is finished" is a
+premise to verify.** For a retirement the literals are *supposed* to fall to
+zero, so the question becomes whether one falls to a single occurrence on an
+unrelated line — `400` surviving only on "400-line PR cap is soft" sends an agent
+asking about the hard per-file gate to the opposite answer. And a cluster retired
+as a closed workstream needs the closure checked against what still ships: six
+tmux facts went on the assumption that probing was done, while two skills built
+on them were live in the session's own skill list. Restoring five wrongly-retired
+facts cost 1.3 KB against a 7 KB overshoot — the budget was never what made those
+retirements wrong.
 
 **Have someone else audit the diff.** Self-review does not catch this — the
 author knows what each line means and so reads the trimmed version as adequate.

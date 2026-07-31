@@ -1,6 +1,6 @@
 ---
 name: bang-shell-shared-cwd
-description: "user `!` shell and agent Bash share cwd; a stale `cd` relocates the command — symptom: `Everything up-to-date` from inside a submodule; use `git -C <abs>`"
+description: "the user's `!` shell and the agent's Bash share one cwd, so a stale `cd` relocates the command; symptom: push says `Everything up-to-date` from inside a submodule; use `git -C <abs>`"
 metadata: 
   node_type: memory
   type: reference
@@ -11,4 +11,4 @@ The user's `!`-prefixed interactive commands and the agent's `Bash` tool run in 
 
 Bit us 2026-05-25: an earlier `cd .../gitlore/memory` (submodule) persisted; the user's `! git push origin main` then ran *inside the submodule* (already pushed → "Everything up-to-date") instead of the root repo. Looked done; the root's 15 commits were still unpushed. `git ls-remote origin refs/heads/main` exposed the truth — the remote head hadn't moved.
 
-**How to apply:** when handing a `!` command to the user (or running your own Bash), make it cwd-independent — `git -C <abs-path> …`, absolute paths, explicit `cd` at the front. Never assume the shell is where you think. Reinforces [[self-contained-directives]]. Related push-classifier facts: [[sandbox-effects]] (also: the auto-mode classifier denies pushing to the default branch `main` even after a generic "just push" — it wants explicit main-push authorization or an allow rule).
+**How to apply:** when handing a `!` command to the user (or running your own Bash), make it cwd-independent — `git -C <abs-path> …`, absolute paths, explicit `cd` at the front. Never assume the shell is where you think. Related push-classifier facts: [[sandbox-effects]] (also: the auto-mode classifier denies pushing to the default branch `main` even after a generic "just push" — it wants explicit main-push authorization or an allow rule).

@@ -1,6 +1,6 @@
 ---
 name: git-protocol-file-allow
-description: "`fatal: transport 'file' not allowed`; child *clone* reads it — repo config can't fix it; use `git -c` or `GIT_CONFIG_COUNT/KEY_0/VALUE_0`"
+description: "`fatal: transport 'file' not allowed`; the child *clone* reads it, so repo config can't fix it — use `git -c` or `GIT_CONFIG_COUNT/KEY_0/VALUE_0`"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: whitespace-safety
-description: "a whitespace-unsafe parse is never a nit; test against a spaced input first; default to NUL-delimited forms"
+description: "a whitespace-unsafe parse is never a nit; test against a spaced input before ranking severity; default to NUL-delimited forms"
 metadata: 
   node_type: memory
   type: feedback

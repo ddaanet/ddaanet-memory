@@ -1,17 +1,23 @@
 ---
 name: hook-input-schema
-description: "base stdin=`session_id`/`transcript_path`/`cwd`+optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged`=observational; `WorktreeCreate` gives a path, doesn't gate; `PostToolBatch` fires per batch (twice/turn normal)"
+description: "base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch — twice in one turn is normal"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 7a891994-6ca1-4ea3-a503-1259d89a76e2
-  modified: 2026-07-30T15:18:10.054Z
+  modified: 2026-07-31T19:18:21.249Z
 ---
 
 Verified against the Claude Code bundle (zod schemas) — first on 2.1.168,
-re-verified on **2.1.219, 2026-07-24**. The base hook input is composed via
-`.and(...)` into **every** hook event, so SessionStart, PreToolUse, PostToolUse,
-UserPromptSubmit, etc. all carry it:
+re-verified on **2.1.219, 2026-07-24**. This is the complement of what
+`plugin-dev:hook-development` documents, not a copy of it: that skill covers
+`session_id`/`transcript_path`/`cwd`/`permission_mode` and the classic events,
+and carries none of the optional base fields, no `SessionStart` `source`
+values, and none of the extended event union below. It ships in a marketplace
+plugin, so the gap cannot be closed at its source.
+
+The base hook input is composed via `.and(...)` into **every** hook event, so
+SessionStart, PreToolUse, PostToolUse, UserPromptSubmit, etc. all carry it:
 
 ```
 { session_id, transcript_path, cwd,
@@ -54,15 +60,13 @@ hook ran, when every hook exited non-zero, or when none returned a path. A hook
 refuses by failing — success is `exit status === 0`; `decision:"block"` plays no
 part.
 
-**`/clear` mints a new session, and `SessionStart(clear)` reports it.** Measured
-in a tmux pane 2026-07-30 with a hook logging the raw payload: the startup
-session was one id, the `clear` payload carried a different one, and a second
-`<session-id>.jsonl` appeared beside the first under the project directory. Its
-`transcript_path` is the **new** session's, and that file already exists when
-the hook runs — so a `SessionStart(clear)` hook can baseline a transcript count
-and confirm a prompt submitted into the fresh session, exactly as a
-`SessionStart(compact)` hook can. (That payload carried no `model`, which
-`startup` did; the field is optional in the base schema, so read it defensively.)
+**A `SessionStart(clear)` payload describes the new session, and its transcript
+already exists when the hook runs.** `transcript_path` names the post-`/clear`
+session's file, on disk by hook time — so a `clear` hook can baseline a
+transcript count and confirm a prompt submitted into the fresh session, exactly
+as a `SessionStart(compact)` hook can. That payload carries no `model` where
+`startup` does; the field is optional in the base schema, so read it
+defensively (2.1.219).
 
 **How to apply:** when a hook needs the project/worktree root, derive it from the
 on-disk `.git` linkage starting at `.cwd` — don't expect a root field in the

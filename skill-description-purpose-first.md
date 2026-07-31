@@ -1,6 +1,6 @@
 ---
 name: skill-description-purpose-first
-description: "skill `description:` frontmatter is TUI-visible; lead with what it does, then triggers/\"Use when\", then exclusions; never a bare trigger list"
+description: "skill `description:` frontmatter is TUI-visible; lead with what it does, then triggers/\"Use when\", then exclusions; never a bare trigger list; drop stale implementation-detail tails"
 metadata: 
   node_type: memory
   type: feedback
@@ -31,4 +31,4 @@ skills in a plugin, not just the headline one. See [[claude-plugin-dev]].
 Model guidance does not belong in a skill body either. Which model runs the
 work is an agent-frontmatter concern, so a skill that says "run this on Sonnet"
 is stating something it cannot enforce — put it on the agent definition
-instead. See [[review-model-selection]].
+instead. See [[sdd-reviewer-tiering]].

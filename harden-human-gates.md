@@ -1,6 +1,6 @@
 ---
 name: harden-human-gates
-description: "apply word-boundary/escape checks where a human types free-text, not on channels whose producer you control"
+description: "apply word-boundary/escape recognition where a human types free-text, not on channels whose producer you control"
 metadata: 
   node_type: memory
   type: feedback

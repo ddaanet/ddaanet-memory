@@ -37,5 +37,4 @@ workflow. The compaction summary paraphrases; git and the ledger do not.
 
 **How to apply:** keep the ledger current at every task seam and
 especially before compaction; recover dead subagents from git + staged
-state, never by re-running completed work. See [[sdd-reviewer-tiering]],
-[[no-volatile-git-state-in-memory]].
+state, never by re-running completed work. See [[sdd-reviewer-tiering]].

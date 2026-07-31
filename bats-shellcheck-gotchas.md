@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-31T18:09:32.791Z
+  modified: 2026-07-31T18:59:31.229Z
 ---
 
 Independent mechanical facts sharing one trigger surface: writing or reviewing
@@ -60,7 +60,7 @@ the function were later deleted or renamed.
 (`[ "$status" -eq 0 ]`) — that is the one that pins existence and behavior.
 Treat negative cases as refinements around it, not as coverage on their own.
 Same trap applies to any `run`-based check keyed on non-zero exit, including
-`run !` forms. General principle: [[mutation-check-negatives]].
+`run !` forms. General principle: [[tests-must-go-red]].
 
 ## `run` is a subshell, so a function's out-params never reach the test
 
@@ -101,10 +101,9 @@ empty value; keep the colon form only where empty and unset genuinely mean the
 same thing. The same asymmetry bites `${VAR:-}` fallbacks in a script under
 test whenever the empty value is the case being covered.
 
-Found by mutation, not by review: deleting the guard left the test green.
-[[tests-must-go-red]] is what catches it —
-[[mutation-check-negatives]] is the general rule, and this is the
-variant where the vacuity lives in the *fixture* rather than the assertion.
+Review did not catch it: deleting the guard left the test green.
+[[tests-must-go-red]] is the general rule, and this is the variant where the
+vacuity lives in the *fixture* rather than the assertion.
 
 ## `grep -qF "$multiline"` matches any ONE line of the pattern
 

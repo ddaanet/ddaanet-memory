@@ -1,6 +1,6 @@
 ---
 name: perf-fix-check-parallelism-assumption
-description: "before proposing --jobs/-P/-j, confirm spare cores exist; otherwise cut per-unit work (cache/reuse) first"
+description: "before proposing --jobs/-P/-j as the headline speed fix, confirm the target reliably has spare cores; otherwise cut per-unit work (cache/reuse) first"
 metadata: 
   node_type: memory
   type: feedback
@@ -18,8 +18,8 @@ per-repetition cost itself (cache, template, memoize the repeated work).
 precommit` runtime; corrected — "parallelism is nice, but it's not enough
 on its own" (David, 2026-07-28). The correction was additive (do both), not
 a rejection of parallelism in favor of caching. (The dev droplet is a
-virtual server David resizes between 1 and 2 vCPUs to save cost when idle —
-see [[droplet-cpu-variability]] — so a fix that only pays
+virtual server David resizes between 1 and 2 vCPUs to save cost when idle,
+so a fix that only pays
 off at 2 vCPUs loses value whenever it's scaled down, but that's a reason
 to also cut per-unit cost, not a reason to skip the parallelism win.)
 
