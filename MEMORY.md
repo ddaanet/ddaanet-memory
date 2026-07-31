@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-30T19:57:21.824Z
+  modified: 2026-07-31T15:47:43.412Z
 ---
 
 # ddaanet tier index
@@ -105,7 +105,7 @@ the project's own memory store.
 - [gitlore tier merge direction](reference_gitlore_tier_merge_direction.md) — a tier fast-forward is not a merge: root keeps its old wording, the resolver still says `state is healthy`, and the next edit to root makes composition revert every incoming line — symptom: a one-line edit diffs dozens of files vs `origin/live`; apply upstream tier lines UP into root, delete from carrier before root, correct wording only after propagating
 - [tier routing: plugin-shaped litmus test](feedback_tier_routing_plugin_shaped.md) — route an operational gotcha to ddaanet (not project memory) when its mechanism depends on the repo being plugin-shaped, not on this repo's own content
 - [a correction applies to what it names](feedback_correction_scope.md) — don't demolish the general claim the corrected instance belonged to; quote the scope back, ask if the general claim survives, and say what you are NOT changing
-- [a memory is not another owner's job](feedback_memory_not_other_owners_job.md) — what a skill, design doc, code comment or CLAUDE.md already owns is a category error in memory; delete it, accuracy is not the test, and ask what the new learning is once the anecdote is stripped
+- [a memory is not another owner's job](feedback_memory_not_other_owners_job.md) — what a skill, design doc, code comment or CLAUDE.md already owns is a category error in memory; accuracy is not the test, ask what the new learning is once the anecdote is stripped, and write from the future reader's vantage — state what is, not what changed
 - [classifier denies self-config writes](feedback_classifier_denied_self_config.md) — auto-mode refuses agent writes that configure/audit the agent: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, same via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it and retrying through another tool reads as tunneling — hand it to the user via `!` or to a hook
 - [denial cost, not denial possibility](feedback_denial_cost_not_possibility.md) — hook path when a denial strands something unrepeatable (an approved summary); direct agent call when it costs one turn
 - [a guard reveals a singleton](feedback_guard_reveals_singleton.md) — a finding ending in "add a mutual check" means a singleton is modelled as N *named* instances; move the identity into the data, count what else duplicates per instance, and the guard disappears
