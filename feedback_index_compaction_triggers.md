@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-07-30T18:57:10.698Z
+  modified: 2026-07-31T09:34:14.504Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -73,11 +73,13 @@ A hook naming a count rather than a thing ("six-section doc") is unmatchable.
 retiring reconstructable ones** — never stripping trigger tokens from surviving
 lines. Merging buys less than it looks: index cost is trigger surface, and a
 merged line must still carry both entries' distinctive literals or it
-misroutes, so only the shared framing prose collapses. Measured: merging two
-overlapping pairs on a 23.8KB index cut 130 bytes, and restoring one literal
-the merge had dropped plus adding two live ones gave 77 back — a net 53 bytes,
-0.2%. Retiring a fact is what actually removes bytes, because its triggers go
-with it. A topic file left
+misroutes, so only the shared framing prose collapses. Measured: three merges
+collapsing 103 entries to 100 on a 23.8KB index netted 39 bytes — 0.16% — and
+one of the three left the index *larger* than it found it, because the
+surviving line had to carry both trigger sets plus the connective prose joining
+them. Merge for routing (two entries competing on one trigger hand an agent
+half a rule), never for headroom. Retiring a fact is what actually removes
+bytes, because its triggers go with it. A topic file left
 intact is no defence — an index line that no longer carries what a recall pass
 would match on is unreachable however complete the file behind it is.
 
