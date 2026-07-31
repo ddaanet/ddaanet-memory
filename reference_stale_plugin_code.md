@@ -1,11 +1,11 @@
 ---
 name: reference-stale-plugin-code
-description: "running code ≠ what you edited: `/plugin update` no-ops if version unchanged; skill bodies need `/reload-plugins`; hooks.json freezes at session start (settings.local.json doesn't) — restart"
+description: "running code ≠ what you edited: `/plugin update` no-ops if version unchanged; skill bodies need `/reload-plugins`; hooks.json freezes at session start (settings.local.json doesn't) — exit + `claude -c`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-24T19:21:20.941Z
+  modified: 2026-07-31T12:19:15.950Z
 ---
 
 One symptom, three causes: the plugin code actually running is not the code you
@@ -25,6 +25,14 @@ particular are cached at session start.
 
 **Fix:** ship via a **version bump**, not just a push. To develop against current
 `main`, load with `--plugin-dir` instead of the cache.
+
+**Installs are pinned per scope, not globally.**
+`~/.claude/plugins/installed_plugins.json` holds one entry per (plugin, scope):
+a `project` entry per `projectPath`, plus at most one `user` entry, each with its
+own `installPath` under `cache/<owner>/<plugin>/<version>/`. Repos routinely sit
+at different versions (2026-07-31: `home` at 0.4.3, `gitmoji` at 0.3.0, user
+scope at 0.4.4), so the newest directory in the cache is not what a given repo
+loads — read the record, not the listing.
 
 Signature — discovered closing **Plan 04 Step 6** (2026-05-24): a marketplace
 session was about to "verify" the **memory-merger** two-turn flow, but still had
@@ -111,5 +119,24 @@ the user's explicit go-ahead.
 
 Not verified: whether the *old* registration still fires after the edit. A no-op
 and a non-call look identical from outside.
+
+## `claude -c` is a full restart, and keeps the conversation
+
+Everything frozen at process start is re-read on a resume. Verified 2026-07-31 by
+a two-run `--plugin-dir` probe whose `SessionStart` hook logged its root and the
+payload's `source`, with `hooks.json` rewritten between the runs to name a
+different script: `claude -c` fired `SessionStart` with `source=resume` and ran
+the **new** command, under the **same** `session_id`. The session transcript
+records no plugin root or version anywhere, so a resume has no stale root to
+restore — `CLAUDE_PLUGIN_ROOT` is resolved afresh from `installed_plugins.json`,
+and every hook that writes from it (gitlore's five `gitlore.*` git-config keys,
+its wrappers, its memory gate) is re-pinned exactly as on a cold start.
+
+So the remedy for **any** frozen-at-start staleness — hook event registration,
+skill bodies, agent definitions, a version-pinned `CLAUDE_PLUGIN_ROOT`, anything
+derived from it — is **exit and relaunch with `claude -c`**, not a cold session
+and not `/plugin` + `/reload-plugins`, neither of which re-fires `SessionStart`.
+`-c` takes the most recent conversation for that cwd; `--resume <id>` when other
+sessions have run there since.
 
 See [[reference-hook-output-channels]].

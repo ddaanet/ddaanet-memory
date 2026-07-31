@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: de3d2151-a51d-4e13-8bd4-cee0e4c48775
-  modified: 2026-07-30T16:14:27.263Z
+  modified: 2026-07-31T12:27:19.736Z
 ---
 
 A memory states what is true, addressed to a reader who was not there. The
@@ -75,10 +75,6 @@ owner for the load-bearing terms rather than trusting a pointer that says it is
 covered. If nothing survives the question, there was no memory to write — an
 empty flush is the normal case. Same test as [[feedback_no_speculative_rules]]
 — no incident, no entry — applied to ownership rather than evidence.
-
-Write and Edit reach the memory directory normally, but the Bash sandbox sees
-it as a read-only filesystem: removing a memory file needs
-`dangerouslyDisableSandbox`, or `rm` fails with "Read-only file system".
 
 Related: [[feedback_design_doc_writing]] states the present-tense rule and the
 future-reader vantage as they apply to docs;
