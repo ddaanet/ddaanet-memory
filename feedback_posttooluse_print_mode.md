@@ -1,6 +1,6 @@
 ---
 name: feedback_posttooluse_print_mode
-description: "`--print` fires the whole hook set (SessionStart/PreToolUse/PostToolUse/PostToolBatch); `hookSpecificOutput.additionalContext` injects; both `--print --resume` and SDK `query()` re-prime every turn — $0.379/14.4s vs $0.425/24.3s per two-turn trial; pick on dependency footprint, not context reuse"
+description: "under --print the whole hook set fires — SessionStart/PreToolUse/PostToolUse/PostToolBatch — and wrapped `hookSpecificOutput.additionalContext` injects; `--print --resume` does scripted multi-turn; SDK `query()` is stateless, so both harnesses re-prime every turn; pick on dependency footprint, not context reuse (per-trial cost/latency in the file)"
 metadata: 
   node_type: memory
   type: feedback

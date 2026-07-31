@@ -1,11 +1,11 @@
 ---
 name: feedback_memory_writing
-description: "state what is true for a reader who wasn't there; cut the anecdote, the tense, the pending framing; \"when using <skill>, do X\" or a project memory logging design decisions the living design doc owns is a category error — delete it, accuracy is not the test; ask what the new learning is"
+description: "state what is true for a reader who wasn't there, not what changed; cut the anecdote, the tense, the pending framing, and the deictic words (now/here/currently/this session) — name the condition, version-stamp what could age; \"when using <skill>, do X\" or a project memory logging design decisions the living design doc owns is a category error — delete it, accuracy is not the test; ask what the new learning is"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: de3d2151-a51d-4e13-8bd4-cee0e4c48775
-  modified: 2026-07-31T12:27:19.736Z
+  modified: 2026-07-31T17:31:02.615Z
 ---
 
 A memory states what is true, addressed to a reader who was not there. The
@@ -29,6 +29,17 @@ habits make one worse than useless:
   comment, the code itself, CLAUDE.md, or a change to a skill, put it there.
   A memory duplicating what the repo already records competes with the
   source and loses.
+
+**Write from the reader's vantage, not the writer's.** The reader is a future
+session with no access to the one that wrote the fact, arriving at an unknown
+moment for an unrelated reason. So the body states what *is*, never what used
+to be or what just changed — a fact phrased as a delta is unreadable once the
+before-state is gone. Deictic words give the vantage away and none of them
+survive the trip: *now*, *here*, *today*, *currently*, *recently*, *this
+session*, *fields seen*, *needs a fresh session*. Each is anchored to a moment
+the reader is not in. Name the condition instead of the moment — "if no
+statusline is configured" rather than "here it writes to X" — and version-stamp
+an observation that could age (`CC 2.1.220`) rather than calling it recent.
 
 ## What another artifact already owns
 
