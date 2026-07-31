@@ -1,11 +1,11 @@
 ---
 name: feedback_mutation_check_negatives
-description: "a \"stays silent\" negative, or a positive match on a shared channel, passes vacuously; mutate the guard and watch it go red first"
+description: "a \"stays silent\" negative, or a positive match on a shared channel, passes vacuously; hold trigger strings in test-side globals and pair each negative with a positive over the same fixture — positive red = path/wording drift, negative red = guard gone; mutate the guard only as fallback"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: a133f610-ff3a-43b5-8aca-054482eb372f
-  modified: 2026-07-26T12:12:09.565Z
+  modified: 2026-07-31T09:42:17.489Z
 ---
 
 A test that asserts something *does not* happen passes before the feature
@@ -20,23 +20,45 @@ with the new message deleted, because some other notice names that path too.
 Match a phrase unique to the message under test, not an identifier the
 channel carries for other reasons.
 
+**Structure negatives so they cannot go vacuous.** Two failure modes, two
+structural answers:
+
+- *String staleness* — the negative asserts the absence of wording production
+  no longer emits. Hold every trigger string in a global defined in the test
+  helper, and assert it from a positive test as well as the negative. A rename
+  in production turns the positive red, the global is corrected once, and the
+  negative moves with it. Define the literal test-side: sourcing it from the
+  production lib moves both sides together and the positive stops pinning the
+  wording.
+- *Path staleness* — the negative passes because its fixture never reaches the
+  guard at all. Pair each negative with a positive over the **same fixture**,
+  differing only in the guard's trigger input. Positive red means the path or
+  the wording drifted; negative red means the guard was deleted or widened.
+
+Few grouped positives license many negatives: one positive over a fixture pins
+the strings and proves the path, and each negative flips a single condition
+against it.
+
 **Why:** Writing the negative case first and seeing it green feels like TDD
 red-green, but the red never happened. The suite then reports coverage of a
 branch no test can distinguish from its absence, which is the same failure
 [[feedback_test_the_invocation_path]] names one level up — there, a suite that
 never ran; here, an assertion that cannot fail.
 
-**How to apply:** After the feature is green, mutate the specific guard the
-assertion watches — widen the condition it excludes, delete the early return,
-reorder the call past its bail, drop the one message the test reads — re-run,
-and confirm *that* test goes red. Restore and re-run. One targeted mutation
-per assertion, not a general mutation sweep; the point is to name which line
-the test is watching. Where a feature writes to two channels, mutate each
-independently: dropping one must fail its own assertion and leave the other's
-green, or the two are not separately pinned.
-Cheap enough to do inline (copy the file, patch, run, restore) and it belongs
-in the same pass as writing the test, not a later audit.
+**How to apply:** default to the paired structure above — it costs no separate
+pass and keeps working as the code moves. Fall back to targeted mutation where
+a negative cannot be paired with a positive that proves its path: mutate the
+specific guard the assertion watches — widen the condition it excludes, delete
+the early return, reorder the call past its bail, drop the one message the test
+reads — re-run, and confirm *that* test goes red. Restore and re-run. One
+targeted mutation per assertion, not a general mutation sweep; the point is to
+name which line the test is watching. Where a feature writes to two channels,
+pin each independently: dropping one must fail its own assertion and leave the
+other's green, or the two are not separately pinned. Mutation is cheap enough
+to do inline (copy the file, patch, run, restore) and belongs in the same pass
+as writing the test, not a later audit.
 
 Related: [[reference-bats-shellcheck-gotchas]] — the specific bats mechanism
 (`run missing_function` exits 127, satisfying `-ne 0` before the code exists)
-that makes this failure mode concrete in that framework.
+that makes this failure mode concrete in that framework;
+[[feedback_tests_must_go_red]] for the general rule this specialises.

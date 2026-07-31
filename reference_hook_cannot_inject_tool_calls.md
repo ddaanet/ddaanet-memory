@@ -1,11 +1,11 @@
 ---
 name: reference_hook_cannot_inject_tool_calls
-description: "no `injectToolCall`/`forceRead`/`requestTool`/`forceToolUse` exists; hooks only block, `updatedInput`, `updatedToolOutput`, `additionalContext` — to show a file, emit its bytes"
+description: "no `injectToolCall`/`forceRead`/`requestTool`/`forceToolUse` exists; hooks only block, `updatedInput`, `updatedToolOutput`, `additionalContext` — to show a file, emit its bytes; but a 15.6KB `additionalContext` is persisted to a file with only ~2KB inlined, and injected text never primes the file-read ledger, so `Edit` still needs a `Read` — emit Read directives when the file must be edited"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 9eca9443-3081-46d5-a1d8-7f881c0f4d41
-  modified: 2026-07-24T17:52:26.028Z
+  modified: 2026-07-31T09:47:36.648Z
 ---
 
 No Claude Code hook can inject a `tool_use`, force a `Read`, or enqueue a tool
@@ -31,6 +31,19 @@ selection stays in a script rather than in agent judgement
 as well as `PostToolUse` and arrives even when the tool call fails
 ([[reference-hook-output-channels]]), so a deny-reason and the injected
 bodies can land in the same turn.
+
+**Two limits make emitted bytes the wrong choice when the agent must *edit*
+what it is shown.** A large `additionalContext` is not delivered whole: at
+15.6KB the harness wrote it to a `tool-results/…-additionalContext.txt` file
+and inlined only a ~2KB preview, so a hook emitting several file bodies
+silently delivers a fraction of them unless the agent notices the pointer and
+reads that file. And injected text does not register in the file-read ledger —
+the ledger is keyed off actual `Read` calls — so `Edit` on a file whose bytes
+arrived by `additionalContext` still fails until the agent Reads it, paying for
+the content twice. There is no supported way to prime the ledger. Where the
+recalled file is going to be edited, emit a directive naming the exact `Read`
+calls instead of the bytes: two round trips, but no truncation and the file
+lands editable.
 
 The complement — *obliging* the agent to reach the checkpoint at all — is a
 separate mechanism: a `PreToolUse` deny on the first durable write of an
