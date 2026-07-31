@@ -1,11 +1,11 @@
 ---
 name: feedback_memory_not_other_owners_job
-description: "what a skill, design doc, code comment or CLAUDE.md already owns is a category error in memory; delete it, accuracy is not the test, and ask what the new learning is once the anecdote is stripped"
+description: "what a skill, design doc, code comment or CLAUDE.md already owns is a category error in memory; accuracy is not the test, ask what the new learning is once the anecdote is stripped, and write from the future reader's vantage — state what is, not what changed"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: b2e74378-5da1-458d-8e13-01ab5f03eebe
-  modified: 2026-07-29T17:13:02.716Z
+  modified: 2026-07-31T15:38:39.598Z
 ---
 
 A memory that repeats what another artifact already owns is in the wrong place.
@@ -35,6 +35,17 @@ learning?** Strip the incident and see what is left. A mechanism that holds
 wherever it is met is the memory; the story of meeting it is not, however
 instructive it felt at the time. If nothing generalizes, the fix already
 landed in the code, the doc or the skill, and there is nothing to write.
+
+**Write from the reader's vantage, not the writer's.** The reader is a future
+session with no access to the one that wrote the fact, arriving at an unknown
+moment for an unrelated reason. So the body states what *is*, never what used
+to be or what just changed — a fact phrased as a delta is unreadable once the
+before-state is gone. Deictic words give the vantage away and none of them
+survive the trip: *now*, *here*, *today*, *currently*, *recently*, *this
+session*, *fields seen*, *needs a fresh session*. Each is anchored to a moment
+the reader is not in. Name the condition instead of the moment — "if no
+statusline is configured" rather than "here it writes to X" — and version-stamp
+an observation that could age (`CC 2.1.220`) rather than calling it recent.
 
 **Why:** David, 2026-07-26. Two gitlore memories told the agent to write
 `.claude/handoff*.md` only through the handoff skill — "those two memories are
