@@ -1,20 +1,21 @@
 ---
 name: reference-bats-shellcheck-gotchas
-description: "SC2314 bare `! cmd` asserts nothing (`run !`); `run missing_fn` exits 127 (vacuous negatives); `grep -qF` matches any ONE line of a multi-line pattern; @test runs under errexit; shellcheck lints .bats; `# shellcheck` = directive"
+description: "SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; a helper's `${n:-default}` erases the empty-arg case; `grep -qF` matches any ONE line of a multi-line pattern; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-29T19:08:13.048Z
+  modified: 2026-07-31T17:31:08.948Z
 ---
 
 Independent mechanical facts sharing one trigger surface: writing or reviewing
 bats tests and shellchecking them.
 
-Three of them are ways a bats test can look green while testing nothing: a bare
+Four of them are ways a bats test can look green while testing nothing: a bare
 `!` asserts nothing, a `run` of a missing function exits 127 so a negative
-assertion passes vacuously, and `grep -qF` over a multi-line pattern asserts
-only that some one line of it is present.
+assertion passes vacuously, `grep -qF` over a multi-line pattern asserts only
+that some one line of it is present, and a test helper's `${n:-default}`
+substitutes the default for the empty argument the test meant to pass.
 
 The errexit fact points the **opposite** way and exists to refute the
 "masked failures" reading — a failing mid-body assertion *aborts* the test
@@ -60,6 +61,50 @@ the function were later deleted or renamed.
 Treat negative cases as refinements around it, not as coverage on their own.
 Same trap applies to any `run`-based check keyed on non-zero exit, including
 `run !` forms. General principle: [[feedback_mutation_check_negatives]].
+
+## `run` is a subshell, so a function's out-params never reach the test
+
+`run` captures status and output by running the command in a **subshell**. Any
+variable the callee sets for its caller — the shell idiom for returning
+structured data, since a function's own exit status is one integer — is gone
+by the time the assertions run:
+
+```bash
+run parse_the_file "$f"      # sets PARSE_ERR for its caller
+[ "$status" -ne 0 ]          # fine
+[[ "$PARSE_ERR" == *"..."* ]]  # empty: the assignment died with the subshell
+```
+
+The symptom is specific and easy to misread: the status assertion passes and
+only the message assertion fails, so it looks like the *message* is wrong
+rather than unreachable. Two ways out, and a suite usually wants both — have
+a test helper print what the callee set and return its status, so `run helper`
+gives `$output` for the message; and call the function **bare** (not under
+`run`) in the tests that need the variables it populates, where bats' errexit
+makes a non-zero return the failure.
+
+Observed 2026-07-30 on a validator that reported through a `DRIVE_ERR`
+variable: eight shape-matrix tests asserted on `$output` and all eight failed
+with an empty one.
+
+## A helper's `${n:-default}` erases the empty-argument case
+
+A test helper that defaults its optional parameters with `${2:-$DEFAULT}`
+cannot be passed an empty string: the colon form substitutes the default for
+unset **and** empty alike, so `run_thing "$dir" ""` — written to exercise the
+missing-identifier branch — silently runs the populated case instead. The test
+then asserts the guard's effect against input that never reached it, and passes
+whether the guard exists or not.
+
+Use `${2-$DEFAULT}` (no colon) in any helper whose parameter has a meaningful
+empty value; keep the colon form only where empty and unset genuinely mean the
+same thing. The same asymmetry bites `${VAR:-}` fallbacks in a script under
+test whenever the empty value is the case being covered.
+
+Found by mutation, not by review: deleting the guard left the test green.
+[[feedback_tests_must_go_red]] is what catches it —
+[[feedback_mutation_check_negatives]] is the general rule, and this is the
+variant where the vacuity lives in the *fixture* rather than the assertion.
 
 ## `grep -qF "$multiline"` matches any ONE line of the pattern
 
