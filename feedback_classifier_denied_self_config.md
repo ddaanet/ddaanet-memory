@@ -1,6 +1,6 @@
 ---
 name: feedback_classifier_denied_self_config
-description: "auto-mode refuses agent writes that configure/audit itself: `enabledPlugins`, a gitdir file a hook consumes (heredoc→*Logging/Audit Tampering*, Write→*Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it, another tool reads as tunneling — hand to the user via `!` or a hook; that list is INCIDENTAL writes only, a user-named action is unobserved not known-denied"
+description: "auto-mode refuses agent writes that configure/audit the agent: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, same via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push; approval doesn't lift it and retrying through another tool reads as tunneling — hand it to the user via `!` or to a hook; that list is INCIDENTAL writes only, a user-named action is unobserved not known-denied"
 metadata: 
   node_type: memory
   type: feedback

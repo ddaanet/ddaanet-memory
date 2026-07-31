@@ -1,6 +1,6 @@
 ---
 name: reference_hook_cannot_inject_tool_calls
-description: "no `injectToolCall`/`forceRead`/`requestTool`/`forceToolUse` exists; hooks only block, `updatedInput`, `updatedToolOutput`, `additionalContext` — to show a file, emit its bytes; but a 15.6KB `additionalContext` is persisted to a file with only ~2KB inlined, and injected text never primes the file-read ledger, so `Edit` still needs a `Read` — emit Read directives when the file must be edited"
+description: "no `injectToolCall`/`forceRead`/`requestTool`/`forceToolUse` field exists; a hook can only block, `updatedInput`, `updatedToolOutput`, `additionalContext` — to make the agent see a file, emit its bytes; but a 15.6KB `additionalContext` is persisted to a file with only ~2KB inlined, and injected text never primes the file-read ledger, so `Edit` still needs a `Read` — emit Read directives when the file must be edited"
 metadata: 
   node_type: memory
   type: reference
