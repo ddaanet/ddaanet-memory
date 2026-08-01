@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-31T18:56:45.123Z
+  modified: 2026-08-01T13:46:36.729Z
 ---
 
 # ddaanet tier index
@@ -66,7 +66,7 @@ the project's own memory store.
 - [Reconstructable is two categories](reconstructable-two-categories.md) — by-harness vs by-model-inference from a paraphrase
 - [Imperative-form rule scope](imperative-form-scope.md) — the skill-development rule targets instruction subjects ("You should X"), not every pronoun; `your post-compaction self` is a deliberate keep
 - [bundle memory with source](bundle-memory-with-source.md) — which commit a memory update rides — not unrelated pending work
-- [Tests must go red](tests-must-go-red.md) — what does not count as a red (an error, green-at-first); a "stays silent" negative passing vacuously, the negative/positive pairing over one fixture, and testing a wait-then-proceed gate
+- [Tests must go red](tests-must-go-red.md) — what does not count as a red (an error, green-at-first); a "stays silent" negative passing vacuously, the negative/positive pairing over one fixture, testing a wait-then-proceed gate; mutate each guard — a pairing claim isn't a pairing — and mutate to the plausible wrong implementation, not to nothing
 - [directive states acts only](directive-states-acts.md) — writing an agent-facing or script-emitted directive: what to cut from it
 - [gitlore memory commit routing](gitlore-memory-commit-routing.md) — when a memory commit stands alone vs rides the parent (the TRIGGER file); withholding it does NOT fix history; dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes, so check `origin/live`
 - [no speculative rules or anti-patterns](no-speculative-rules.md) — whether a rule or an anti-pattern has earned an entry

@@ -5,11 +5,12 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: ce981dd4-19be-4e5d-baa0-0c4f080d1af5
+  modified: 2026-07-31T17:37:29.252Z
 ---
 
 When presenting a large planning or design document for user review, do NOT just commit it and ask "look this over." The user's reaction: "documents are too large for eyeballs" — large docs hide errors in volume, and reviewers (human or LLM) skim instead of inspect.
 
-**Why:** Plan 04 (`docs/plans/2026-05-22-04-marketplace-install.md`) was ~680 lines. The user's first revdiff pass surfaced exactly one annotation (a redundant test layer). They later said they "should have looked for changes and did not" — meaning the volume defeated the review.
+**Why:** Plan 04 (gitlore `plans/2026-05-22-04-marketplace-install.md`) was ~680 lines. The user's first revdiff pass surfaced exactly one annotation (a redundant test layer). They later said they "should have looked for changes and did not" — meaning the volume defeated the review.
 
 **How to apply:**
 - Before asking the user to review a long doc, do a fresh-eyes pass yourself and flag specific high-risk sections (concrete shell snippets, cross-repo paths, file lists, anything that requires checking against the world rather than reading prose).
