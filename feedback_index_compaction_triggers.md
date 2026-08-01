@@ -1,11 +1,11 @@
 ---
 name: feedback_index_compaction_triggers
-description: "an index line's ONLY job is read-or-skip routing — want it always in context, use CLAUDE.md/~/.claude/CLAUDE.md; never shorten one to hit a byte target — trimming keeps prescriptions and cuts symptoms/identifiers; gitlore's 25600-byte budget and its 17.1KB compaction prompt are advisory, CC's 24.4KB loader cap is the gate and silently truncates the tail (project lines first); count each literal index-wide before and after — falling to zero is unreachable, falling to one on another line MISROUTES; have someone else audit the diff"
+description: "an index line's ONLY job is read-or-skip routing — want it always in context, use CLAUDE.md/~/.claude/CLAUDE.md; never shorten one to hit a byte target — trimming keeps prescriptions and cuts symptoms/identifiers; gitlore's 25600-byte budget and its 17.1KB compaction prompt are advisory, CC's 24.4KB loader cap is the gate and silently truncates the tail (project lines first); count each literal index-wide before and after — falling to zero is unreachable, falling to one on another line MISROUTES; over budget is NEVER a reason to under-trigger a new/updated fact — pressure means retire, not ship an unroutable line; have someone else audit the diff"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-07-31T09:34:14.504Z
+  modified: 2026-08-01T07:49:14.874Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -82,6 +82,19 @@ half a rule), never for headroom. Retiring a fact is what actually removes
 bytes, because its triggers go with it. A topic file left
 intact is no defence — an index line that no longer carries what a recall pass
 would match on is unreachable however complete the file behind it is.
+
+**Being over budget is never a reason to under-trigger a new or updated fact.**
+The pressure argues for retiring facts, not for shipping a line that cannot
+route to the one just written. A fact whose index line omits the literal a
+recall pass would match on is already lost, so trading its triggers for bytes
+buys headroom by destroying exactly what the headroom is for — and it does it
+silently, since the file is there and looks complete. Write the triggers the
+fact needs; if the index is over the cap, that is the retirement decision
+coming due, and it is a separate act with its own judgement. Observed
+2026-08-01: an addition to the hook-schema line was self-reverted on the
+reasoning that 100 bytes would push 100 bytes off the invisible tail. Correct
+about the arithmetic, wrong about which side pays — the reverted line was the
+only route to a fact written that same session.
 
 **Have someone else audit the diff.** Self-review does not catch this — the
 author knows what each line means and so reads the trimmed version as adequate.
