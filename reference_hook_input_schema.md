@@ -1,11 +1,11 @@
 ---
 name: reference-hook-input-schema
-description: "base stdin=`session_id`/`transcript_path`/`cwd`+optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged`=observational; `WorktreeCreate` gives a path, doesn't gate; `PostToolBatch` fires per batch (twice/turn normal)"
+description: "base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch — twice in one turn is normal; NO event carries token counts (context size comes from transcript `usage`); `additionalContext` lands mid-turn, `continue:false` halts one"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 7a891994-6ca1-4ea3-a503-1259d89a76e2
-  modified: 2026-07-30T15:18:10.054Z
+  modified: 2026-08-01T06:11:55.896Z
 ---
 
 Verified against the Claude Code bundle (zod schemas) — first on 2.1.168,
@@ -40,6 +40,28 @@ message fired the batch hooks with that message's calls, and the very next
 message fired them again. A hook that stashes a pre-state at `PreToolUse` and
 consumes it at `PostToolBatch` therefore has a *per-batch* baseline — treating it
 as per-turn overstates how long a stash lives.
+
+**No hook event carries token counts**, and `PostToolBatch` is the only event
+that fires *inside* a turn. Verified 2026-07-31 on 2.1.220 by nested `claude -p`
+runs. There is no context percentage or window size on any payload, so context
+size comes from the transcript: on the newest entry carrying `.message.usage`,
+`input_tokens + cache_creation_input_tokens + cache_read_input_tokens` is the
+prompt sent for that call (accurate after a compaction). Take the *last* such
+entry rather than summing — one API response emits several JSONL entries sharing
+a `message.id`, each repeating the same `usage`. Inside a subagent
+`transcript_path` points at the **parent**; the subagent's own usage is at
+`<session-dir>/subagents/agent-<agent_id>.jsonl`, so a naive read measures the
+wrong context. `PostToolBatch` stdin also carries an undocumented `tool_calls[]`
+(`tool_name`/`tool_input`/`tool_use_id`/`tool_response`, already resolved) —
+absent from the binary's own schema doc-strings, visible only in a live payload.
+
+**`hookSpecificOutput.additionalContext` reaches the model on the next API call
+of the same turn**, and **`continue: false` halts a running turn** — the batched
+calls still run and their results land in the transcript, then the turn ends with
+no further API call and no final assistant text (`--debug hooks` names it
+`requested preventContinuation`). `decision: "block"` halts too, by a different
+internal path. Together these are the only levers a mid-turn hook has: inject,
+message, or halt — see [[reference-hook-cannot-inject-tool-calls]].
 
 **`CwdChanged` is observational only** — its `hookSpecificOutput` schema declares
 nothing but `watchPaths`, and its dispatcher reads back only `watchPaths[]` +
