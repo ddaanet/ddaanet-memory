@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: a133f610-ff3a-43b5-8aca-054482eb372f
-  modified: 2026-07-31T22:02:11.211Z
+  modified: 2026-08-01T08:05:24.333Z
 ---
 
 A test that asserts something *does not* happen passes before the feature
@@ -54,6 +54,22 @@ byte-compare against a copy taken before the pass, rather than grepping for the
 mark a write would have left. A write that reordered without leaving the mark is
 just as much a write.
 
+**Check that the observable the negative watches is one the positive path
+actually produces.** A "nothing happened" proxy that is equally true on the
+success path pins nothing at all — a hook asserted not to write a settings file
+that its own design forbids writing in either branch, a marker no branch
+creates. This is a third staleness, beside string and path: the *proxy* never
+discriminated, so no mutation anywhere can red it. Pick the observable from what
+the feature emits when it does fire — the config keys it sets, the files it
+installs, the bytes on its output channel — and assert their absence.
+
+**Where a fallback can supply the same answer as the rule, order the fixture so
+it cannot.** A preference implemented as "use the matching entry, else the first
+one" is not pinned by input whose first entry is the matching one: deleting the
+preference leaves the test green. Put the decoy first. Same shape as the
+fixture-not-comment rule below, one level in: the fixture has to make the two
+implementations disagree, not merely exercise both.
+
 **A pairing is a property of the fixture, not of the comment above it.** A
 negative whose fixture differs from its positive in more than the guard's
 trigger input is unpaired however confidently the comment claims otherwise: it
@@ -84,6 +100,18 @@ pin each independently: dropping one must fail its own assertion and leave the
 other's green, or the two are not separately pinned. Mutation is cheap enough
 to do inline (copy the file, patch, run, restore) and belongs in the same pass
 as writing the test, not a later audit.
+
+**Mutate to the plausible wrong implementation, not to nothing.** Deleting a
+bail outright is usually absorbed downstream — an empty variable makes the next
+path check fail on its own, a missing file makes the next read return the
+default — so the deletion proves only that the code is defensive in layers.
+What the assertion is really defending against is the *substitute*: filling the
+missing root in from the session cwd instead of bailing, adding a `2>/dev/null`
+so an unparseable config reads as "feature off". Write that version and the
+assertion reds cleanly. Read the mutated line back before trusting the run: a
+harness that checks only *that* the file changed will report a red for a
+mutation that mangled the script, and a red from a broken script is the same
+false evidence as an error standing in for a red.
 
 Read a surviving mutation before believing it. Three things look identical from
 the green count, and only one of them is a bad test:
