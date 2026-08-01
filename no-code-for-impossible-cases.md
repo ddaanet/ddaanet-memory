@@ -1,6 +1,6 @@
 ---
 name: no-code-for-impossible-cases
-description: "Don't write defensive code for states the data model or upstream source cannot produce; check the constraint before generalizing"
+description: "\"if they exist\" means go check the data model, not build for it"
 metadata: 
   node_type: memory
   type: feedback

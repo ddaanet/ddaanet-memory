@@ -1,6 +1,6 @@
 ---
 name: subagents-over-applied
-description: "one-subagent-per-task is mis-granular; the axis is batching (one agent for several small/mechanical/one-loop tasks to spare main-session context), not agents-vs-inline; a shared mutable file only rules out *parallel* agents (mechanical does not)"
+description: "batching vs one-per-task, and why a shared mutable file rules out only *parallel* agents"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: posttooluse-print-mode
-description: "under --print the whole hook set fires — SessionStart/PreToolUse/PostToolUse/PostToolBatch — and wrapped `hookSpecificOutput.additionalContext` injects; `--print --resume` does scripted multi-turn; SDK `query()` is stateless, so both harnesses re-prime every turn; pick on dependency footprint, not context reuse (per-trial cost/latency in the file)"
+description: "`--print` vs SDK `query()` as a scripted harness: which hooks fire (incl. `PostToolBatch`), whether `additionalContext` injects, how each does multi-turn (`--print --resume`), and what to pick on (cost/latency in the file)"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: marginal-weakness-is-not-misweighting
-description: A metric that discriminates at the base rate on its own can still earn a heavy weight in a multivariate score; never cut a weight from a one-metric-at-a-time table
+description: "a metric can discriminate at the base rate alone and still earn a heavy weight"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: harness-over-agent
-description: "Detection, branching, and decision logic belongs in a script or hook, not in agent reasoning — agent compliance with instructions is a weaker guarantee than deterministic code"
+description: "first rule of skill design: where deterministic mechanical work belongs"
 metadata: 
   node_type: memory
   type: feedback

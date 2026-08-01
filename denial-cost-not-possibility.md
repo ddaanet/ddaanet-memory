@@ -1,6 +1,6 @@
 ---
 name: denial-cost-not-possibility
-description: "hook path when a denial strands something unrepeatable (an approved summary); direct agent call when it costs one turn"
+description: "hook path when a denial would strand something unrepeatable; direct agent call when it costs one turn"
 metadata: 
   node_type: memory
   type: feedback

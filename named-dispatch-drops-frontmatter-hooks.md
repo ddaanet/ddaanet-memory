@@ -1,6 +1,6 @@
 ---
 name: named-dispatch-drops-frontmatter-hooks
-description: "spawning a custom agent with a `name` overwrites the dispatch's `agentType` with that name and demotes the definition to `customAgentType`; frontmatter `hooks:` resolve by `agentType`, so a named dispatch silently registers zero hooks and runs uncontained"
+description: "spawning a custom agent with a `name` overwrites the dispatch's `agentType` and demotes the definition to `customAgentType`; frontmatter `hooks:` resolve by `agentType`, so a named dispatch registers zero hooks and runs uncontained"
 metadata: 
   node_type: memory
   type: reference

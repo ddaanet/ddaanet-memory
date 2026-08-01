@@ -1,6 +1,6 @@
 ---
 name: genuine-red-not-missing-sut
-description: "TDD red must be a failed assertion, not a missing module/command; plan interface contracts go one-per-line, not run-on prose"
+description: "TDD red = failed assertion (stub-then-assert), never a missing module; plan interfaces one contract per line"
 metadata:
   node_type: memory
   type: feedback

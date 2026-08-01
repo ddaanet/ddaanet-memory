@@ -1,6 +1,6 @@
 ---
 name: sdd-reviewer-tiering
-description: "reviewer one rung above the implementer in SDD; Sonnet is the floor for any reviewer or claude-code-guide query, Haiku misses subtle issues and hallucinates; Fable designs, Opus drafts, Sonnet executes, keep Fable output short and code-free"
+description: "Sonnet is the reviewer/`claude-code-guide` floor (Haiku hallucinates); Fable designs, Opus drafts, Sonnet executes"
 metadata: 
   node_type: memory
   type: feedback

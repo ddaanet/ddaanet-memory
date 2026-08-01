@@ -1,6 +1,6 @@
 ---
 name: provisional-values-not-provisional-code
-description: "Uncalibrated constants are parameters to bind, not a reason to compute in Python what SQL expresses; and output aimed at analysis must be a data format"
+description: "uncalibrated constants: a parameter to bind, or a licence for a placeholder implementation"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: prohibition-vs-procedure
-description: "front-load prohibitions, defer procedures to their trigger; a resident recipe turns into ceremony"
+description: "always-on context takes prohibitions; procedures defer to their trigger"
 metadata: 
   node_type: memory
   type: feedback

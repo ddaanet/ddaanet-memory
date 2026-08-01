@@ -1,6 +1,6 @@
 ---
 name: mutate-code-to-test-the-tests
-description: "In eyeball review, prove a test has teeth by deleting the code it covers and re-running — reading the assertion is not enough"
+description: "proving a test has teeth, and what an unkillable mutation means"
 metadata: 
   node_type: memory
   type: feedback

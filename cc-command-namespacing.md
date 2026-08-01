@@ -1,6 +1,6 @@
 ---
 name: cc-command-namespacing
-description: "`/<plugin>:<path-under-commands>`, so `commands/gitlore/install.md` becomes `/gitlore:gitlore:install`; keep commands flat; watch for a skill colliding on the same `<plugin>:<name>`"
+description: "`/<plugin>:<path-under-commands>`, so `commands/gitlore/install.md` becomes `/gitlore:gitlore:install`; and a skill colliding on the same `<plugin>:<name>`"
 metadata: 
   node_type: memory
   type: reference

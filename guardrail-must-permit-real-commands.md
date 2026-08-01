@@ -1,6 +1,6 @@
 ---
 name: guardrail-must-permit-real-commands
-description: "verify an allowlist/guardrail against the exact command the contained system must issue — a probe-shaped test proves nothing, and a guardrail that forbids the primary operation was never enforcing"
+description: "ghmem's allowlist hook forbade the notes `route` requires, so it was never enforcing; verify a guard with a command the system actually issues, expecting ALLOW"
 metadata: 
   node_type: memory
   type: feedback

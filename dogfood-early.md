@@ -1,6 +1,6 @@
 ---
 name: dogfood-early
-description: Run new code on the actual production target as soon as it ships — not just on test fixtures — because self-application surfaces bugs that synthetic harnesses miss
+description: "when to run new code on its real production target"
 metadata: 
   node_type: memory
   type: feedback

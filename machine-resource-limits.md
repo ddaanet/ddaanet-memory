@@ -1,6 +1,6 @@
 ---
 name: machine-resource-limits
-description: "~2GB RAM and OOM is what kills this box (not load average); /tmp is a 987M tmpfs — run SDD sequentially in the main tree"
+description: "~2GB RAM and OOM is what kills this box (not load average); /tmp is a 987M tmpfs"
 metadata: 
   node_type: memory
   type: project

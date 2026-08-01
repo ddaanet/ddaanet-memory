@@ -1,6 +1,6 @@
 ---
 name: git-stderr-and-parsing
-description: "which git queries are silent on normal-absence (drop the redirect); `(fetch first)`/`(non-fast-forward)` = divergence vs `(pre-receive hook declined)` = policy; `fetch -q` prints NOTHING on rejection while `push -q` still reports — never classify under `-q`; `--git-common-dir` is relative in a main worktree → CDPATH trap; `-z --get-regexp` for whitespace-safe values"
+description: "which git queries are silent on normal-absence; `(fetch first)`/`(non-fast-forward)` = divergence vs `(pre-receive hook declined)` = policy; `fetch -q` prints NOTHING on rejection while `push -q` still reports; `--git-common-dir` is relative in a main worktree → CDPATH trap; `-z --get-regexp`"
 metadata: 
   node_type: memory
   type: reference

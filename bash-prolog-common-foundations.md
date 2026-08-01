@@ -1,6 +1,6 @@
 ---
 name: bash-prolog-common-foundations
-description: "A justfile's shared bash_prolog holds only helpers with two or more call sites — recipe bodies belong in recipes, not in a run-<recipe> function"
+description: "what belongs in a shared `bash_prolog` vs in a recipe body"
 metadata: 
   node_type: memory
   type: feedback

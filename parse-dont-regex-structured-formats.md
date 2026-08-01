@@ -1,6 +1,6 @@
 ---
 name: parse-dont-regex-structured-formats
-description: "use a real parser for structured formats (YAML/JSON/etc), not a regex; regex is for genuine token extraction from prose"
+description: "use a real parser for YAML/JSON/TOML/HTML, never a hand-rolled regex even for \"just one field\"; regex is for prose token extraction"
 metadata: 
   node_type: memory
   type: feedback

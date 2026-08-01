@@ -1,6 +1,6 @@
 ---
 name: mutation-sweep-must-survive-a-kill
-description: "a `finally` restore does not survive SIGKILL; narrow each mutation's test target and diff the tree afterwards; and a sweep whose writes the sandbox denies (under `.claude/`) reports every mutation SURVIVED — mutate a copy and always run an unmutated control"
+description: "a `finally` restore does not survive SIGKILL; a sweep whose writes the sandbox denies (under `.claude/`) reports every mutation SURVIVED"
 metadata: 
   node_type: memory
   type: feedback

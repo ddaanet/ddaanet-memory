@@ -1,6 +1,6 @@
 ---
 name: agent-hooks-need-exact-trust-key
-description: "`.claude/agents` frontmatter `hooks:` silently skipped (\"Skipping frontmatter hooks\", `tengu_agent_hooks_origin_untrusted`) when `~/.claude.json` `hasTrustDialogAccepted` is false for the exact project path; inherited parent trust hides it and no dialog ever appears — necessary but not sufficient, a second silent gate is the dispatch's name, and a provoke-check must read the tool result, not the agent's report"
+description: "`.claude/agents` frontmatter `hooks:` silently skipped (\"Skipping frontmatter hooks\", `tengu_agent_hooks_origin_untrusted`): `~/.claude.json` `hasTrustDialogAccepted` for the exact project path, inherited parent trust hides it, no dialog ever appears, and a second silent gate: the dispatch's `name`"
 metadata: 
   node_type: memory
   type: reference

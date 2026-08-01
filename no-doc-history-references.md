@@ -1,6 +1,6 @@
 ---
 name: no-doc-history-references
-description: Specs/docs must not reference their own previous versions; rejections of real design alternatives stay
+description: "specs never reference their own previous versions; keep standalone rejections"
 metadata: 
   node_type: memory
   type: feedback

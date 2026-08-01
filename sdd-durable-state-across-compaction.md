@@ -1,6 +1,6 @@
 ---
 name: sdd-durable-state-across-compaction
-description: keeping subagent-driven-development state durable — recover dead subagents from staged work; flush the SDD ledger (not just memory) before compaction
+description: "flush the SDD ledger, not just memory, before compacting — `precompact` won't; recovering dead subagents"
 metadata: 
   node_type: memory
   type: feedback

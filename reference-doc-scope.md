@@ -1,6 +1,6 @@
 ---
 name: reference-doc-scope
-description: "a lasting guideline stays general/reusable (neutral examples, version- not repo-grounded); repo-specific application goes in a separate point-in-time audit; confirm scope before delegating research"
+description: "scoping a lasting guideline vs a point-in-time audit, before delegating the research"
 metadata: 
   node_type: memory
   type: feedback

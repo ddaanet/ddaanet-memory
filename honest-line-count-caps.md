@@ -1,6 +1,6 @@
 ---
 name: honest-line-count-caps
-description: "plan/PR line caps mean wrap at ~72 cols then split, never cram long lines; on source files, never shave docstrings to fit — surface the split instead"
+description: "plan/PR line caps: wrapping vs cramming, and never shaving docstrings to fit"
 metadata: 
   node_type: memory
   type: feedback

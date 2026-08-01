@@ -1,6 +1,6 @@
 ---
 name: shape-rules-are-not-duplication
-description: a validation rule needing no knowledge from the inner layer is a shape rule and belongs at the outer guard; refusing it as duplicated domain logic leaves the malformed case accepted twice
+description: "which layer a validation rule belongs in: ask what vocabulary the rule needs"
 metadata: 
   node_type: memory
   type: feedback

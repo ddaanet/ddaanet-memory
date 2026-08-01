@@ -1,6 +1,6 @@
 ---
 name: test-the-invocation-path
-description: "assert discovery, `[ -x ]` (a `100644` hook never runs), and that the suite is listed in `make test`"
+description: "testing discovery and the invocation path: `[ -x ]` (a `100644` hook never runs), and whether the suite is listed in `make test`"
 metadata: 
   node_type: memory
   type: feedback

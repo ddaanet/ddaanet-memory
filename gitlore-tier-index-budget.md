@@ -1,6 +1,6 @@
 ---
 name: gitlore-tier-index-budget
-description: "mounting a populated tier imports its whole index into the consumer; composition orders tier-first, so the consumer's OWN project lines are what fall past the 24.4KB load cutoff — and the fix is in the shared tier, not the repo"
+description: "mounting a populated tier imports its whole index; composition orders tier-first, so the consumer's OWN project lines fall past the 24.4KB load cutoff"
 metadata: 
   node_type: memory
   type: reference

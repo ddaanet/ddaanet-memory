@@ -1,6 +1,6 @@
 ---
 name: perf-fix-check-parallelism-assumption
-description: "before proposing --jobs/-P/-j as the headline speed fix, confirm the target reliably has spare cores; otherwise cut per-unit work (cache/reuse) first"
+description: "proposing `--jobs`/`-P`/`-j` as the headline speed fix: the assumption about spare cores to check first"
 metadata: 
   node_type: memory
   type: feedback

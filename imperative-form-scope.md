@@ -1,6 +1,6 @@
 ---
 name: imperative-form-scope
-description: "the skill-development rule targets instruction subjects (\"You should X\"), not every pronoun; a bare grep for \"you\" over-reports; `your post-compaction self` is a deliberate keep"
+description: "the skill-development rule targets instruction subjects (\"You should X\"), not every pronoun; `your post-compaction self` is a deliberate keep"
 metadata: 
   node_type: memory
   type: feedback

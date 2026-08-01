@@ -1,11 +1,11 @@
 ---
 name: index-compaction-triggers
-description: "an index line's ONLY job is read-or-skip routing — want it always in context, use CLAUDE.md/~/.claude/CLAUDE.md; never shorten one to hit a byte target — trimming keeps prescriptions and cuts symptoms/identifiers; gitlore's 25600-byte budget and its 17.1KB compaction prompt are advisory, CC's 24.4KB loader cap is the gate and silently truncates the tail (project lines first); count each literal index-wide before and after — falling to zero is unreachable, falling to one on another line MISROUTES; have someone else audit the diff"
+description: "classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; audit plain words, not just backticked literals"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-07-31T20:53:25.888Z
+  modified: 2026-08-01T08:08:26.796Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -19,9 +19,31 @@ file still exists.
 
 The index is not the place to put something because it should always be in
 context. A fact that must be present without being looked up belongs in
-`CLAUDE.md`, or `~/.claude/CLAUDE.md` when it holds across every repo — those
-load whole and are meant for it. Loading the index every session is a
-consequence of it being a routing table, not a second purpose to write for.
+`CLAUDE.md`, `~/.claude/CLAUDE.md`, or a shared tier's `shared-claude.md` when it
+holds across every repo — those load whole and are meant for it. Loading the index
+every session is a consequence of it being a routing table, not a second purpose to
+write for.
+
+**Every line is one of three kinds, and the kind tells you what its trigger
+surface is.** Classify before touching a line:
+
+- **WHEN** — fires on a symptom met mid-task: an error string, a flag, a config
+  key, an observed misbehaviour. The symptoms and identifiers *are* the trigger;
+  the prescription is payload.
+- **HOW** — fires on a task or decision you are starting. The **condition** is the
+  trigger; the rule content is payload. The condition often hides inside what
+  reads like prescription: "ask what vocabulary the rule needs, not which layer
+  catches it first" is the trigger ("which layer should validate this?"), not the
+  rule.
+- **Acted-inline** — there is no lookup step. Model tier while typing `model:`
+  into an `Agent` call, how to answer a correction, what belongs in always-on
+  context. For these the index *is* the point of use, so a hook that routes but
+  does not say which side the memory lands on is worthless. **These do not belong
+  in the index at all** — they belong in the always-loaded file, and moving them
+  there is the one compaction lever that works (below).
+
+A line that resists compression is usually already pure routing. A line that
+compresses easily is usually acted-inline and was never index material.
 
 **Why the pressure exists at all:** the binding constraint is bytes, not
 lines — the index blob loads verbatim into every session. Measured
@@ -69,9 +91,10 @@ config keys, env vars, flag and event names, file paths, the observable symptom,
 and any contrast whose value was the disambiguation (`fetch -q` vs `push -q`).
 A hook naming a count rather than a thing ("six-section doc") is unmatchable.
 
-**The only levers that buy real headroom are merging overlapping facts and
-retiring reconstructable ones** — never stripping trigger tokens from surviving
-lines. Merging buys less than it looks: index cost is trigger surface, and a
+**The levers that buy real headroom are relocating the acted-inline class,
+retiring reconstructable facts, and merging overlapping ones** — never stripping
+trigger tokens from surviving lines. Relocation is the largest and is treated in
+full below. Merging buys less than it looks: index cost is trigger surface, and a
 merged line must still carry both entries' distinctive literals or it
 misroutes, so only the shared framing prose collapses. Measured: three merges
 collapsing 103 entries to 100 on a 23.8KB index netted 39 bytes — 0.16% — and
@@ -83,14 +106,27 @@ bytes, because its triggers go with it. A topic file left
 intact is no defence — an index line that no longer carries what a recall pass
 would match on is unreachable however complete the file behind it is.
 
-**Relocating a line to an always-loaded file is not compaction.** Moving an
-untriggerable standing rule out of the index and into `CLAUDE.md` or
-`ddaanet/shared-claude.md` is right in kind — that is where a rule that must act
-without being looked up belongs — but it buys no total headroom, because the
-destination loads whole every session too. Measured: 14 relocations cut 2,200 B
-of index and added 2,692 B of `shared-claude.md`. Relocate for correctness, and
-count the destination's growth in the same breath; only the index cap falls, and
-a bullet written from scratch can easily exceed the line it replaced.
+**Relocating the acted-inline class is the lever that actually works.** Moving a
+standing rule out of the index and into `CLAUDE.md` or `ddaanet/shared-claude.md`
+is right in kind — that is where a rule that must act without being looked up
+belongs. It buys no *total* context headroom, because the destination loads whole
+every session too, and a bullet written from scratch can exceed the line it
+replaced (measured once at 14 relocations: −2,200 B of index, +2,692 B of
+`shared-claude.md`).
+
+**But total context is not the constraint that bites — the index cap is.** Only
+the index is silently truncated. My human partner settled this explicitly:
+"don't sweat the shared-claude.md tokens, it's a different limit, and the goal
+here is fixing memory index overflow." Measured on the 2026-08-01 pass: 24
+acted-inline lines out of the index cut 3,491 B from the capped file and grew
+`shared-claude.md` from 5,765 to 14,070 B — and that 3.5 KB is what paid for
+restoring every trigger and carve-out a preceding trim pass had destroyed. The
+index landed at 22,168 B with 2.8 KB of headroom and zero misroutes.
+
+Relocation is not a byte trick. It is the correct home for a rule with no lookup
+step, and the byte relief is a consequence. Carry each rule across **whole, with
+its carve-outs** — read the topic file, not just the index line, because the
+"how to apply" section is where the exceptions live.
 
 **A compressed rule must keep its exceptions.** Squeezing a fact into an
 always-on bullet drops the "how to apply" section, and carve-outs live in there:
@@ -117,6 +153,40 @@ author knows what each line means and so reads the trimmed version as adequate.
 An adversarial pass briefed to falsify "I cut only elaboration" found 15 bad
 lines in an already self-checked diff, and its own verification pass then found
 six more it had missed.
+
+**Run two auditors on different briefs; they find disjoint classes.** On the
+2026-08-01 pass one was briefed on trigger loss (tokens to zero, tokens fallen to
+one on the wrong line, conditions cut in place of prescriptions, collapsed
+disambiguations, hooks naming a count) and one on meaning damage (rules that lost
+an exception, inversions by truncation, neutral "X vs Y" hiding which side the
+memory lands on, scope drift). They returned 33 and 25 findings with little
+overlap. Brief each to falsify, not to confirm, and tell each to re-verify its own
+findings after declaring itself done.
+
+**A backtick-and-quote sweep is not sufficient as a literal audit.** My own
+self-audit extracted only backticked and double-quoted spans and reported *zero*
+misroutes; the auditor's plain-word lost-vocabulary sweep — every word present in
+BEFORE and absent in AFTER, 464 of them — found four real misroutes plus
+`heredoc`, `precompact`, `mtime`, `unsandboxed`, `parallel` and every model name
+sitting at zero. Bare identifiers carry routing weight without ever being marked
+up. Sweep plain words too.
+
+**Trimming a whole index is measured as the wrong lever.** Cutting prescriptions
+while keeping symptoms — the direction this file endorses — took a 32,405 B index
+to 24,316 B (−25%). Two adversarial audits then found 58 findings: 4 misroutes,
+17 tokens at zero, 6 rules that lost their exception, and one line rewritten into
+a claim that was simply *false* (a hook's `additionalContext` "size limit", when
+the fact is that a large payload is spilled to a file with ~2 KB inlined). About a
+fifth of touched lines took real damage, and repairing them consumed almost the
+entire 8 KB the trim had bought. Two things make the compressible surface far
+smaller than it looks: prescriptions carry trigger literals (`precompact`,
+`Haiku`, `CLAUDE.md`, `heredoc`, `fsync`), and carve-outs live in the prescription
+half, so a "shortened" rule is frequently a wrong one.
+
+What *did* survive as a real gain: hooks that merely restated their own title
+(`choosing a hook output channel:` on a line titled *hook output channels*) and
+boilerplate like "full state and history in the file", which every entry implies.
+Delete those freely — they cost bytes and route nothing.
 
 **A silent trim buried in an unrelated commit is not a divergence to weigh —
 just restore it.** Two lost triggers (`phantom dotfiles`, `own hooks.json

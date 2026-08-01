@@ -1,6 +1,6 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump in consumer release"
+description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump"
 metadata: 
   node_type: memory
   type: project

@@ -1,6 +1,6 @@
 ---
 name: transcripts-are-ground-truth
-description: Subagent transcripts hold the exact tool inputs an agent issued — diff them against the artifact to tell corrupted output from clean
+description: "a corrupted subagent artifact: transcripts hold the verbatim tool inputs to diff against"
 metadata: 
   node_type: memory
   type: feedback

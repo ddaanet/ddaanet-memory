@@ -1,6 +1,6 @@
 ---
 name: skill-vs-command
-description: When to use a self-triggering skill vs an explicit command for plugin agent actions
+description: "self-triggering skill when the condition is mechanical/detectable; command only for explicitly user-initiated actions"
 metadata: 
   node_type: memory
   type: feedback

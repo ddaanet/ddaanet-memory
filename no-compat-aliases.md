@@ -1,6 +1,6 @@
 ---
 name: no-compat-aliases
-description: "When removing a constant, patch all consumers directly — don't add a compat alias"
+description: "removing a constant that has live consumers"
 metadata: 
   node_type: memory
   type: feedback

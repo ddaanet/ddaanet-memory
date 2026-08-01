@@ -1,6 +1,6 @@
 ---
 name: ground-formulas-in-data
-description: "Always ground heuristic formulas (weights, thresholds) in data analysis, not intuition"
+description: "derive from corpus analysis, never hip-shooting"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: edify-python-standards
-description: "Python quality bar comes from ../edify — uv, click, pytest, ruff-ALL, mypy strict, docformatter; plus the justfile shape: bash_prolog `sync` fn (never a recipe), bare tool names, 400-line check_line_limits.sh"
+description: "uv, click, pytest, ruff-ALL, mypy strict; edify repo is the reference config; justfile shape and the 400-line check_line_limits.sh gate"
 metadata: 
   node_type: memory
   type: reference

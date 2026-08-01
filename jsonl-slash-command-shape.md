@@ -1,6 +1,6 @@
 ---
 name: jsonl-slash-command-shape
-description: "slash commands log as a `<command-name>/foo:bar</command-name>` string in a `type:\"user\"` entry — not literal text, no `Skill` tool_use; agent-invoked skills ARE `Skill` tool_use; skill bodies inject as `isMeta:true` user entries on both paths; `/compact` double-records"
+description: "slash commands log as a `<command-name>/foo:bar</command-name>` string in a `type:\"user\"` entry, not literal text and no `Skill` tool_use; agent-invoked skills ARE `Skill` tool_use; skill bodies inject as `isMeta:true`; `/compact` double-records"
 metadata: 
   node_type: memory
   type: reference

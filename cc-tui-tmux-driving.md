@@ -1,6 +1,6 @@
 ---
 name: cc-tui-tmux-driving
-description: "mid-turn input has FOUR classes (TUI-local/harness-action-queued/plugin-command-own-turn/prose-injected-mid-turn); `Stop`+`SessionStart(compact)` are the authoritative gates; `Stop` doesn't fire on Esc"
+description: "mid-turn input as TUI-local / harness-action queued / plugin-command own-turn / prose injected into the running turn; `Stop` + `SessionStart(compact)` are the authoritative gates (`Stop` doesn't fire on Esc)"
 metadata:
   node_type: memory
   type: reference
