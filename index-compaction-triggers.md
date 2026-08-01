@@ -1,11 +1,11 @@
 ---
 name: index-compaction-triggers
-description: "classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; audit plain words, not just backticked literals"
+description: "classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; over budget is NEVER a reason to under-trigger a new/updated fact — pressure means retire, not ship an unroutable line; audit plain words, not just backticked literals"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-08-01T08:08:26.796Z
+  modified: 2026-08-01T14:36:49.029Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -105,6 +105,19 @@ half a rule), never for headroom. Retiring a fact is what actually removes
 bytes, because its triggers go with it. A topic file left
 intact is no defence — an index line that no longer carries what a recall pass
 would match on is unreachable however complete the file behind it is.
+
+**Being over budget is never a reason to under-trigger a new or updated fact.**
+The pressure argues for retiring facts, not for shipping a line that cannot
+route to the one just written. A fact whose index line omits the literal a
+recall pass would match on is already lost, so trading its triggers for bytes
+buys headroom by destroying exactly what the headroom is for — and it does it
+silently, since the file is there and looks complete. Write the triggers the
+fact needs; if the index is over the cap, that is the retirement decision
+coming due, and it is a separate act with its own judgement. Observed
+2026-08-01: an addition to the hook-schema line was self-reverted on the
+reasoning that 100 bytes would push 100 bytes off the invisible tail. Correct
+about the arithmetic, wrong about which side pays — the reverted line was the
+only route to a fact written that same session.
 
 **Relocating the acted-inline class is the lever that actually works.** Moving a
 standing rule out of the index and into `CLAUDE.md` or `ddaanet/shared-claude.md`

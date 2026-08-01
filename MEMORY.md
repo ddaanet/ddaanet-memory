@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-07-31T18:56:45.123Z
+  modified: 2026-08-01T14:36:59.052Z
 ---
 
 # ddaanet tier index
@@ -54,7 +54,7 @@ the project's own memory store.
 - [CLAUDE_PROJECT_DIR over cwd](claude-project-dir.md) — project root in a hook script: `CLAUDE_PROJECT_DIR` vs payload cwd, which drifts with shell cd and /add-dir
 - [no transition special cases](no-transition-special-cases.md) — handling a version transition in your own tooling with a user base of one
 - [uv: sync only, direnv venv](uv-direnv-venv.md) — no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`
-- [Hook input schema](hook-input-schema.md) — base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch (twice in one turn is normal)
+- [Hook input schema](hook-input-schema.md) — base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch (twice in one turn is normal); NO event carries token counts (context size comes from transcript `usage`); `additionalContext` lands mid-turn, `continue:false` halts one
 - [Reference doc scope](reference-doc-scope.md) — scoping a lasting guideline vs a point-in-time audit, before delegating the research
 - [Skill description: purpose first](skill-description-purpose-first.md) — a skill `description:` is TUI-visible: purpose, then "Use when", then exclusions
 - [Skill bundled-script invocation](skill-bundled-scripts.md) — `CLAUDE_PLUGIN_ROOT` is UNSET in agent Bash (hooks only); every *enabled* plugin's `bin/` is on PATH (disabled = absent), so a bare-name `bin/` shim invokes bundled scripts cross-plugin
@@ -71,7 +71,7 @@ the project's own memory store.
 - [gitlore memory commit routing](gitlore-memory-commit-routing.md) — when a memory commit stands alone vs rides the parent (the TRIGGER file); withholding it does NOT fix history; dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes, so check `origin/live`
 - [no speculative rules or anti-patterns](no-speculative-rules.md) — whether a rule or an anti-pattern has earned an entry
 - [checkout clears merge state](git-checkout-clears-merge-state.md) — `git checkout` silently unlinks MERGE_HEAD/MERGE_MSG (`remove_branch_state`), so a *clean* `merge --no-commit` dies on any later re-checkout while its index survives; recover by restoring both pointers after `write-tree` == `merge-tree --write-tree`
-- [index compaction loses triggers](index-compaction-triggers.md) — classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; audit plain words, not just backticked literals
+- [index compaction loses triggers](index-compaction-triggers.md) — classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; over budget is NEVER a reason to under-trigger a new/updated fact — pressure means retire, not ship an unroutable line; audit plain words, not just backticked literals
 - [detect liveness, not presence](detect-liveness-not-presence.md) — probing a foreign tool's state file: why `[ -f known/path ]` false-positives
 - [tier mount blows the index budget](gitlore-tier-index-budget.md) — mounting a populated tier imports its whole index; composition orders tier-first, so the consumer's OWN project lines fall past the 24.4KB load cutoff
 - [gitlore tier merge direction](gitlore-tier-merge-direction.md) — tiers are pinned: where `/gitlore:merge`|`/gitlore:push` land a merge, and which index to edit — never root's block by hand — for a pointer removal, or a wording fix only AFTER propagating
