@@ -1,6 +1,6 @@
 ---
 name: optional-means-source-can-omit
-description: A field is optional only where the upstream source can really omit it; leniency hides a dropped field as a silent null
+description: "treating a field as optional, and what a default hides"
 metadata: 
   node_type: memory
   type: feedback

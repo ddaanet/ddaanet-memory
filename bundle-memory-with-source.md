@@ -1,6 +1,6 @@
 ---
 name: bundle-memory-with-source
-description: "commit a memory update in the same parent commit as the source change it documents, not separately; don't over-apply to unrelated pending work"
+description: "which commit a memory update rides — not unrelated pending work"
 metadata: 
   node_type: memory
   type: feedback

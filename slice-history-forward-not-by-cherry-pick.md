@@ -1,6 +1,6 @@
 ---
 name: slice-history-forward-not-by-cherry-pick
-description: "To re-slice landed straight-line history into review batches, construct each slice's tree forward from the final state; cherry-pick reordering conflicts hopelessly"
+description: "re-expressing landed history as review slices, and why cherry-pick reordering fails"
 metadata: 
   node_type: memory
   type: feedback

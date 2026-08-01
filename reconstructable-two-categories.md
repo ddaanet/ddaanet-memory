@@ -1,6 +1,6 @@
 ---
 name: reconstructable-two-categories
-description: "by-harness (deterministic, free → drop it) vs by-model-inference from a paraphrase (lossy, fails silently → carry it); name the reconstructor first"
+description: "by-harness vs by-model-inference from a paraphrase"
 metadata: 
   node_type: memory
   type: feedback

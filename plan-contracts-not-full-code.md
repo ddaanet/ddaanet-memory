@@ -1,6 +1,6 @@
 ---
 name: plan-contracts-not-full-code
-description: "implementation plans carry interfaces, literal strings and test contracts — never full function bodies; superpowers:writing-plans demands the opposite and must be overridden"
+description: "how much code a plan carries; writing-plans demands full bodies and must be overridden"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: correction-scope
-description: "a correction applies to what it names, not the class it belongs to; re-read its words before acting, and say out loud what you are NOT changing so an over-reach is caught before it lands"
+description: "a correction names one instance: don't demolish the general claim it belonged to"
 metadata: 
   node_type: memory
   type: feedback

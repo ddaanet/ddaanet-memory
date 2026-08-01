@@ -1,6 +1,6 @@
 ---
 name: no-internal-back-compat
-description: "don't keep backward compatibility for internal clients; change the callers instead"
+description: "change the callers instead"
 metadata: 
   node_type: memory
   type: feedback

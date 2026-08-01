@@ -1,6 +1,6 @@
 ---
 name: directive-states-acts
-description: "cut from agent-facing and script-emitted directives: mechanism (verify it and narrate it back instead), orderings an earlier step settled, literalized meta-notes, and prohibitions naming the identifier they forbid — withhold instead"
+description: "writing an agent-facing or script-emitted directive: what to cut from it"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: tests-pass-for-the-wrong-reason
-description: "A green test can assert a true fact produced by the wrong cause; mutation testing catches these where reading never will, and they recur once per task in subagent-driven work"
+description: "a green test asserting a true fact produced by the wrong cause"
 metadata: 
   node_type: memory
   type: feedback

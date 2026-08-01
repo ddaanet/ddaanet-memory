@@ -1,6 +1,6 @@
 ---
 name: bats-shellcheck-gotchas
-description: "SC2314 bare `! cmd` asserts nothing (use `run !`); `run missing_fn` exits 127 so negatives pass vacuously; a helper's `${n:-default}` erases the empty-arg case; `grep -qF` matches any ONE line of a multi-line pattern; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive"
+description: "SC2314 bare `! cmd` asserts nothing; `run missing_fn` exits 127 so negatives pass vacuously; a helper's `${n:-default}` erases the empty-arg case; `grep -qF` matches any ONE line of a multi-line pattern; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive"
 metadata: 
   node_type: memory
   type: reference

@@ -1,6 +1,6 @@
 ---
 name: spec-contract-size-predicts-pr-size
-description: the 400-line PR cap is soft; a spec task whose contract exceeds ~400 lines predicts its implementation overshoots too — split at spec-review time
+description: "the 400-line PR cap is soft; a task's contract size predicts its impl overshoot"
 metadata:
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: tests-must-go-red
-description: "an error isn't a red and neither is green-at-first; a \"stays silent\" negative, or a positive matching an accumulating channel on a string another producer emits, passes vacuously — hold trigger strings in test-side globals and pair each negative with a positive over the SAME fixture (positive red = path/wording drift, negative red = guard gone); a pairing is a property of the fixture, not the comment above it; a wait-then-proceed gate is tested by DELAY, never by absence"
+description: "what does not count as a red (an error, green-at-first); a \"stays silent\" negative passing vacuously, the negative/positive pairing over one fixture, and testing a wait-then-proceed gate"
 metadata: 
   node_type: memory
   type: feedback

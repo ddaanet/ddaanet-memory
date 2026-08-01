@@ -1,6 +1,6 @@
 ---
 name: design-doc-writing
-description: "dated design entries are write-time records (keep rationale); memory/docs/comments state present-tense truth; six-section doc: FR, NFR, architecture, decisions, rejected alternatives, changelog — the changelog its own file; `(implemented <date>)` tags and status blobs are changelog material, prose subsections beat a big table"
+description: "where dated rationale goes vs present-tense truth; the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog); `(implemented <date>)` tags are changelog material"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: claude-project-dir
-description: Use CLAUDE_PROJECT_DIR not cwd from hook payload — cwd tracks shell working directory which can drift via /add-dir + cd
+description: "project root in a hook script: `CLAUDE_PROJECT_DIR` vs payload cwd, which drifts with shell cd and /add-dir"
 metadata: 
   node_type: memory
   type: feedback

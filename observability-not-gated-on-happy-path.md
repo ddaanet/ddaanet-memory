@@ -1,6 +1,6 @@
 ---
 name: observability-not-gated-on-happy-path
-description: "never skip failure-reporting because the run you watched went fine; enumerate failure paths and ask who learns about each"
+description: "failure-reporting for the paths the run you watched didn't take"
 metadata: 
   node_type: memory
   type: feedback

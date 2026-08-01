@@ -1,6 +1,6 @@
 ---
 name: test-with-live-data-before-designing
-description: "Run the pipeline against real data before planning the next subproject — fixtures share the code's blind spots and hide whole defect classes"
+description: "before planning the next subproject: real data, not fixtures"
 metadata: 
   node_type: memory
   type: feedback

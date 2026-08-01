@@ -1,6 +1,6 @@
 ---
 name: prose-voice-does-not-delegate
-description: "an underspecified \"uncram\" brief gets applied as find-and-replace; NOT evidence that prose degrades down-tier, and \"flat\" was my own unconfirmed verdict"
+description: "an underspecified \"uncram\" brief gets applied as find-and-replace; NOT evidence that prose degrades down-tier"
 metadata: 
   node_type: memory
   type: feedback

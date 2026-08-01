@@ -1,6 +1,6 @@
 ---
 name: plan-late
-description: "defer until evidence arrives, act before inaction decides by default"
+description: "defer until evidence arrives; act before inaction decides"
 metadata: 
   node_type: memory
   type: feedback

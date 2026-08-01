@@ -1,6 +1,6 @@
 ---
 name: tier-links-cross-a-boundary
-description: "routing a fact up into a shared tier turns its links to project-local siblings into permanently dead pointers; strip the pointer, keep the prose grounding"
+description: "routing a fact up carries its `[[links]]` verbatim, and ones aimed at project-local siblings go permanently dead, unlike a write-it-later dangle"
 metadata: 
   node_type: memory
   type: feedback

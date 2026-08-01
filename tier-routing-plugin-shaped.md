@@ -1,6 +1,6 @@
 ---
 name: tier-routing-plugin-shaped
-description: "litmus test for routing an operational/environmental gotcha to the ddaanet tier vs project memory: would it affect anything plugin-shaped, not just this repo"
+description: "routing an operational gotcha to ddaanet vs project memory"
 metadata: 
   node_type: memory
   type: feedback

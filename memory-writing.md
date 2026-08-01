@@ -1,6 +1,6 @@
 ---
 name: memory-writing
-description: "state what is true for a reader who wasn't there, not what changed; cut the anecdote, the tense, the pending framing, and the deictic words (now/here/currently/this session) — name the condition, version-stamp what could age; \"when using <skill>, do X\" or a project memory logging design decisions the living design doc owns is a category error — delete it, accuracy is not the test; ask what the new learning is"
+description: "what to cut (anecdote, tense, now/here/currently/this session), what to version-stamp, and the category errors that mean delete: \"when using <skill>, do X\", or logging decisions the design doc owns"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: stale-artifact-is-not-agent-death
-description: "A subagent's unwritten report proves nothing about whether it is alive; re-dispatching on that inference put two implementers in one tree and corrupted both their verification runs"
+description: "an unwritten subagent report proves nothing about whether the agent died"
 metadata: 
   node_type: memory
   type: feedback

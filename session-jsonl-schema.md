@@ -1,6 +1,6 @@
 ---
 name: session-jsonl-schema
-description: "no official schema; key on `isMeta`/`isSidechain`/`isCompactSummary`, never content; one assistant message = N entries sharing `message.id`, so group on it before asking what was batched"
+description: "no official schema, key on `isMeta`/`isSidechain`/`isCompactSummary`, never content; one assistant message = N entries sharing `message.id`"
 metadata: 
   node_type: memory
   type: reference

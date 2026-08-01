@@ -75,6 +75,132 @@ rules that change what the agent does by default.
   it until the next user message — not an API round-trip and not a tool call;
   "call" covers both API and tool calls.
 
+## Working with my human partner
+
+- **Technical claims about LLM mechanism must be grounded.** No casual mechanism
+  claims ("the model thinks X because Y") without checking against actual
+  transformer/training/API behaviour; cost math specific and checkable — input vs
+  output pricing, cache costs, break-even points. Asked to "be contrarian" or "poke
+  holes", deliver real pushback, not performative disagreement. Strawmanning and
+  false dichotomies get called out.
+- **Micro is a deliberate choice.** My human partner used vim bindings full-time for
+  months and gave helix a real try, and rejects modal editing — not a fallback, and
+  it is what motivates the colwrap and popup-layer work.
+- **A correction applies to what it names.** Told a specific instance was wrong,
+  change that instance and do not demolish the general claim it belonged to — the
+  general claim usually survives, with the corrected instance as its exception.
+  Before acting, quote the correction's own scope back, name the delta against what
+  you are about to change, ask explicitly whether the general claim still holds, and
+  state what you are *not* touching. Leaving a stale sentence costs a later edit;
+  deleting a true one costs the fact, and in a shared tier costs it for every
+  consumer.
+- **Verify a claim against its own source before acting on it** — subagent findings,
+  delegated citations, hook-cited limits, handoff and memory status lines, my human
+  partner's corrections, spec symbols. State claims ("not yet run", "pending", "still
+  open") are the rotting class: nothing writes back when the state moves. Name the
+  source of truth for the claim's kind and spend one command on it. If it cannot be
+  confirmed, downgrade it and say so rather than silently complying.
+
+## Deciding and planning
+
+- **Take decisions as late as possible, but not later.** Deferring buys information;
+  past the deadline, momentum and accreted code make the decision by default. Name an
+  unforced question as open, state what evidence would settle it, and do not write
+  code that presupposes the unsettled answer. Write a plan right before executing it,
+  and plan only the iteration in front of you — pre-writing is fine only when asked.
+- **Deterministic mechanical work belongs in the harness, not the agent.** First rule
+  of skill design: a script or hook does detection, branching and decisions and emits
+  a structured result; the skill body is for judgement only. Splitting mechanical
+  logic between body and harness also obscures the mechanism.
+- **Always-on context takes prohibitions; procedures defer to their trigger.** A
+  guardrail against something the agent would otherwise do unprompted must be
+  front-loaded — nothing downstream discloses it in time. A recipe resident in
+  context reads as a process you must run, so the agent performs ceremony where the
+  happy path was meant to be seamless.
+
+## Dispatch
+
+- **Reviewer one rung above the implementer**, and **Sonnet is the floor for any
+  reviewer or `claude-code-guide` query** — Haiku misses subtle issues, omits
+  information and hallucinates. Haiku is fine as an implementer on mechanical,
+  isolated tasks. Default shape: Fable designs, Opus drafts, Sonnet executes; keep
+  Fable turns lean and code-free, since cheaper agents produce code fine from a prose
+  outline.
+- **Choose agent boundaries by batching, not by task.** "N tasks" ≠ "N subagents",
+  and it does not mean "N tasks → inline" either: the cost a subagent offsets is
+  context churn in the main session. A repeat mechanical edit does not disqualify an
+  agent — one agent owning the whole run often makes sense. A shared mutable file
+  rules out only *parallel* agents; one sequential agent handling the batch is fine.
+- **Never bundle a red task into a green-task subagent.** The red-phase review is
+  what proves the test fails against unchanged code, i.e. that it exercises the
+  behaviour the implementation will change. "They share a commit" is a packaging
+  detail; the review boundary is a correctness check.
+- **This box will not take parallel heavy work.** ~2GB RAM and OOM is what kills it —
+  never load average — and `/tmp` is a 987M tmpfs where `uv` copies rather than
+  hardlinks. Judge parallelism by resident memory against ~500MB of headroom. Run SDD
+  sequentially in the main tree.
+- **Route a plugin action by what a denial would cost, not by whether one is
+  possible.** Intent file plus hook when a denial would strand something unrepeatable
+  — a user approval, an ordering guarantee. Direct agent call when it costs one turn.
+
+## Tests
+
+- **Automated by default.** Manual tests do not compound; each is a recurring tax.
+  Reserve manual for judgement that cannot be expressed deterministically, and
+  re-evaluate each plan — yesterday's "too hard to automate" is often trivial once a
+  fixture exists.
+- **If you have spent 80% writing the test cases, the last 20% to automate them is a
+  small markup.** Do not propose agent-driven tests where assertion-based shell tests
+  work. Reserve eyeball testing for what genuinely resists assertion: TUI rendering,
+  screenshot diffs, smoke output on real data.
+- **Encode behavior in the suite, never a hand-run throwaway fixture.** Grep the
+  suite first — the path is often already covered. Manual runs are for dogfooding the
+  real product end to end, which is a different thing from testing a script.
+- **Dogfood the day it ships.** Run a self-contained slice on the real target the
+  same day; do not wait for the next plan to validate the last one. Fixtures encode
+  what you expected to vary; the real environment includes what you did not think to
+  parameterize. Treat surprises as patches to the just-shipped plan.
+- **Never skip failure-reporting because the run you watched went fine.** A clean run
+  is evidence about behaviour, never about observability. Enumerate the failure paths
+  and ask who learns about each: silent-to-everyone must be fixed;
+  visible-to-the-user-but-not-the-agent is weaker; a path whose signal would be
+  inferred rather than observed is worth leaving silent if inferring it produces
+  false alarms.
+- **Whitespace safety is essential — never a nit.** Treat splitting on whitespace as
+  a defect on sight. Severity claims from reading are guesses: run it against a
+  spaced input first. Default to NUL-delimited forms (`git config -z --get-regexp`,
+  `find -print0`, `read -r -d ''`). State a residual bound in a comment rather than
+  implying full coverage.
+
+## Code
+
+- **Entry points first, definitions after their users** — including constants. Never
+  front-load a constant above the function that reads it, and never group all
+  constants or all classes into a section of their own. The exceptions are genuine
+  evaluation-order constraints: a base class before its subclasses, a constant
+  composed into another module-level constant, annotations resolved at class
+  creation.
+- **No compat aliases, no internal back-compat.** Removing a constant or moving a
+  symbol means patching every in-repo caller directly, even if that is more files.
+  Anything kept only to spare the callers is dead weight that hides the real
+  dependency. Reserve compatibility work for genuine published API boundaries.
+- **A quiet gate signs off with the list of checks that passed**, accumulated as they
+  run — never a bare "OK" or "Green". Silence is ambiguous: a check that printed
+  nothing looks exactly like one that never ran. A recap resolves it because a
+  missing check is visibly missing. Failure stays terse.
+
+## Boundaries
+
+- **Other repos stay read-only.** A finding implicating another of my human partner's
+  repos gets investigated, verified and *proposed* — never edited in place, however
+  small and verified the fix. The session's working directory is the scope of
+  consent, and being right does not authorize the edit. Dropping a note or brief in
+  that repo is permitted; it is the *end* of your involvement, not a ticket you hold
+  open — do not carry it in a task frame or a pending-work list.
+- **Never hand-edit a vendored subtree.** `<consumer>/plugin-dev/` is read-only
+  generated content: edit claude-plugin-dev, cut a tagged release, then
+  `just update-plugin-dev vX.Y.Z`. Always pin a tag, never `main`.
+
 ## A brief's recommendation is input, not a decision
 
 A brief that enumerates options and recommends one has not decided anything.

@@ -1,6 +1,6 @@
 ---
 name: gitlore-tier-merge-direction
-description: "tiers are pinned: `/gitlore:merge`|`/gitlore:push` land the merge in the carrier, then adopt it UP into root's block — never rebuild root's block by hand; delete a pointer from root alone; correct wording only AFTER propagating, and a verified defect in an adopted line is the follow-up change"
+description: "tiers are pinned: where `/gitlore:merge`|`/gitlore:push` land a merge, and which index to edit — never root's block by hand — for a pointer removal, or a wording fix only AFTER propagating"
 metadata: 
   node_type: memory
   type: reference

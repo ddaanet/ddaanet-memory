@@ -1,6 +1,6 @@
 ---
 name: no-transition-special-cases
-description: "Don't code around a version transition in a tool with a user base of one — fix forward, one fact plus one act"
+description: "handling a version transition in your own tooling with a user base of one"
 metadata: 
   node_type: memory
   type: feedback

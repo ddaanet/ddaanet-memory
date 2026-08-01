@@ -1,6 +1,6 @@
 ---
 name: loose-generation
-description: Don't pressure generation to suppress scaffolding; enforce output constraints in a second pass
+description: "where to constrain a generator: the scaffold or the artifact boundary"
 metadata: 
   node_type: memory
   type: feedback

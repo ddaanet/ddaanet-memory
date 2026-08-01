@@ -1,6 +1,6 @@
 ---
 name: guard-safety-visible-in-the-pattern
-description: "a containment guard's accepted-input class should be narrow enough that its safety is visible in the pattern, not a proof about quoting — even when a differential test shows the wide class is safe"
+description: "narrowing a guard's accepted class: what writers need vs what you can prove inert"
 metadata: 
   node_type: memory
   type: feedback

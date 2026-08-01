@@ -1,6 +1,6 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\", mask vs genuinely-stale lock — only a real one survives unsandboxed, phantom dotfiles as char devices or zero-byte files (break `git add -A`), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard/atomic mv), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes: dangerouslyDisableSandbox, /add-dir, `!`"
+description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes incl. dangerouslyDisableSandbox"
 metadata: 
   node_type: memory
   type: reference

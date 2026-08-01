@@ -1,6 +1,6 @@
 ---
 name: outside-in-tdd
-description: "When architecture is fixed, prefer outside-in TDD (red e2e first) over bottom-up unit tests, because outside-in produces black-box tests coupled to the contract rather than internals"
+description: "starting TDD when the architecture is already fixed: e2e first or units first"
 metadata: 
   node_type: memory
   type: feedback

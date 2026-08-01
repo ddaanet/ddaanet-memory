@@ -1,6 +1,6 @@
 ---
 name: unkillable-mutation-means-a-wrong-model
-description: "a mutation a plan mandates but that no test can kill is evidence the plan's model of the code is wrong — investigate the premise, never instruct the implementer to tune the fixture until it bites"
+description: "a mandated mutation no test can kill means the plan's premise is false; never \"tune the fixture until it bites\""
 metadata: 
   node_type: memory
   type: feedback

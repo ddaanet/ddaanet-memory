@@ -1,6 +1,6 @@
 ---
 name: remove-cleanly-no-vestigial
-description: "cut all machinery in one pass; no absence-tests, no vestigial fixtures, inline a collapsed script; if a design proved harmful the cleanup is total"
+description: "how much machinery goes in one pass, and what not to leave behind"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: plan-length-matches-work
-description: "plan doc length tracks the executable work, not the topic"
+description: "tracks the executable work, not the topic"
 metadata: 
   node_type: memory
   type: feedback

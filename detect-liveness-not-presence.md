@@ -1,6 +1,6 @@
 ---
 name: detect-liveness-not-presence
-description: "a foreign tool's state file needs the *current* layout plus an identity marker inside it: layouts move (the old path becomes a declared stray) and abandoned files are never cleaned up, so `[ -f known/path ]` false-positives; fail open, pick newest, stay read-only"
+description: "probing a foreign tool's state file: why `[ -f known/path ]` false-positives"
 metadata: 
   node_type: memory
   type: feedback

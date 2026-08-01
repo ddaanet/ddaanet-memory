@@ -1,6 +1,6 @@
 ---
 name: uncram-prose-shapes
-description: Comments and docstrings written under line pressure cram in three recognisable shapes; unpack them without flattening the voice
+description: "crammed prose has three tells: multi-rule blocks, semicolon chains, colon-joined fragments; keep load-bearing em-dashes"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: dont-bake-in-guarantees
-description: "Don't bake a strong guarantee (durability, ordering, atomicity) into an API contract if a later caller will need it relaxed; expose it as an opt-in delegation method"
+description: "a guarantee a later caller must relax belongs in an opt-in method, not every call (fsync → `Ledger.sync()`)"
 metadata: 
   node_type: memory
   type: feedback

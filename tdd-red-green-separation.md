@@ -1,6 +1,6 @@
 ---
 name: tdd-red-green-separation
-description: "in subagent plan execution, never bundle a red-task into a green-task subagent; the red-phase review is what proves the test exercises the change"
+description: "never bundle a red task into a green-task subagent in plan execution"
 metadata: 
   node_type: memory
   type: feedback

@@ -1,6 +1,6 @@
 ---
 name: guard-reveals-singleton
-description: "a review finding that ends in \"add a mutual check\" is the tell that a singleton resource is modelled as N named instances — move the identity into the data and the guard disappears"
+description: "a finding ending in \"add a mutual check\" means a singleton is modelled as N *named* instances"
 metadata: 
   node_type: memory
   type: feedback

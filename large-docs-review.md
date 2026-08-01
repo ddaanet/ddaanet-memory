@@ -1,6 +1,6 @@
 ---
 name: large-docs-review
-description: "For multi-hundred-line plan/spec docs, don't lean on the user to eyeball the whole thing — surface high-risk sections explicitly first"
+description: "flag high-risk sections explicitly rather than asking for a full eyeball pass"
 metadata: 
   node_type: memory
   type: feedback

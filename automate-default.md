@@ -1,6 +1,6 @@
 ---
 name: automate-default
-description: "automated tests by default; when a manual check is justified"
+description: "automated vs manual checks, and when a manual one is justified"
 metadata: 
   node_type: memory
   type: feedback
