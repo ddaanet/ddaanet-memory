@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: a133f610-ff3a-43b5-8aca-054482eb372f
-  modified: 2026-07-31T13:22:46.191Z
+  modified: 2026-07-31T22:02:11.211Z
 ---
 
 A test that asserts something *does not* happen passes before the feature
@@ -37,7 +37,22 @@ structural answers:
 
 Few grouped positives license many negatives: one positive over a fixture pins
 the strings and proves the path, and each negative flips a single condition
-against it.
+against it. That licenses the *coverage*, not the evidence. A test body runs
+under errexit, so the grouped positive aborts the test the moment it fails and
+every negative after it is never reached — a mutation that breaks both only ever
+demonstrates the positive. Proving a negative discriminates needs a mutation
+that leaves its positive green.
+
+**Where the absent string is a variant of the present one, drop the pair and
+assert the exact block.** A prefixed twin of an unprefixed line, the superseded
+wording of a line whose new wording is asserted: no single fault produces both,
+so the negative restates the positive and no mutation can red it alone. An
+exact-block equality — the file's whole bullet region, in order — has no absent
+string to go stale, and a dropped line, a stray duplicate, a reorder and a
+wording drift each fail it. Same move for "this file was not written at all":
+byte-compare against a copy taken before the pass, rather than grepping for the
+mark a write would have left. A write that reordered without leaving the mark is
+just as much a write.
 
 **A pairing is a property of the fixture, not of the comment above it.** A
 negative whose fixture differs from its positive in more than the guard's
@@ -69,6 +84,32 @@ pin each independently: dropping one must fail its own assertion and leave the
 other's green, or the two are not separately pinned. Mutation is cheap enough
 to do inline (copy the file, patch, run, restore) and belongs in the same pass
 as writing the test, not a later audit.
+
+Read a surviving mutation before believing it. Three things look identical from
+the green count, and only one of them is a bad test:
+
+- *The mutation missed the guard.* The condition being cut is not the one that
+  decides the case, so the test never had a chance to notice. Follow the value
+  through the code before concluding anything about the test — and if the cut
+  condition really is unreachable from every fixture, that is a production
+  finding: an unpinned guard, which is worth its own fixture built around the
+  odd layout the guard defends against.
+- *The negative is over-determined.* Two independent guards each suffice, so no
+  single fault reaches the assertion. Break both at once to tell this apart from
+  an unfalsifiable assertion; that combined run is a reachability check, not a
+  discrimination claim, and the assertion stays honest belt-and-braces.
+- *The negative genuinely cannot fail*, per the variant-of-the-positive case
+  above. Replace it, do not annotate it — and where it refutes wording no
+  producer emits at all, so the property is untestable by design, delete the
+  whole test rather than trimming it back to its testable residue. A title
+  stating an untestable claim is the thing to cut; keeping the assertions that
+  survive leaves a test whose name no longer describes it.
+
+A negative refuting a **third-party** tool's message (git's "embedded git
+repository" advice, a compiler warning) still pairs: run that tool's producing
+path directly over the same fixture, so one assertion proves the message is
+still live in this version and reaches this store, while the other proves your
+own code avoids it.
 
 Related: [[reference-bats-shellcheck-gotchas]] — the specific bats mechanism
 (`run missing_function` exits 127, satisfying `-ne 0` before the code exists)
