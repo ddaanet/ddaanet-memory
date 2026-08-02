@@ -5,14 +5,14 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8bc34870-8b8c-49fa-85a0-4ad6d99085e8
-  modified: 2026-07-30T15:34:20.850Z
+  modified: 2026-08-01T14:25:51.189Z
 ---
 
 Across the five tasks of ghmem dispatch B1 (2026-07-21), **every single
 task shipped at least one test that passed for the wrong reason** — a
 test that asserted something true, but true because of a cause other than
-the code under test. Reading the tests never found them; mutating the
-code they claimed to cover found all of them.
+the code under test. Reading the tests found none of them: every assertion
+on the page is correct, and the wrong cause lives in the fixture.
 
 Concrete instances from that one plan:
 
@@ -42,9 +42,10 @@ is not evidence that the named mechanism produced it. Green is not
 enough; green *for the stated reason* is the bar.
 
 **How to apply:** do not trust a green suite on inherited or
-subagent-written work — mutate the specific line the test claims to
-cover and confirm a NAMED test dies (see
-[[mutate-code-to-test-the-tests]]). When a test raises the right
+subagent-written work. Take each assertion and name what else could
+produce the observable it checks; where anything else can, the fixture
+has to be rebuilt until nothing else can ([[tests-that-cannot-discriminate]]).
+When a test raises the right
 exception, check nothing upstream raises the same type first. When it
 compares collections, assert they are non-empty before comparing, or the
 equality is vacuous. When it observes a downstream effect (the queue

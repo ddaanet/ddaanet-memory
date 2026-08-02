@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: ee821d18-029f-4b49-8a7a-56008312ab1a
-  modified: 2026-07-26T13:48:37.593Z
+  modified: 2026-08-01T14:28:30.971Z
 ---
 
 When a guard admits user-chosen input, narrow the class to what is
@@ -30,5 +30,5 @@ differential test anyway — it is what tells you whether you are
 narrowing out of caution or out of necessity, and the answer belongs in
 the comment. See [[guardrail-must-permit-real-commands]] and
 [[tests-pass-for-the-wrong-reason]] — two of the tests for that class
-were passing because a *different* rule caught them, and only survived
-mutation once each body closed with exactly what its opener named.
+were passing because a *different* rule caught them, and only began to
+discriminate once each body closed with exactly what its opener named.
