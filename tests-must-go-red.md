@@ -1,11 +1,11 @@
 ---
 name: tests-must-go-red
-description: "what does not count as a red (an error, green-at-first); a \"stays silent\" negative passing vacuously, the negative/positive pairing over one fixture, a wait-then-proceed gate; mutate each guard, and mutate to the plausible wrong implementation"
+description: "what does not count as a red (an error, green-at-first); a \"stays silent\" negative passing vacuously, the negative/positive pairing over one fixture, testing a wait-then-proceed gate; an untestable negative is deleted whole, not trimmed back"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: ef3c82af-f6b0-46b1-a5ed-150fdb5b8a25
-  modified: 2026-08-01T13:46:31.439Z
+  modified: 2026-08-01T14:28:21.730Z
 ---
 
 An assertion counts as evidence only once it has been observed failing. An
@@ -62,14 +62,14 @@ Few grouped positives license many negatives: one positive over a fixture pins
 the strings and proves the path, and each negative flips a single condition
 against it. That licenses the *coverage*, not the evidence. A test body runs
 under errexit, so the grouped positive aborts the test the moment it fails and
-every negative after it is never reached — a mutation that breaks both only ever
-demonstrates the positive. Proving a negative discriminates needs a mutation
-that leaves its positive green.
+every negative after it is never reached: a negative sitting behind a positive
+runs only in the case where the positive already held. Give each negative its
+own test body, or place it ahead of the positive, so its result is its own.
 
 **Where the absent string is a variant of the present one, drop the pair and
 assert the exact block.** A prefixed twin of an unprefixed line, the superseded
 wording of a line whose new wording is asserted: no single fault produces both,
-so the negative restates the positive and no mutation can red it alone. An
+so the negative restates the positive and nothing can fail it alone. An
 exact-block equality — the file's whole bullet region, in order — has no absent
 string to go stale, and a dropped line, a stray duplicate, a reorder and a
 wording drift each fail it. Same move for "this file was not written at all":
@@ -82,7 +82,7 @@ actually produces.** A "nothing happened" proxy that is equally true on the
 success path pins nothing at all — a hook asserted not to write a settings file
 that its own design forbids writing in either branch, a marker no branch
 creates. This is a third staleness, beside string and path: the *proxy* never
-discriminated, so no mutation anywhere can red it. Pick the observable from what
+discriminated, so no change anywhere can fail it. Pick the observable from what
 the feature emits when it does fire — the config keys it sets, the files it
 installs, the bytes on its output channel — and assert their absence.
 
@@ -107,49 +107,11 @@ Where a feature writes to two channels, pin each independently: dropping one
 must fail its own assertion and leave the other's green, or the two are not
 separately pinned.
 
-## Mutate each guard — a pairing claim isn't a pairing
-
-Nothing else distinguishes a paired negative from one that merely looks paired,
-and mutation is the whole cover where a negative cannot be paired with a
-positive that proves its path. Mutate the specific guard the assertion watches —
-widen the condition it excludes, delete the early return, reorder the call past
-its bail, drop the one message the test reads — re-run, and confirm *that* test
-goes red. Restore and re-run. One targeted mutation per assertion, not a general
-sweep; the point is to name which line the test is watching. It is cheap enough
-inline (copy the file, patch, run, restore) and belongs in the same pass as
-writing the test, not a later audit ([[mutate-code-to-test-the-tests]]).
-
-**Mutate to the plausible wrong implementation, not to nothing.** Deleting a
-bail outright is usually absorbed downstream — an empty variable makes the next
-path check fail on its own, a missing file makes the next read return the
-default — so the deletion proves only that the code is defensive in layers.
-What the assertion is really defending against is the *substitute*: filling the
-missing root in from the session cwd instead of bailing, adding a `2>/dev/null`
-so an unparseable config reads as "feature off". Write that version and the
-assertion reds cleanly. Read the mutated line back before trusting the run: a
-harness that checks only *that* the file changed will report a red for a
-mutation that mangled the script, and a red from a broken script is the same
-false evidence as an error standing in for a red.
-
-Read a surviving mutation before believing it. Three things look identical from
-the green count, and only one of them is a bad test:
-
-- *The mutation missed the guard.* The condition being cut is not the one that
-  decides the case, so the test never had a chance to notice. Follow the value
-  through the code before concluding anything about the test — and if the cut
-  condition really is unreachable from every fixture, that is a production
-  finding: an unpinned guard, which is worth its own fixture built around the
-  odd layout the guard defends against.
-- *The negative is over-determined.* Two independent guards each suffice, so no
-  single fault reaches the assertion. Break both at once to tell this apart from
-  an unfalsifiable assertion; that combined run is a reachability check, not a
-  discrimination claim, and the assertion stays honest belt-and-braces.
-- *The negative genuinely cannot fail*, per the variant-of-the-positive case
-  above. Replace it, do not annotate it — and where it refutes wording no
-  producer emits at all, so the property is untestable by design, delete the
-  whole test rather than trimming it back to its testable residue. A title
-  stating an untestable claim is the thing to cut; keeping the assertions that
-  survive leaves a test whose name no longer describes it.
+Where a negative genuinely cannot fail — it refutes wording no producer emits
+at all, so the property is untestable by design — delete the whole test rather
+than trimming it back to its testable residue. A title stating an untestable
+claim is the thing to cut; keeping the assertions that survive leaves a test
+whose name no longer describes it.
 
 A negative refuting a **third-party** tool's message (git's "embedded git
 repository" advice, a compiler warning) still pairs: run that tool's producing
@@ -169,7 +131,5 @@ the moment the code changes.
 Related: [[bats-shellcheck-gotchas]] — the specific bats mechanisms
 (`run missing_function` exits 127 before the code exists; `run` is a subshell
 so out-params never reach the test) that make these failure modes concrete in
-that framework; [[unkillable-mutation-means-a-wrong-model]] for the case where
-the surviving mutation is a finding about the spec rather than the test, and
-[[mutation-sweep-must-survive-a-kill]] for running mutations in bulk without
-leaving the tree mutated.
+that framework; [[tests-that-cannot-discriminate]] for the assertion and fixture
+shapes that pass whatever the code does.

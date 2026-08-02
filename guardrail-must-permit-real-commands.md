@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8798f83d-450b-4871-a398-d6b23a79504a
-  modified: 2026-07-26T10:55:19.397Z
+  modified: 2026-08-01T14:37:02.007Z
 ---
 
 A containment allowlist must permit the contained system's **primary
@@ -55,5 +55,5 @@ broken *closed* blocks the provocation too and looks exactly like
 success from the deny alone.
 
 See [[agent-hooks-need-exact-trust-key]] for the other way this same
-hook silently fails to run, and [[stale-artifact-is-not-agent-death]]
-for why a worker's own account of what it did is not evidence.
+hook silently fails to run, and [[verify-at-source]] for why a worker's
+own account of what it did is not evidence.

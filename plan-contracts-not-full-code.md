@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: a9133ea6-55ff-41b0-a76f-21cad29dbb69
-  modified: 2026-07-22T17:53:09.097Z
+  modified: 2026-08-01T14:28:28.871Z
 ---
 
 Implementation plans are **contract-style**. Verbatim code belongs in a
@@ -18,7 +18,7 @@ writes the code.
   members, a header prefix an agent parses, a terminal message. A
   reviewer reading one task cannot catch a mismatch here.
 - **Contract, never code:** function bodies. State the precondition,
-  the postcondition, the invariant, and the mutation that must kill it.
+  the postcondition, and the invariant.
 - **Arguably verbatim:** tests, since a test is the contract made
   executable — but only if the implementation is NOT also handed over,
   or TDD becomes theatre.
@@ -35,7 +35,7 @@ genuinely failing test, which manufactures
 [[tests-pass-for-the-wrong-reason]]; and the reviewer ends up
 reviewing the planner's judgement laundered through the implementer
 instead of independent work. Verification belongs in the gate — ruff,
-mypy, pytest, mutation — not in an unverified markdown code block.
+mypy, pytest — not in an unverified markdown code block.
 
 **How to apply:** when `writing-plans` asks for full code, write the
 `Interfaces:` block verbatim and the steps as contracts, and say in

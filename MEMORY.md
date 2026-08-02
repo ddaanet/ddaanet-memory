@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-01T13:46:36.729Z
+  modified: 2026-08-01T14:52:40.181Z
 ---
 
 # ddaanet tier index
@@ -66,7 +66,7 @@ the project's own memory store.
 - [Reconstructable is two categories](reconstructable-two-categories.md) — by-harness vs by-model-inference from a paraphrase
 - [Imperative-form rule scope](imperative-form-scope.md) — the skill-development rule targets instruction subjects ("You should X"), not every pronoun; `your post-compaction self` is a deliberate keep
 - [bundle memory with source](bundle-memory-with-source.md) — which commit a memory update rides — not unrelated pending work
-- [Tests must go red](tests-must-go-red.md) — what does not count as a red (an error, green-at-first); a "stays silent" negative passing vacuously, the negative/positive pairing over one fixture, testing a wait-then-proceed gate; mutate each guard — a pairing claim isn't a pairing — and mutate to the plausible wrong implementation, not to nothing
+- [Tests must go red](tests-must-go-red.md) — what does not count as a red (an error, green-at-first); a "stays silent" negative passing vacuously, the negative/positive pairing over one fixture, testing a wait-then-proceed gate; an untestable negative is deleted whole, not trimmed back
 - [directive states acts only](directive-states-acts.md) — writing an agent-facing or script-emitted directive: what to cut from it
 - [gitlore memory commit routing](gitlore-memory-commit-routing.md) — when a memory commit stands alone vs rides the parent (the TRIGGER file); withholding it does NOT fix history; dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes, so check `origin/live`
 - [no speculative rules or anti-patterns](no-speculative-rules.md) — whether a rule or an anti-pattern has earned an entry
@@ -81,15 +81,12 @@ the project's own memory store.
 - [classifier denies self-config writes](classifier-denied-self-config.md) — auto-mode denials on agent self-configuration: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push; INCIDENTAL writes only, not user-named ones
 - [a guard reveals a singleton](guard-reveals-singleton.md) — a finding ending in "add a mutual check" means a singleton is modelled as N *named* instances
 - [Transcripts are ground truth](transcripts-are-ground-truth.md) — a corrupted subagent artifact: transcripts hold the verbatim tool inputs to diff against
-- [Stale artifact ≠ agent death](stale-artifact-is-not-agent-death.md) — an unwritten subagent report proves nothing about whether the agent died
 - [Slice history forward](slice-history-forward-not-by-cherry-pick.md) — re-expressing landed history as review slices, and why cherry-pick reordering fails
 - [Slice an uncommitted tree via the index](slice-uncommitted-tree-via-index.md) — stage each slice, never touch the tree; `hash-object -w` + `update-index --cacheinfo` for files spanning two slices
 - [Style briefs need the how](prose-voice-does-not-delegate.md) — an underspecified "uncram" brief gets applied as find-and-replace; NOT evidence that prose degrades down-tier
 - [SDD durable state across compaction](sdd-durable-state-across-compaction.md) — flush the SDD ledger, not just memory, before compacting — `precompact` won't; recovering dead subagents
 - [Live data before designing](test-with-live-data-before-designing.md) — before planning the next subproject: real data, not fixtures
-- [Mutate code to test the tests](mutate-code-to-test-the-tests.md) — proving a test has teeth, and what an unkillable mutation means
-- [Mutation sweeps must survive a kill](mutation-sweep-must-survive-a-kill.md) — a `finally` restore does not survive SIGKILL; a sweep whose writes the sandbox denies (under `.claude/`) reports every mutation SURVIVED
-- [Unkillable mutation = wrong model](unkillable-mutation-means-a-wrong-model.md) — a mandated mutation no test can kill means the plan's premise is false; never "tune the fixture until it bites"
+- [Tests that cannot discriminate](tests-that-cannot-discriminate.md) — shapes that pass whatever the code does: birth state, algebraic tautology, two empty derived states compared, parallel counts all equal, an isolation fixture with nothing to leak, upsert idempotence standing in for teardown, a substring another line satisfies
 - [Tests pass for the wrong reason](tests-pass-for-the-wrong-reason.md) — a green test asserting a true fact produced by the wrong cause
 - [Provisional values, not provisional code](provisional-values-not-provisional-code.md) — uncalibrated constants: a parameter to bind, or a licence for a placeholder implementation
 - [Ground formulas in data](ground-formulas-in-data.md) — derive from corpus analysis, never hip-shooting
