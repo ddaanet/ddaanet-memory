@@ -33,8 +33,7 @@ another repository or a submodule.
 reached for in service of its own task while the user had asked for something
 else. The classifier weighs whether an action is what the user asked for, so a
 user-named action — a submodule push behind an explicit `/gitlore:push` — is a
-different case: unobserved, not known-denied. Related:
-[[denial-cost-not-possibility]].
+different case: unobserved, not known-denied.
 
 **Resolution confirmed for the cross-repo case:** a release script (gitlore's
 own `plugin-dev/release.just`) needed to bump a sibling repo's file

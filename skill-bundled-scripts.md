@@ -48,4 +48,4 @@ claude-code-guide passes that claimed it isn't possible:
 (`exec bash "$(dirname "$0")/../scripts/real.sh" "$@"`), keep logic in
 `scripts/`, and have the skill body invoke the shim by bare name. No hook
 required for "skill body must run a bundled script." Use a hook only when no
-agent action is needed on the result. See [[harness-over-agent]].
+agent action is needed on the result.

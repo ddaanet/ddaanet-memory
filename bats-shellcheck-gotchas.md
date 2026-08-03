@@ -38,7 +38,6 @@ Observed 2026-07-21: an implementation plan's test code carried four
 `! grep -qF` negative assertions; two would have passed unconditionally,
 including the one meant to prove that mirror-down strips the tier prefix from a
 path. The linter caught it before the tests ran, not the author's review.
-See [[no-handrun-tests]].
 
 ## `run missing_function` exits 127, so negative assertions pass vacuously
 
@@ -143,7 +142,7 @@ produces them.
 
 Context: a code-quality review subagent flagged every non-final assertion in a
 converted suite as a correctness HIGH ("masked failures"); a 5-line bats probe
-disproved it. See [[verify-at-source]].
+disproved it.
 
 ## ShellCheck lints `.bats` natively
 

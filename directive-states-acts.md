@@ -61,8 +61,9 @@ act. Ask what a reader would *do* with each remaining line; if the answer is
 "check it" or "explain it back", cut it. Test the negatives on the whole word
 (`[[ "$output" != *"trigger"* ]]`) and pair each with a positive over the same
 fixture per [[tests-must-go-red]]. When a rule is an ordering between the
-*caller's own steps*, it belongs where the steps are described — see
-[[prohibition-vs-procedure]] on placement. The split of judgement from
-mechanism is [[harness-over-agent]]; stating a rule positively in the
+*caller's own steps*, it belongs where the steps are described: a
+prohibition must be front-loaded, a procedure defers to its trigger. The
+split of judgement from mechanism is the harness/agent boundary; stating a
+rule positively in the
 step where it acts rather than as a prohibition is
 [[no-speculative-rules]].

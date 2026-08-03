@@ -35,4 +35,3 @@ against the work the summary describes — `PWD`, `CLAUDE_PROJECT_DIR`, and the
 gitStatus block. If they disagree, say so and stop; do not reconcile it by
 `cd`-ing. Treat a guard refusal or a "modified by the user or a linter" notice
 on a file you did not touch as evidence of a concurrent session, not noise.
-Related: [[no-in-place-other-repos]].

@@ -31,4 +31,4 @@ skills in a plugin, not just the headline one. See [[claude-plugin-dev]].
 Model guidance does not belong in a skill body either. Which model runs the
 work is an agent-frontmatter concern, so a skill that says "run this on Sonnet"
 is stating something it cannot enforce — put it on the agent definition
-instead. See [[sdd-reviewer-tiering]].
+instead.

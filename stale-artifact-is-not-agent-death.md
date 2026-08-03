@@ -41,7 +41,7 @@ other sessions, not my agent. Before re-dispatching into a tree that
 already has an agent in it, get positive evidence the first one is gone,
 and if you cannot, ask rather than guess. When a replacement does land on
 inherited work, re-verify the gate yourself in a quiet tree instead of
-trusting any agent's green claim — see
-[[machine-resource-limits]] for why agents here go silent in the first
-place, and [[mutate-code-to-test-the-tests]] for why a mutation run in a
-contended tree is meaningless.
+trusting any agent's green claim — this box OOMs against ~2GB, which is why
+agents here go silent in the first place, and see
+[[mutate-code-to-test-the-tests]] for why a mutation run in a contended
+tree is meaningless.
