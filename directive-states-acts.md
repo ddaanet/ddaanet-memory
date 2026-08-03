@@ -60,7 +60,7 @@ split the mode exists to prevent.
 act. Ask what a reader would *do* with each remaining line; if the answer is
 "check it" or "explain it back", cut it. Test the negatives on the whole word
 (`[[ "$output" != *"trigger"* ]]`) and pair each with a positive over the same
-fixture per [[tests-must-go-red]]. When a rule is an ordering between the
+fixture per [[green-is-not-evidence]]. When a rule is an ordering between the
 *caller's own steps*, it belongs where the steps are described — see
 [[prohibition-vs-procedure]] on placement. The split of judgement from
 mechanism is [[harness-over-agent]]; stating a rule positively in the

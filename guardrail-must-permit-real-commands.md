@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8798f83d-450b-4871-a398-d6b23a79504a
-  modified: 2026-07-26T10:55:19.397Z
+  modified: 2026-08-01T14:37:02.007Z
 ---
 
 A containment allowlist must permit the contained system's **primary
@@ -23,7 +23,7 @@ enforcement, no topic could ever be routed.
 provoke-and-check dispatch" — a true observation, obtained from a
 command shape real usage never takes. The probe proved the hook was
 attached; it never asked whether the hook permitted the work. That is
-[[tests-pass-for-the-wrong-reason]] applied to a guardrail, and the
+[[green-is-not-evidence]] applied to a guardrail, and the
 failure is silent in the worst direction: the corpus filling with
 note-bearing routes was itself proof that enforcement was off, and it
 read as success for a whole run.
@@ -55,5 +55,5 @@ broken *closed* blocks the provocation too and looks exactly like
 success from the deny alone.
 
 See [[agent-hooks-need-exact-trust-key]] for the other way this same
-hook silently fails to run, and [[stale-artifact-is-not-agent-death]]
-for why a worker's own account of what it did is not evidence.
+hook silently fails to run, and [[verify-at-source]] for why a worker's
+own account of what it did is not evidence.
