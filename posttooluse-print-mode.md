@@ -1,11 +1,11 @@
 ---
 name: posttooluse-print-mode
-description: "`--print` vs SDK `query()` as a scripted harness: which hooks fire (incl. `PostToolBatch`), whether `additionalContext` injects, how each does multi-turn (`--print --resume`), and what to pick on (cost/latency in the file)"
+description: "`--print` vs SDK `query()` as a scripted harness: which hooks fire (incl. `PostToolBatch`), whether `additionalContext` injects, how each does multi-turn (`--print --resume`), and what to pick on (cost/latency in the file); `claude -p` is NOT read-only — `SessionStart` fires, so a probe verifying repo state can silently mutate the tree it was checking"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: c1fe8547-2e6f-4cb6-b1a3-c378f4e05ed4
-  modified: 2026-07-22T14:43:28.578Z
+  modified: 2026-08-03T17:47:43.799Z
 ---
 
 **Under `claude --print`, PostToolUse hooks fire and a properly-wrapped `additionalContext` injects.** Verified by direct test on CC 2.1.212: a PostToolUse hook ran under `--print` and its `additionalContext` steered the model's reply. A widespread belief holds the opposite (GitHub [anthropics/claude-code#37559](https://github.com/anthropics/claude-code/issues/37559) reads that way) — test before trusting it.
@@ -17,6 +17,8 @@ just the one event that happened to be verified first. That mattered here: gitlo
 eval fixture hand-listed `PostToolUse` alone, which left composition, the commit
 gate, recall and add-tier dark in every eval ever run — derive the eval's hook
 wiring from the plugin's real `hooks.json` instead ([[test-the-invocation-path]]).
+
+**Because `SessionStart` fires, `claude -p` is not a read-only probe — it is a real session that runs your repo-mutating hooks.** A one-shot `-p` invocation used to *verify* state can destroy the state it was checking. Observed 2026-08-03: two `claude -p` probes confirming a `CLAUDE.md` `@` import resolved also ran gitlore's own `SessionStart`, whose unconditional `git submodule update` re-pinned a memory tier to its recorded gitlink and walked HEAD back off a just-landed merge commit, reverting the merged fact files. Nothing reported it — the probe answered the question it was asked and the damage was in a different file. Before spending a `-p` run on a question about the working tree, ask what this repo's `SessionStart` does; where it writes, verify by reading the tree instead, or take the probe's answer knowing the tree may have moved under it.
 
 **`additionalContext` requires `hookSpecificOutput` wrapping.** A hook printing top-level `{"additionalContext": "..."}` is silently dropped; the correct shape is:
 ```json
