@@ -43,6 +43,6 @@ machine-checkable exit condition delegates fine — the `raw_nodes.py` split wit
 "`check_line_limits.sh` must exit 0" came back correct on the first try.
 Whatever comes back, read the full diff before reporting it as done;
 "agent reported success" is not verification. See
-[[tests-pass-for-the-wrong-reason]] for the same evidence-over-assertion
+[[green-is-not-evidence]] for the same evidence-over-assertion
 instinct, and [[honest-line-count-caps]] for why the uncramming was
 allowed to push a file over the cap in the first place.

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 2ab4326a-2ac4-4c90-9dd8-4da55efdf552
-  modified: 2026-08-01T14:26:10.878Z
+  modified: 2026-08-03T10:16:06.108Z
 ---
 
 Before planning a subproject that builds on an existing pipeline, run
@@ -39,5 +39,4 @@ Hold back anything that writes a non-regenerable ledger until the read
 half is proven. Measure distributions, not just "it ran" — the p50/p90/
 max of every quantity a downstream constant is supposed to bound.
 
-Related: [[tests-pass-for-the-wrong-reason]],
-[[ground-formulas-in-data]], [[tests-that-cannot-discriminate]].
+Related: [[green-is-not-evidence]], [[ground-formulas-in-data]].
