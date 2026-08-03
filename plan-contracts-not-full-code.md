@@ -32,7 +32,7 @@ cost is concrete: the plan's copy of the code is the one that was
 never run, type-checked or linted; it goes stale against the tasks
 before it; an implementer handed the implementation cannot write a
 genuinely failing test, which manufactures
-[[tests-pass-for-the-wrong-reason]]; and the reviewer ends up
+[[green-is-not-evidence]]; and the reviewer ends up
 reviewing the planner's judgement laundered through the implementer
 instead of independent work. Verification belongs in the gate — ruff,
 mypy, pytest — not in an unverified markdown code block.
