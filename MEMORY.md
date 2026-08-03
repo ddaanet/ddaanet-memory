@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-01T14:36:59.052Z
+  modified: 2026-08-03T15:53:19.516Z
 ---
 
 # ddaanet tier index
@@ -30,6 +30,7 @@ the project's own memory store.
 - [plan length matches work](plan-length-matches-work.md) — tracks the executable work, not the topic
 - [git hook env leak](git-hook-env-leak.md) — `index file open failed: Not a directory` in a hook = leaked repo-local `GIT_*`; `unset $(git rev-parse --local-env-vars)`, but save/restore `GIT_INDEX_FILE` for a staging `git add` or it dies on `Unable to create '.git/index.lock': File exists`
 - [submodule escape to parent](submodule-escape-to-parent.md) — `git -C`/`cd` into a submodule with no `.git` silently operates on the **parent**; symptom: bogus 160000 gitlink or a stray `git branch`; linked worktree = `--git-dir` ≠ `--git-common-dir`
+- [submodule url arrives rewritten](submodule-url-arrives-rewritten.md) — matching a submodule's `remote.origin.url` against a marker you wrote into `.gitmodules`: git absolutizes a relative url on the way in, so the literal is only ever visible to a `.gitmodules` read; and an entry with no `url` at all cannot be initialized
 - [CC sub-agent approval](cc-subagent-approval.md) — `No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to `SendMessage`; a bare `idle_notification` is not a report
 - [harden human gates, not controlled channels](harden-human-gates.md) — where word-boundary/escape recognition belongs: human free-text vs a channel whose producer you control
 - [CC command namespacing](cc-command-namespacing.md) — `/<plugin>:<path-under-commands>`, so `commands/gitlore/install.md` becomes `/gitlore:gitlore:install`; and a skill colliding on the same `<plugin>:<name>`
@@ -66,11 +67,13 @@ the project's own memory store.
 - [Reconstructable is two categories](reconstructable-two-categories.md) — by-harness vs by-model-inference from a paraphrase
 - [Imperative-form rule scope](imperative-form-scope.md) — the skill-development rule targets instruction subjects ("You should X"), not every pronoun; `your post-compaction self` is a deliberate keep
 - [bundle memory with source](bundle-memory-with-source.md) — which commit a memory update rides — not unrelated pending work
-- [Tests must go red](tests-must-go-red.md) — what does not count as a red (an error, green-at-first); a "stays silent" negative passing vacuously, the negative/positive pairing over one fixture, and testing a wait-then-proceed gate
+- [Green is not evidence](green-is-not-evidence.md) — accepting a green test you did not watch fail, yours or inherited: shapes that pass whatever the code does (birth state, algebraic tautology, empty derived states compared, parallel counts all equal, an isolation fixture with nothing to leak, upsert idempotence for teardown, a substring another line satisfies, a downstream effect standing in for the write, the right exception from the wrong guard); structuring a negative against string/path/proxy staleness, the negative/positive pairing over one fixture, a wait-then-proceed gate, and deleting an untestable negative whole
+- [run the gate, not a suite subset](run-the-gate-not-a-suite-subset.md) — verifying a change before declaring it done: picking the affected suites is the guess the gate exists to remove
 - [directive states acts only](directive-states-acts.md) — writing an agent-facing or script-emitted directive: what to cut from it
 - [gitlore memory commit routing](gitlore-memory-commit-routing.md) — when a memory commit stands alone vs rides the parent (the TRIGGER file); withholding it does NOT fix history; dirty memory with no fresh summary ABORTS that commit, and summary mtime must beat every memory file; neither path pushes, so check `origin/live`
 - [no speculative rules or anti-patterns](no-speculative-rules.md) — whether a rule or an anti-pattern has earned an entry
 - [checkout clears merge state](git-checkout-clears-merge-state.md) — `git checkout` silently unlinks MERGE_HEAD/MERGE_MSG (`remove_branch_state`), so a *clean* `merge --no-commit` dies on any later re-checkout while its index survives; recover by restoring both pointers after `write-tree` == `merge-tree --write-tree`
+- [shared trigger means merge](shared-trigger-means-merge.md) — several memories that each seem to lack a trigger: test whether they name one moment before writing a trigger clause into each; duplication is the tell, and splitting further or hanging it off an agent prompt both fail
 - [index compaction loses triggers](index-compaction-triggers.md) — classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; over budget is NEVER a reason to under-trigger a new/updated fact — pressure means retire, not ship an unroutable line; audit plain words, not just backticked literals
 - [detect liveness, not presence](detect-liveness-not-presence.md) — probing a foreign tool's state file: why `[ -f known/path ]` false-positives
 - [tier mount blows the index budget](gitlore-tier-index-budget.md) — mounting a populated tier imports its whole index; composition orders tier-first, so the consumer's OWN project lines fall past the 24.4KB load cutoff
@@ -81,16 +84,11 @@ the project's own memory store.
 - [classifier denies self-config writes](classifier-denied-self-config.md) — auto-mode denials on agent self-configuration: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push; INCIDENTAL writes only, not user-named ones
 - [a guard reveals a singleton](guard-reveals-singleton.md) — a finding ending in "add a mutual check" means a singleton is modelled as N *named* instances
 - [Transcripts are ground truth](transcripts-are-ground-truth.md) — a corrupted subagent artifact: transcripts hold the verbatim tool inputs to diff against
-- [Stale artifact ≠ agent death](stale-artifact-is-not-agent-death.md) — an unwritten subagent report proves nothing about whether the agent died
 - [Slice history forward](slice-history-forward-not-by-cherry-pick.md) — re-expressing landed history as review slices, and why cherry-pick reordering fails
 - [Slice an uncommitted tree via the index](slice-uncommitted-tree-via-index.md) — stage each slice, never touch the tree; `hash-object -w` + `update-index --cacheinfo` for files spanning two slices
 - [Style briefs need the how](prose-voice-does-not-delegate.md) — an underspecified "uncram" brief gets applied as find-and-replace; NOT evidence that prose degrades down-tier
 - [SDD durable state across compaction](sdd-durable-state-across-compaction.md) — flush the SDD ledger, not just memory, before compacting — `precompact` won't; recovering dead subagents
 - [Live data before designing](test-with-live-data-before-designing.md) — before planning the next subproject: real data, not fixtures
-- [Mutate code to test the tests](mutate-code-to-test-the-tests.md) — proving a test has teeth, and what an unkillable mutation means
-- [Mutation sweeps must survive a kill](mutation-sweep-must-survive-a-kill.md) — a `finally` restore does not survive SIGKILL; a sweep whose writes the sandbox denies (under `.claude/`) reports every mutation SURVIVED
-- [Unkillable mutation = wrong model](unkillable-mutation-means-a-wrong-model.md) — a mandated mutation no test can kill means the plan's premise is false; never "tune the fixture until it bites"
-- [Tests pass for the wrong reason](tests-pass-for-the-wrong-reason.md) — a green test asserting a true fact produced by the wrong cause
 - [Provisional values, not provisional code](provisional-values-not-provisional-code.md) — uncalibrated constants: a parameter to bind, or a licence for a placeholder implementation
 - [Ground formulas in data](ground-formulas-in-data.md) — derive from corpus analysis, never hip-shooting
 - [Marginal weakness ≠ misweighting](marginal-weakness-is-not-misweighting.md) — a metric can discriminate at the base rate alone and still earn a heavy weight
@@ -103,7 +101,7 @@ the project's own memory store.
 - [Plans carry contracts, not code](plan-contracts-not-full-code.md) — how much code a plan carries; writing-plans demands full bodies and must be overridden
 - [Honest line-count caps](honest-line-count-caps.md) — plan/PR line caps: wrapping vs cramming, and never shaving docstrings to fit
 - [Spec contract size predicts PR size](spec-contract-size-predicts-pr-size.md) — the 400-line PR cap is soft; a task's contract size predicts its impl overshoot
-- [Genuine red, not missing SUT](genuine-red-not-missing-sut.md) — TDD red = failed assertion (stub-then-assert), never a missing module; plan interfaces one contract per line
+- [Genuine red, not missing SUT](genuine-red-not-missing-sut.md) — TDD red = failed assertion (stub-then-assert), never a missing module, and green-at-first is not evidence; one inert-stub run reds a whole batch but proves absence not wrongness; plan interfaces one contract per line
 - [Don't bake in guarantees](dont-bake-in-guarantees.md) — a guarantee a later caller must relax belongs in an opt-in method, not every call (fsync → `Ledger.sync()`)
 - [No code for impossible cases](no-code-for-impossible-cases.md) — "if they exist" means go check the data model, not build for it
 - [Shape rules are not duplication](shape-rules-are-not-duplication.md) — which layer a validation rule belongs in: ask what vocabulary the rule needs

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: ca597732-d159-40c8-adc3-c5e8c88c1ec2
-  modified: 2026-07-25T18:06:59.261Z
+  modified: 2026-08-01T14:37:03.486Z
 ---
 
 When an agent's output lands corrupted (shell expansion, truncation, a
@@ -31,5 +31,4 @@ cannot be trusted, check whether a transcript pins down what was meant.
 Parse the command with `shlex.split` — it keeps backticks literal, so
 what it yields is the author's intent, and any difference from the
 artifact is exactly what the shell did to it. Relates to
-[[stale-artifact-is-not-agent-death]] and
 [[verify-restart-before-structural-diagnosis]].
