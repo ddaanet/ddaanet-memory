@@ -209,7 +209,6 @@ of every touched fact file to match — one 2-line index edit produced a 57-file
 diff (2 index files + 55 fact-file frontmatter updates). Review the whole
 submodule diff before committing a compaction, not just the index files.
 
-Related: [[verify-at-source]] (confirm a reported loss in the file
-before acting); [[memory-writing]] (what belongs in the fact file the
+Related: [[memory-writing]] (what belongs in the fact file the
 line points at); background on why the index is the only reliably-recalled
 surface in `docs/references/cc-memory-retrieval.md`.

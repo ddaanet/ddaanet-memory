@@ -155,7 +155,4 @@ framings. **Compactness is cutting connectives, not dropping content** —
 completeness of substance stays. Same instinct applied to hook output:
 [[hook-output-channels]].
 
-Related: [[harness-over-agent]] (a design principle whose *application*
-can shift even though the principle holds),
-[[examine-evidence-drift]], [[verify-at-source]],
-[[loose-generation]].
+Related: [[examine-evidence-drift]], [[loose-generation]].

@@ -16,9 +16,8 @@ half-migrated path. Fix forward instead.
 **Why:** David: "Don't write a special case for the gitlore transition, it
 has a user base of one." With one user the transition window is a single
 restart; the branch outlives the case it covers, and its explanatory prose
-is wrong the moment the transition ends. Same instinct as
-[[no-compat-aliases]] — carrying the old state costs more than
-patching through.
+is wrong the moment the transition ends. Same instinct as refusing compat
+aliases — carrying the old state costs more than patching through.
 
 **How to apply:** When a message or code path starts enumerating causes
 ("installed before this session / updated since / the pinned path moved"),

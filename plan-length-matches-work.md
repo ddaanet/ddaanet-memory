@@ -17,4 +17,4 @@ When the work is concrete ("edit N files + run M commands"), the plan doc should
 - For packaging/configuration/distribution plans: a short checklist (≤30 lines) with steps + open decisions + scope notes is plenty.
 - Reserve full spec docs for plans with non-trivial design decisions worth recording across sessions.
 
-Related: [[plan-late]] (don't plan beyond next iteration); [[large-docs-review]] (large docs defeat eyeball review).
+Related: [[large-docs-review]] (large docs defeat eyeball review).

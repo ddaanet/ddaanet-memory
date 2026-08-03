@@ -29,8 +29,8 @@ the identity marker, and pick most-recently-modified among several matches —
 alphabetical glob order is not a liveness signal. Make the near-miss fail *open*
 (no detection → do the normal thing), because a false positive here suppresses
 your own durable state. Verify the layout and marker against the other tool's
-own source, not its docs or your recollection — see
-[[verify-at-source]]. Keep the detector read-only: another workflow's
+own source, not its docs or your recollection. Keep the detector
+read-only: another workflow's
 stale file is never yours to delete, however abandoned it looks. And keep one
 registry function that owns the layout, with every consumer interpolating what
 it prints — a hardcoded copy of the path in a directive drifts silently, and a
