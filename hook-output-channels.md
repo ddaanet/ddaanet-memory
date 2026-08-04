@@ -1,11 +1,11 @@
 ---
 name: hook-output-channels
-description: "`systemMessage` vs `additionalContext` vs stderr (`additionalContext` is honoured at PreToolUse too), what a hook ERROR does, and that only exit 2 blocks (PreToolUse only)"
+description: "`systemMessage` vs `additionalContext` vs stderr (`additionalContext` is honoured at PreToolUse too), that `systemMessage` renders ANSI, what a hook ERROR does, and that only exit 2 blocks (PreToolUse only)"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-26T11:07:59.441Z
+  modified: 2026-08-03T15:11:50.065Z
 ---
 
 ## Channel mechanics (verified 2026-06-10; PreToolUse additions 2026-07-17)
@@ -111,6 +111,13 @@ is curt and informative"). No "to fix this, run X" — that is the agent's job v
 
 `_wipe-emit.sh` is the in-repo reference implementation of this style — read it
 rather than re-deriving the conventions.
+
+**`systemMessage` renders ANSI escapes rather than showing them as literal
+bytes.** So a hook that speaks only when something went wrong can lead its line
+with a style reset (`$'\033[0m'`) to escape the dimming applied to ordinary hook
+chatter, which is what handoff's drift report and context-size nudge do. Curt
+and informative still governs the words; this is only about not being rendered
+as noise.
 
 ## Wording an agent-facing DENY: no actionable phrases
 
