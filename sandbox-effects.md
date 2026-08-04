@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-31T18:10:22.415Z
+  modified: 2026-08-04T08:46:33.458Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -120,6 +120,18 @@ them; and they are visible with the sandbox OFF (both via
 `dangerouslyDisableSandbox` and via the `unsandbox-git-status` hook), so "it is
 only the sandboxed view" does not explain them away. Do not delete them, do not
 commit them, do not raise them as a finding.
+
+**They are real files while a sandbox is in effect, and the sandbox need not be
+yours.** They materialize on the filesystem whenever *some* agent is running a
+sandboxed Bash command, and are visible to every process for as long as that
+lasts — which is why an unsandboxed reader sees them and why they come and go
+rather than accumulating. With parallel subagents this is not rare: a
+controller's own unsandboxed `git status` shows a clean tree one moment and
+fourteen phantom dotfiles the next, purely because a subagent happened to be
+mid-`Bash` call. So absence proves nothing about a later moment, and presence
+says nothing about the repo — do not conclude from one clean reading that
+`git add -A` is safe here, and always stage explicit pathspecs when any other
+agent is live.
 
 **They break `git add -A` under the sandbox**: `error: .bash_profile: can only
 add regular files, symbolic links or git-directories`, and the whole `add`
