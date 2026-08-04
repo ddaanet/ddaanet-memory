@@ -44,8 +44,7 @@ fixed (`e205aa6`, `27af3b8`). Check with `find
 list means `--plugin-dir`/fresh cache; double-prefixed `/gitlore:gitlore:resolve`
 means a stale nested cache.
 
-Related: [[cc-agent-discovery]], [[cc-command-namespacing]],
-[[dogfood-early]].
+Related: [[cc-agent-discovery]], [[cc-command-namespacing]].
 
 ## Skill bodies are snapshotted at session start
 

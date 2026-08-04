@@ -26,8 +26,8 @@ grep: `additionalContext` 180, `updatedInput` 249, `permissionDecision` 34,
 deterministically, don't try to make the agent Read them — have the hook read
 them and emit the bytes as `additionalContext`. That is strictly better than a
 forced Read: one round trip instead of two, no tool-permission surface, and the
-selection stays in a script rather than in agent judgement
-([[harness-over-agent]]). `additionalContext` is honoured at `PreToolUse`
+selection stays in a script rather than in agent judgement.
+`additionalContext` is honoured at `PreToolUse`
 as well as `PostToolUse` and arrives even when the tool call fails
 ([[hook-output-channels]]), so a deny-reason and the injected
 bodies can land in the same turn.

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 4d44ae29-6174-4981-8edd-c8bc5e4cff28
-  modified: 2026-07-30T15:26:44.458Z
+  modified: 2026-08-02T18:06:13.335Z
 ---
 
 A tier is pinned at the commit the memory tree records for it, so it advances
@@ -22,6 +22,12 @@ decided by root at `HEAD`: present there means root deleted it, absent means
 nobody authored it in root, so it is kept and reported. **Removing a pointer
 from root alone is therefore enough** — the carrier copy goes in the same pass.
 
+That holds only for a line root carried at `HEAD`. A pointer that arrived from
+upstream in the merge you are cleaning up after was never in root at `HEAD`, so
+the same rule reads it as tier-only, keeps it, and reports it: deleting it from
+root propagates nothing and the carrier index has to be edited directly. Check
+`git show HEAD:memory/MEMORY.md` for the line before assuming one pass suffices.
+
 **Correct content *after* propagating it, never during.** A merge that also
 "fixes" wording is indistinguishable from reverting what upstream just sent.
 Land upstream's lines first, then author corrections in root as their own
@@ -35,5 +41,4 @@ makes it look decided.
 
 Related: [[examine-evidence-drift]] (get the drift direction from git
 history — the longer text is not automatically the newer one),
-[[index-compaction-triggers]] (what a corrective pass must restore),
-[[verify-at-source]].
+[[index-compaction-triggers]] (what a corrective pass must restore).

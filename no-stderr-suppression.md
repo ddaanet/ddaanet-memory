@@ -36,4 +36,4 @@ unreadable directory read as "empty" so the installer proceeded into it.
 Never replace git's message with a guess: worktree-remove appended "(locked or
 uncommitted)" to every failure, which was wrong whenever it wasn't that.
 
-Related: [[whitespace-safety]], [[git-stderr-and-parsing]].
+Related: [[git-stderr-and-parsing]].

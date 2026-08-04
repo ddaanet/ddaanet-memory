@@ -50,4 +50,4 @@ about it: run the gate twice to see `✓ Cached`, append a throwaway
 line to a file in the newly-covered tree, confirm the next run does
 real work, then remove it and confirm `git diff` on that file is
 empty. A hash you only reasoned about is the same claim that failed
-here. See [[gate-verdict-recaps-what-passed]].
+here.

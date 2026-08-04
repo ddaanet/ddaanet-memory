@@ -33,8 +33,8 @@ user-visible channel — leaving stderr (exit 2 / `--verbose` / debug log). The
 honest error path is **`systemMessage` + `exit 0`**, which is what D14 concluded
 when it moved SessionStart's errors off `stderr` + `exit 1`. `|| true` and a bare
 `|| exit 0` on a fallible command are dishonest error paths — check status
-explicitly, report on `systemMessage`, exit 0. Applied in D17's index-sync hooks;
-see [[prohibition-vs-procedure]].
+explicitly, report on `systemMessage`, exit 0. Applied in D17's index-sync
+hooks.
 
 **Blocking asymmetry** (don't conflate "don't exit 2" with "don't error"):
 
@@ -94,8 +94,7 @@ model.
 
 Consequence for gitlore (D14): route user-facing notices through `systemMessage`,
 not stderr-on-exit-0 and **not** via the agent — `additionalContext` saying "tell
-the user…" is model-dependent on the hot path, against NFR1/D7. See
-[[harness-over-agent]], [[verify-at-source]].
+the user…" is model-dependent on the hot path, against NFR1/D7.
 
 ## Wording the user-facing channel: curt and informative
 
