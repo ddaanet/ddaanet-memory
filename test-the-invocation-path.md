@@ -48,5 +48,5 @@ Redirect to distinct files, echo `$?` before any pipe, count `^ok`/`^not ok`, an
 sanity-check the delta: a number that moves the wrong way is a broken measurement,
 not a surprise.
 
-Related: [[dogfood-early]] (same failure family — fixtures/tests miss what
-the real target hits), [[no-handrun-tests]].
+Same failure family as dogfooding the real target: fixtures and tests miss
+what the real target hits.

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8cd21851-d241-49bf-afaf-b4baf0c4f311
-  modified: 2026-07-31T18:59:35.448Z
+  modified: 2026-08-04T09:33:02.379Z
 ---
 
 When authoring text a script emits *for an agent to act on* — a probe directive,
@@ -61,8 +61,7 @@ act. Ask what a reader would *do* with each remaining line; if the answer is
 "check it" or "explain it back", cut it. Test the negatives on the whole word
 (`[[ "$output" != *"trigger"* ]]`) and pair each with a positive over the same
 fixture per [[green-is-not-evidence]]. When a rule is an ordering between the
-*caller's own steps*, it belongs where the steps are described — see
-[[prohibition-vs-procedure]] on placement. The split of judgement from
-mechanism is [[harness-over-agent]]; stating a rule positively in the
-step where it acts rather than as a prohibition is
-[[no-speculative-rules]].
+*caller's own steps*, it belongs where the steps are described: a prohibition
+must be front-loaded, a procedure defers to its trigger. The split of judgement
+from mechanism is the harness/agent boundary; stating a rule positively in the
+step where it acts rather than as a prohibition is [[no-speculative-rules]].

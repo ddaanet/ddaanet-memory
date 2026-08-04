@@ -20,5 +20,5 @@ unit of review.
 
 **How to apply:** invoke the skill in the same turn the review is requested,
 before opening the first file; then run shellcheck for the mechanical layer and
-read for the uncatchable one. Related: [[whitespace-safety]],
-[[no-stderr-suppression]], [[git-hook-env-leak]].
+read for the uncatchable one. Related: [[no-stderr-suppression]],
+[[git-hook-env-leak]].

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: df6d1dc0-1862-40d1-ae3b-48ec59dd93a3
-  modified: 2026-08-03T10:17:27.929Z
+  modified: 2026-08-04T09:33:33.357Z
 ---
 
 A test is evidence only when there is a state of the world in which it fails.
@@ -176,8 +176,8 @@ distinguish from its absence — the same failure [[test-the-invocation-path]]
 names one level up, where a whole suite never ran. The structural answers above
 cost no separate pass and keep working as the code moves, which is what makes
 them the answer: a validation ritual performed once by hand is a test run by
-hand ([[no-handrun-tests]]), and it stops being true the moment the code
-changes.
+hand — behaviour worth checking belongs in the suite, never in a throwaway
+fixture — and it stops being true the moment the code changes.
 
 **How to apply:** for each test guarding non-trivial logic, name a state of the
 world in which it fails, and name what else could produce the observable it
@@ -189,9 +189,10 @@ proves. Never leave a test whose NAME claims coverage it does not have. Apply
 this hardest to green you did not write — inherited or subagent-authored work
 — where nothing shows you the red that never happened; in subagent-driven
 development it is not an occasional risk, so budget one wrong-reason test per
-task and let the adversarial reviewer tier hunt it ([[sdd-reviewer-tiering]],
-[[tdd-red-green-separation]]). It pairs with the sibling lesson that briefs
-themselves misdescribe the code.
+task and let a reviewer a rung above the implementer hunt it — which needs the
+red phase dispatched separately from the green one, or nobody ever saw the test
+fail. It pairs with the sibling lesson that briefs themselves misdescribe the
+code.
 
 Related: [[bats-shellcheck-gotchas]] — the specific bats mechanisms
 (`run missing_function` exits 127 before the code exists; `run` is a subshell
