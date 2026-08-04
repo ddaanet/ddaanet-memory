@@ -1,11 +1,11 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes incl. dangerouslyDisableSandbox"
+description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes incl. dangerouslyDisableSandbox"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-04T08:46:33.458Z
+  modified: 2026-08-04T11:24:19.561Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -135,10 +135,12 @@ agent is live.
 
 **They break `git add -A` under the sandbox**: `error: .bash_profile: can only
 add regular files, symbolic links or git-directories`, and the whole `add`
-aborts. Two ways out — stage with explicit pathspecs, or re-run the same `git
-add -A` with `dangerouslyDisableSandbox: true`, which the auto classifier lets
-through and where the stand-ins are simply not there to choke on (verified with
-`git add -An`).
+aborts. Stage with explicit pathspecs. Re-running the same `git add -A` with
+`dangerouslyDisableSandbox: true` is a second way out only when yours is the
+only sandbox in play — the auto classifier lets it through, and with no sandbox
+in effect the stand-ins are not there to choke on (verified with `git add -An`)
+— but per the paragraph above it does nothing while another agent is mid-`Bash`
+call, since the files are real for every process for as long as that lasts.
 
 `.envrc` vars pass through the sandbox: `MARKETPLACE_DIR` and the `DIRENV_*`
 vars are present in the sandboxed env (direnv runs in the launching shell). The
