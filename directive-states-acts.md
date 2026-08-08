@@ -1,11 +1,11 @@
 ---
 name: directive-states-acts
-description: "writing an agent-facing or script-emitted directive: what to cut from it"
+description: "writing an agent-facing or script-emitted directive, or a code comment: what to cut from it, and what \"remove narration\" cuts"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 8cd21851-d241-49bf-afaf-b4baf0c4f311
-  modified: 2026-08-04T09:33:02.379Z
+  modified: 2026-08-08T15:23:22.203Z
 ---
 
 When authoring text a script emits *for an agent to act on* — a probe directive,
@@ -43,6 +43,17 @@ not in a foreign project's context. Ask who else could supply the identifier.
 Nobody → say nothing. Only when the reader demonstrably already has it (it
 appeared earlier in the same context) is a prohibition worth its cost, and then
 forbid by role rather than by name.
+
+**Code comments take the same cut, against a different bar: what a maintainer
+needs in order to change the code safely.** Where a repo keeps its design
+history in a changelog, comments drift into retelling it — the defect that
+motivated the shape, what an earlier draft said, a clause defending the choice
+against an alternative. The rule, the constraint and the contract stay; the
+story, the incident and the self-commentary belong to the changelog, which is
+where a reader who wants them is already headed. Rationale a maintainer needs
+in order not to break the code is not narration: "the arrays expand this way
+because bash 3.2" stays. "Remove narration" is the instruction that makes the
+cut.
 
 **Why:** handoff's `with-commit` memory directive shipped as five paragraphs
 explaining gitlore's pre-commit hook, gitlink staging, mtime freshness, and an
