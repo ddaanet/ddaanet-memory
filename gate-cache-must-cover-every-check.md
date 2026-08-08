@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 22ff8b16-eedb-4ef3-9a9c-5a7a83d05f4f
-  modified: 2026-07-26T10:55:30.993Z
+  modified: 2026-08-04T10:31:08.085Z
 ---
 
 When a gate caches its verdict against a hash of its inputs, that hash
@@ -44,6 +44,26 @@ meant adding `hooks` to the hash and `bats --version` beside
 of the check is to read that tree. The test for which fix applies is
 whether you want the check to see those files at all — not whether the
 hash gets broader.
+
+**A third fix, when the costs inside one gate differ by orders of
+magnitude: split.** Give the offending check its own recipe and its own
+sentinel, and make the expensive gate depend on it. gitlore's `precommit`
+runs a 7m30s bats suite over an input set that deliberately excludes
+`agents/`, `commands/` and `skills/`; widening it would have made every
+prose edit to a skill body pay the full suite, and narrowing was
+unavailable because reading those directories is the distribution
+suite's whole job. `check-distribution` runs that one 2s suite behind
+its own hash and hangs off `precommit`. The test for this fix is a cost
+asymmetry *inside* one gate: a cheap check that reads outside the hash
+does not belong in the same cache as an expensive one.
+
+Two constraints on the split. Declare the new gate's inputs as
+everything **its** check reads, not merely the paths the other gate
+misses — the narrow version is correct only while the other set stays as
+drawn, and nothing states that dependency. And it must be its own
+recipe, not a second block in the same body: `check-sentinel` sets shell
+variables that `record-sentinel` reads back, so a second call in one
+shebang clobbers the first's state.
 
 Whichever way it is fixed, **prove the coverage** instead of reasoning
 about it: run the gate twice to see `✓ Cached`, append a throwaway
