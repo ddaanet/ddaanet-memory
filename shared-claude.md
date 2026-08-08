@@ -204,8 +204,8 @@ rules that change what the agent does by default.
 ## A brief's recommendation is input, not a decision
 
 A brief that enumerates options and recommends one has not decided anything.
-Surface the choice and get David's call before writing code, even when the
-brief's own stated constraints appear to settle it.
+Surface the choice and get my human partner's call before writing code, even
+when the brief's own stated constraints appear to settle it.
 
 Briefs are usually written by an agent in another repo, so both the
 recommendation and the constraints justifying it are that agent's assumptions
