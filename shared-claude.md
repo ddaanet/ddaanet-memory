@@ -116,7 +116,12 @@ rules that change what the agent does by default.
   guardrail against something the agent would otherwise do unprompted must be
   front-loaded — nothing downstream discloses it in time. A recipe resident in
   context reads as a process you must run, so the agent performs ceremony where the
-  happy path was meant to be seamless.
+  happy path was meant to be seamless. **A gate that emits its own instructions is
+  invoked, not pre-satisfied** — its refusal *is* the report, carrying the format,
+  the path and the next command, so triggering it costs one call while
+  reconstructing it by hand costs several and still gets details wrong. That holds
+  for gates that are cheap, reversible and self-describing; it is not a licence to
+  fire a destructive command and read the error.
 
 ## Dispatch
 
