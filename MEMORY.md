@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-08T22:28:11.508Z
+  modified: 2026-08-10T19:07:42.185Z
 ---
 
 # ddaanet tier index
@@ -81,7 +81,7 @@ the project's own memory store.
 - [tier mount blows the index budget](gitlore-tier-index-budget.md) — mounting a populated tier imports its whole index; composition orders tier-first, so the consumer's OWN project lines fall past the 24.4KB load cutoff
 - [gitlore tier merge direction](gitlore-tier-merge-direction.md) — tiers are pinned: where `/gitlore:merge`|`/gitlore:push` land a merge, and which index to edit — never root's block by hand — for a pointer removal, or a wording fix only AFTER propagating
 - [tier routing: plugin-shaped litmus test](tier-routing-plugin-shaped.md) — routing an operational gotcha to ddaanet vs project memory
-- [tier links cross a boundary](tier-links-cross-a-boundary.md) — routing a fact up carries its `[[links]]` verbatim, and ones aimed at project-local siblings go permanently dead, unlike a write-it-later dangle
+- [tier links cross a boundary](tier-links-cross-a-boundary.md) — routing a fact up carries its `[[links]]` and any repo-relative `docs/` path verbatim; ones aimed at a project-local sibling or another repo's file go permanently dead, unlike a write-it-later dangle
 - [Writing memories](memory-writing.md) — what to cut (anecdote, tense, now/here/currently/this session), what to version-stamp, and the category errors that mean delete: "when using <skill>, do X", logging decisions the design doc owns, or anything that is common sense or one step from an indexed memory
 - [classifier denies self-config writes](classifier-denied-self-config.md) — auto-mode denials on agent self-configuration: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push; INCIDENTAL writes only, not user-named ones
 - [a guard reveals a singleton](guard-reveals-singleton.md) — a finding ending in "add a mutual check" means a singleton is modelled as N *named* instances

@@ -1,11 +1,11 @@
 ---
 name: tier-links-cross-a-boundary
-description: "routing a fact up carries its `[[links]]` verbatim, and ones aimed at project-local siblings go permanently dead, unlike a write-it-later dangle"
+description: "routing a fact up carries its `[[links]]` and any repo-relative `docs/` path verbatim; ones aimed at a project-local sibling or another repo's file go permanently dead, unlike a write-it-later dangle"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: c1666e33-a938-42c3-a372-e89af689e7f6
-  modified: 2026-07-30T17:15:07.639Z
+  modified: 2026-08-10T19:07:34.355Z
 ---
 
 When a memory is routed from a project's own store up into a shared tier, its
@@ -33,3 +33,14 @@ apply or it is not a tier fact. Watch for two adjacent cases: a link naming a
 *skill* rather than a memory, and one whose target the prose already names, so
 the pointer is pure redundancy. See [[memory-writing]] and
 [[tier-routing-plugin-shaped]].
+
+**A repo-relative file path dies the same way, and more quietly.** A tier fact
+citing `docs/references/cc-memory-retrieval.md` resolves only inside the repo
+that holds the file; from every other consumer it names nothing, and the reader
+cannot tell which repo owns it. Name the repo in the prose — "the gitlore
+repo's `docs/references/…`" — or drop the citation. Observed on
+[[index-compaction-triggers]], whose pointer to the recall research read from
+micro as a missing file; the research was re-run from scratch and reproduced
+findings already recorded there. Where the citation is the record of prior
+work, name the artifacts too, so the next session can see the question is
+already answered before spending a session answering it again.
