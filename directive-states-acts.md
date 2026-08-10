@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8cd21851-d241-49bf-afaf-b4baf0c4f311
-  modified: 2026-08-08T15:23:22.203Z
+  modified: 2026-08-10T05:07:13.981Z
 ---
 
 When authoring text a script emits *for an agent to act on* — a probe directive,
@@ -54,6 +54,16 @@ where a reader who wants them is already headed. Rationale a maintainer needs
 in order not to break the code is not narration: "the arrays expand this way
 because bash 3.2" stays. "Remove narration" is the instruction that makes the
 cut.
+
+**One change, four artifacts, one telling.** A change that touches code, tests,
+a changelog entry and a design doc invites writing the incident into all four,
+and each copy reads as reasonable in isolation. The changelog gets the narrative
+— it is the write-time record; the design doc gets the standing rule in present
+tense; the code and test comments get the constraint alone. Watch for a
+signature phrase recurring across them: "load-bearing", "the shape of", "by
+construction" carry real meaning the first time and become verbal tics by the
+fourth, at which point they read as emphasis substituting for content. Grep the
+diff for your own favourites before committing.
 
 **Why:** handoff's `with-commit` memory directive shipped as five paragraphs
 explaining gitlore's pre-commit hook, gitlink staging, mtime freshness, and an
