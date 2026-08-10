@@ -1,11 +1,11 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump"
+description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump; `just release` must be run unsandboxed or it dies at that bump on `mv: inter-device move failed`/`Read-only file system`, leaving a half-done release `resume-release` finishes"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-  modified: 2026-07-29T14:51:29.243Z
+  modified: 2026-08-10T10:47:31.625Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev,
 latest tag `v0.2.0` shipped 2026-04-29) is the canonical release
@@ -58,5 +58,14 @@ folds the marketplace bump into the same atomic release.
 - `VERSION` exists because subtree pulls don't propagate tags —
   consumers had no way to identify the toolkit version they vendored.
   See toolkit `docs/design.md` "Toolkit version source of truth".
+- **Run `just release` with the command sandbox disabled.** The
+  marketplace bump is the recipe's last step and its only write outside
+  the repo, so under the sandbox it dies there on `mv: inter-device move
+  failed … unable to remove target: Read-only file system` against
+  `$MARKETPLACE_DIR`. Everything before it — version commit, tag, branch
+  push, GitHub release — has already landed, so a sandboxed run leaves a
+  half-done release rather than a failed one; `just resume-release`,
+  likewise unsandboxed, completes it and is idempotent. See
+  [[sandbox-effects]].
 - `edify` is deliberately out of scope (hybrid Python+plugin shape
   with PyPI publish; keeps its bespoke recipe).
