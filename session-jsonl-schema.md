@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 418b085a-9253-496e-8e70-8f9e0500107c
-  modified: 2026-07-26T10:23:40.998Z
+  modified: 2026-08-10T05:07:04.511Z
 ---
 
 There is NO authoritative schema for Claude Code session JSONLs
@@ -36,3 +36,17 @@ Compaction appends in the same file/session ID:
 `type:"system", subtype:"compact_boundary"` + summary as a `type:"user"`
 entry with `isCompactSummary: true` (no `isMeta`). See
 [[jsonl-slash-command-shape]] and [[jsonl-sidechain-segregation]].
+
+**A hook reading `usage` from the transcript sees the PREVIOUS API call's
+sample.** The assistant entry carrying the current call's `usage` has not been
+flushed when `PostToolUse`/`PostToolBatch` fires, so the newest sample on disk
+is one call behind. Harmless while a prompt grows monotonically — a few thousand
+tokens against any sane threshold — and wrong in exactly one place: across a
+compaction, where the sample above the boundary measures the context that was
+just discarded, and being the last before it is the largest of the session.
+Verified 2026-08-09: a hook read 197354 against a live context of 87253, on the
+first tool batch after the compaction. So scope any transcript measurement to
+entries newer than the last `isCompactSummary`, and when nothing is newer,
+report nothing rather than falling back — between a compaction and its first API
+call there is no sample to read. Applies to any per-call metric taken this way,
+not just context size.
