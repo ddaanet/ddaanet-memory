@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: de3d2151-a51d-4e13-8bd4-cee0e4c48775
-  modified: 2026-08-05T16:01:45.572Z
+  modified: 2026-08-10T14:03:25.080Z
 ---
 
 A memory states what is true, addressed to a reader who was not there. The
@@ -94,11 +94,14 @@ that is narration rather than instruction. Name the owner before writing — if 
 skill, a design doc, a README or the code itself states it at the point of use,
 don't restate it. What legitimately stays in memory is what no owner can carry:
 a correction the user made, a failure mode observed in this repo, a constraint
-from outside the artifact's world. Verify coverage before deleting — grep the
-owner for the load-bearing terms rather than trusting a pointer that says it is
-covered. If nothing survives the question, there was no memory to write — an
-empty flush is the normal case. Same test as [[no-speculative-rules]]
-— no incident, no entry — applied to ownership rather than evidence.
+from outside the artifact's world. A quoted correction may name its source: an
+attribution credits evidence, which is not the same act as referring to the
+user by name, and the rule against the latter does not reach it. Verify
+coverage before deleting — grep the owner for the load-bearing terms rather
+than trusting a pointer that says it is covered. If nothing survives the
+question, there was no memory to write — an empty flush is the normal case.
+Same test as [[no-speculative-rules]] — no incident, no entry — applied to
+ownership rather than evidence.
 
 Related: [[design-doc-writing]] states the present-tense rule and the
 future-reader vantage as they apply to docs;
