@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-08-01T14:36:49.029Z
+  modified: 2026-08-10T18:55:50.751Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -224,4 +224,6 @@ submodule diff before committing a compaction, not just the index files.
 
 Related: [[memory-writing]] (what belongs in the fact file the
 line points at); background on why the index is the only reliably-recalled
-surface in `docs/references/cc-memory-retrieval.md`.
+surface in the gitlore repo's `docs/references/cc-memory-retrieval.md`, whose
+changelog also holds the recall experiments (`2026-07-22-active-recall-fr16-d18`,
+`2026-08-08-recall-skill-no-hook`) — check there before re-running one.
