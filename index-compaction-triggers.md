@@ -1,11 +1,11 @@
 ---
 name: index-compaction-triggers
-description: "classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; over budget is NEVER a reason to under-trigger a new/updated fact — pressure means retire, not ship an unroutable line; audit plain words, not just backticked literals"
+description: "classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; over budget is NEVER a reason to under-trigger a new/updated fact — pressure means retire, not ship an unroutable line; rewriting fact bodies is not a lever (measured 2%, index unmoved); audit plain words, not just backticked literals"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-08-01T14:36:49.029Z
+  modified: 2026-08-10T19:10:51.941Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -118,6 +118,15 @@ coming due, and it is a separate act with its own judgement. Observed
 reasoning that 100 bytes would push 100 bytes off the invisible tail. Correct
 about the arithmetic, wrong about which side pays — the reverted line was the
 only route to a fact written that same session.
+
+**Rewriting fact bodies is not a lever at all.** Applying [[memory-writing]] to
+five randomly drawn facts took 7,185 B of file to 6,973 B — 2% — and moved the
+index by exactly zero, which it must: the two govern different surfaces. The
+guide's cuts are substitutions, not deletions. Stripping a narrated incident
+does not remove the obligation to justify the rule; it forces the reason to be
+stated abstractly, and abstract reasons run longer than concrete ones. One of
+the five grew 13%. Run the guide for hygiene — it catches stale filenames and
+tier-rule violations — never for headroom.
 
 **Relocating the acted-inline class is the lever that actually works.** Moving a
 standing rule out of the index and into `CLAUDE.md` or `ddaanet/shared-claude.md`
