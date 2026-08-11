@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: de3d2151-a51d-4e13-8bd4-cee0e4c48775
-  modified: 2026-08-05T16:01:45.572Z
+  modified: 2026-08-11T14:31:52.502Z
 ---
 
 A memory states what is true, addressed to a reader who was not there. The
@@ -50,8 +50,8 @@ an observation that could age (`CC 2.1.220`) rather than calling it recent.
 ## What another artifact already owns
 
 Recording what belongs somewhere else is the habit that recurs, so it gets
-stated at length. A memory
-repeating what another artifact owns is in the wrong place. The owner states it
+stated at length. A memory repeating what another artifact owns is in the wrong
+place. The owner states it
 at the moment it matters — a skill loads its instructions at its own trigger, a
 living design doc is read before structural work — while the memory copy drifts
 and pays index bytes every session to say the same thing worse.
