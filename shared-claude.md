@@ -75,6 +75,10 @@ rules that change what the agent does by default.
 - **No volatile git state in memory files** — no commit ids, branch tips, or
   "uncommitted as of" notes. Identify things by durable names: branches,
   paths, issue numbers. Upstream-main shas are stable but still discouraged.
+  Tags and version numbers are stable too and still rot the moment they assert
+  currency — "latest tag vX", "since vX", "as of vX", "N repos migrated" —
+  because what ages is the claim, not the ref. A version that *grounds* an
+  observation (`verified against CC 2.1.220`) stays.
   A session that needs exact volatile state puts it in a handoff, not memory.
 - **"Turn" means a user turn** — one user message and everything that follows
   it until the next user message — not an API round-trip and not a tool call;
