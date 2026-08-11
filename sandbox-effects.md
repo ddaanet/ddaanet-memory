@@ -1,11 +1,11 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes incl. dangerouslyDisableSandbox"
+description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", sandboxed `claude -p` silently drops every SessionStart hook; escapes incl. dangerouslyDisableSandbox"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-04T11:24:19.561Z
+  modified: 2026-08-11T13:10:04.340Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -322,3 +322,31 @@ picks the zellij branch when `ZELLIJ` is set and falls silently because the
 launcher pipes `zellij run` stderr to `/dev/null`, so sandbox failure looks like
 "exit 1 with no output"; and any future skill/script driving zellij from inside
 CC. Once sandbox-disabled, the floating pane appears immediately.
+
+## Sandboxed `claude -p` silently drops every `SessionStart` hook
+
+A `claude -p <prompt>` spawned from inside the command sandbox needs to
+`mkdir` a per-hook scratch dir under `~/.claude/session-env/<session-id>/`
+before running each `SessionStart` hook, and that path sits outside the
+sandbox's write allowlist. Every registered `SessionStart` hook across every
+plugin — not just the one you're chasing — then fails with `EROFS:
+read-only file system, mkdir '.../session-env/<id>'`. This surfaces only in
+`[ERROR]`/`[DEBUG]` log lines (`-d hooks --debug-file <path>`); the turn
+itself completes and returns its normal reply, so nothing in the visible
+output signals that every `SessionStart` side effect was skipped.
+
+Symptom: a fix that depends on a `SessionStart` hook's side effect appears
+to do nothing even after the documented remedy. Confirmed 2026-08-11:
+gitlore's `git config gitlore.hooksDir` (repointed to the current plugin
+version every `SessionStart`, [[stale-plugin-code]]) stayed pinned at the
+old version through two sandboxed `claude -p ping` calls in the target
+repo — the standard "start a session there" remedy — and only updated once
+retried with `dangerouslyDisableSandbox: true`.
+
+**How to apply:** run any `claude -p`/`--print` invocation whose *point* is
+a `SessionStart` (or other) hook's side effect with
+`dangerouslyDisableSandbox: true`. A sandboxed one is fine only when you
+need just the model's textual reply and no hook needs to fire around it.
+[[posttooluse-print-mode]] establishes that `SessionStart` fires under
+`--print` at all — that finding was made unsandboxed; this note is the
+sandbox-specific caveat on top of it.
