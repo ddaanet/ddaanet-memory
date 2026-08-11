@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: ca597732-d159-40c8-adc3-c5e8c88c1ec2
-  modified: 2026-07-26T10:55:09.944Z
+  modified: 2026-08-11T19:04:11.199Z
 ---
 
 When deciding whether an outer guard should reject something the inner
@@ -16,16 +16,16 @@ If it does, leave it inside — two copies of a domain rule drift. If it
 does not, it is a fact about the request's *shape*, and the guard is
 where it belongs.
 
-I got this backwards on ghmem's allowlist hook. Asked whether an empty
-heredoc note should be legal, I argued the hook should stay
-content-agnostic: it is a grammar, and which verdicts require a note
-lives in `record_verdict` with both halves tested. My human partner
-overruled it — an empty heredoc is malformed either way, because a
-verdict that takes a note has none and one that takes no note should
-not have opened a heredoc at all.
+The call went backwards on ghmem's allowlist hook. Asked whether an
+empty heredoc note should be legal, the argument was that the hook
+should stay content-agnostic: it is a grammar, and which verdicts
+require a note lives in `record_verdict` with both halves tested. My
+human partner overruled it — an empty heredoc is malformed either way,
+because a verdict that takes a note has none and one that takes no
+note should not have opened a heredoc at all.
 
 That rule never has to know which verdict is in play, so it was never
-the domain rule. My "don't duplicate" instinct had bundled two
+the domain rule. The "don't duplicate" instinct had bundled two
 different rules under one label and defended the wrong one.
 
 **Why:** the layer that owns a rule is set by what the rule needs to

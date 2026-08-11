@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 3f455518-26f6-4b60-9d14-22f0e25d6f36
-  modified: 2026-08-01T14:26:09.461Z
+  modified: 2026-08-11T19:06:45.298Z
 ---
 
 Editing comments and docstrings for *style* delegates badly when the
@@ -16,8 +16,8 @@ every explanatory colon into a full stop, producing limp replacements
 ("Not its own table — nested JSON inside…" became "This is not its own
 table. It is nested JSON inside…"). A corrective wave was worse: it left
 files whose exact regressions had been quoted to it untouched,
-over-reverted others back to zero, and raced my own edits until I
-stopped it.
+over-reverted others back to zero, and raced the main session's own
+edits until it was stopped.
 
 **Why:** the brief said *what* to do but never *how* to unpack a run-on
 paragraph, and an underspecified style rule affords only find-and-
@@ -26,12 +26,13 @@ just longer?* — was never briefed, so it was never applied. Terse voice
 reads as "crammed" to an agent told to uncram.
 
 **Two limits on this evidence, both load-bearing.** "Limp" and "flat"
-were *my own* verdicts on the replacements in that session; my human
-partner never confirmed a regression, so this is a self-assessment, not
-a measured quality drop. And the cause was brief specification, not
-model tier — nothing here says a cheaper model would have done worse
-against a *well*-specified brief. Do not cite this memory as a prior
-that prose degrades down-tier; it does not support that claim.
+were the editing agent's *own* verdicts on the replacements in that
+session; my human partner never confirmed a regression, so this is a
+self-assessment, not a measured quality drop. And the cause was brief
+specification, not model tier — nothing here says a cheaper model would
+have done worse against a *well*-specified brief. Do not cite this
+memory as a prior that prose degrades down-tier; it does not support
+that claim.
 
 **How to apply:** brief the *how*, not just the what — a worked
 before/after example of an unpacking, and an explicit "keep the

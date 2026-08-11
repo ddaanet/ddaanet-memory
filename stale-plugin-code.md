@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-31T12:19:15.950Z
+  modified: 2026-08-11T20:02:56.816Z
 ---
 
 One symptom, three causes: the plugin code actually running is not the code you
@@ -58,8 +58,8 @@ session start, not read at invocation.
 
 **Fix for a skill body: `/reload-plugins`** — no restart needed. Run 2026-07-20 it
 reported `18 plugins · 8 skills · 11 agents · 34 hooks`, and the next invocation
-loaded the new body (the skill listing's `description:` updated too). The user can
-invoke it with `! /reload-plugins`.
+loaded the new body (the skill listing's `description:` updated too). My human
+partner can invoke it with `! /reload-plugins`.
 
 **Scope — this is verified for skill bodies only.** Whether `/reload-plugins`
 re-registers a plugin's hook *events* is **inferred, not directly observed**: the
@@ -113,8 +113,8 @@ payload shape. **Don't debug the script — start a new session.**
 
 Corollary for probing: you can test a hook-*logic* change in the session that makes
 it, never a hook-*event* change. Routing the test through `settings.local.json`
-instead is blocked by the auto-mode classifier as self-modification, so that needs
-the user's explicit go-ahead.
+instead is blocked by the auto-mode classifier as self-modification, so that
+needs my human partner's explicit go-ahead.
 
 Not verified: whether the *old* registration still fires after the edit. A no-op
 and a non-call look identical from outside.

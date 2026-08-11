@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-04T11:24:19.561Z
+  modified: 2026-08-11T20:02:53.180Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -72,16 +72,16 @@ move, and the sandbox makes an entirely healthy repo look like a crashed one.
 
 ## Strict sandbox mode blocks the escape (no `dangerouslyDisableSandbox`)
 
-When the user has enabled strict sandbox mode (`/sandbox` → "Strict sandbox
-mode"), `dangerouslyDisableSandbox: true` is blocked. Git write operations
-(`git add`, `git commit`) then fail with "Read-only file system" on
+When my human partner has enabled strict sandbox mode (`/sandbox` → "Strict
+sandbox mode"), `dangerouslyDisableSandbox: true` is blocked. Git write
+operations (`git add`, `git commit`) then fail with "Read-only file system" on
 `.git/index.lock`. Strict mode disables the override mechanism entirely; the
 filesystem restriction is enforced at the OS level and cannot be bypassed by the
 agent.
 
-**How to apply:** ask the user to run the command via `! git …`, or to toggle
-sandbox mode first (`/sandbox` → unsandboxed fallback). Do NOT retry the same
-sandboxed command or try workarounds.
+**How to apply:** ask my human partner to run the command via `! git …`, or to
+toggle sandbox mode first (`/sandbox` → unsandboxed fallback). Do NOT retry the
+same sandboxed command or try workarounds.
 
 **Strict mode is a user setting and is often off.** Do not read this section as
 "the escape never works" — check rather than assume. In the 2026-07-21 session
@@ -191,11 +191,11 @@ worktree branch into main.
 For *read-only* inspection of local git state and adjacent filesystem probes —
 `git status`, `log`, `diff`, `show`, `branch`, `rev-parse`, `ls-files`,
 `blame`, `cat .gitconfig`, `ls .claude/`, reading dotfiles — reaching for
-`dangerouslyDisableSandbox: true` is a standing default David set explicitly,
-not a per-case approval to seek: call it directly, without pre-announcing or
-asking. Mutating operations (`git commit`, `push`, `reset`, `checkout -- …`,
-anything that writes) are NOT covered and still follow normal confirmation
-rules.
+`dangerouslyDisableSandbox: true` is a standing default my human partner set
+explicitly, not a per-case approval to seek: call it directly, without
+pre-announcing or asking. Mutating operations (`git commit`, `push`, `reset`,
+`checkout -- …`, anything that writes) are NOT covered and still follow normal
+confirmation rules.
 
 ## Harness-mounted config paths are busy/read-only (sandbox breaks it)
 
@@ -266,9 +266,9 @@ returns "Read-only file system"; the identical two-turn resume that failed
 sandboxed returned `subtype: success` unsandboxed.
 
 **Consequence for eval/harness design:** any two-turn (or N-turn) flow relying on
-`--resume` must run **unsandboxed** (`dangerouslyDisableSandbox`, or David's own
-shell). A single-turn connectivity **probe cannot detect this** — it never
-resumes, so it passes sandboxed while the real flow cannot. gitlore's
+`--resume` must run **unsandboxed** (`dangerouslyDisableSandbox`, or my human
+partner's own shell). A single-turn connectivity **probe cannot detect this** —
+it never resumes, so it passes sandboxed while the real flow cannot. gitlore's
 `tests/evals/run-evals.sh` documents this in its header and its probe comment.
 Related: [[classifier-denied-self-config]] (the gitdir is likewise
 write-blocked, which is why the memory-message IPC file lives in the parent
