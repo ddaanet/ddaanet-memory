@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-11T20:02:56.816Z
+  modified: 2026-08-11T20:50:32.257Z
 ---
 
 One symptom, three causes: the plugin code actually running is not the code you
@@ -89,7 +89,7 @@ without a restart ([[cc-worktree-memory-freeze]]). Timing caveat: a
 `PostToolUse` hook fires *after* the triggering tool returns, so a single Bash call
 cannot observe its own hook — check the side effect on the next call. (Distinct
 from `autoMemoryDirectory`, which genuinely resolves once at startup and no hook
-can change — [[auto-memory-directory]].)
+can change.)
 
 A **plugin's own `hooks/hooks.json` does not reload**, even under `--plugin-dir .`
 where the plugin loads straight from the checkout you are editing. Observed
