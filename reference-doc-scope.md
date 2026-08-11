@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 4479f78d-488b-45fe-8ba1-d506de58b1bc
+  modified: 2026-08-11T19:43:13.941Z
 ---
 
 When asked to research best practices and produce a *lasting guideline*
@@ -12,12 +13,12 @@ When asked to research best practices and produce a *lasting guideline*
 keep the guideline **general and project-agnostic**. Do NOT ground it in
 the current repo or frame it as an audit input.
 
-**Why:** ddaa intended the mypy/typing guideline to be reusable until the
-toolchain changes. I scoped the Stage-1 research prompt to "ground in THIS
-project" + "so an agent can audit scripts/*.py", which leaked ~19
-"this repo does X" intrusions + a Repo-notes + Review-log section into a
-doc meant to be durable. Repo-specific commentary makes a general
-reference read as a stale one-off and won't transfer.
+**Why:** My human partner intended the mypy/typing guideline to be reusable
+until the toolchain changes. Scoping the Stage-1 research prompt to "ground
+in THIS project" + "so an agent can audit scripts/*.py" leaked ~19 "this
+repo does X" intrusions + a Repo-notes + Review-log section into a doc
+meant to be durable. Repo-specific commentary makes a general reference
+read as a stale one-off and won't transfer.
 
 **How to apply:** Split the two artifacts cleanly —
 - the **guideline** = general DO/AVOID rules, neutral illustrative

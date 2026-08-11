@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-08-10T19:10:51.941Z
+  modified: 2026-08-11T19:05:59.034Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -172,7 +172,7 @@ retirements wrong.
 
 **Have someone else audit the diff.** Self-review does not catch this — the
 author knows what each line means and so reads the trimmed version as adequate.
-An adversarial pass briefed to falsify "I cut only elaboration" found 15 bad
+An adversarial pass briefed to falsify "only elaboration was cut" found 15 bad
 lines in an already self-checked diff, and its own verification pass then found
 six more it had missed.
 
@@ -185,8 +185,8 @@ memory lands on, scope drift). They returned 33 and 25 findings with little
 overlap. Brief each to falsify, not to confirm, and tell each to re-verify its own
 findings after declaring itself done.
 
-**A backtick-and-quote sweep is not sufficient as a literal audit.** My own
-self-audit extracted only backticked and double-quoted spans and reported *zero*
+**A backtick-and-quote sweep is not sufficient as a literal audit.** A
+self-audit extracting only backticked and double-quoted spans reported *zero*
 misroutes; the auditor's plain-word lost-vocabulary sweep — every word present in
 BEFORE and absent in AFTER, 464 of them — found four real misroutes plus
 `heredoc`, `precompact`, `mtime`, `unsandboxed`, `parallel` and every model name
@@ -214,8 +214,8 @@ Delete those freely — they cost bytes and route nothing.
 just restore it.** Two lost triggers (`phantom dotfiles`, `own hooks.json
 unlink EROFS`) had their removal unmentioned in the commit message that carried
 it (that commit documented dropping two different, unrelated facts). Framing
-this as "should I fork away from upstream" is the wrong question when it's all
-one shared history with no actual conflict — restoring a token nobody
+this as "should this fork away from upstream" is the wrong question when it's
+all one shared history with no actual conflict — restoring a token nobody
 deliberately removed is just the next commit, not a fork to justify.
 
 **Adversarial audit, confirmed working.** After a real compaction pass

@@ -1,11 +1,11 @@
 ---
 name: memory-writing
-description: "what to cut (anecdote, tense, now/here/currently/this session), what to version-stamp, and the category errors that mean delete: \"when using <skill>, do X\", logging decisions the design doc owns, or anything that is common sense or one step from an indexed memory"
+description: "what to cut (anecdote, tense, now/here/currently/this session), what to version-stamp, when \"the user\" is a term of art rather than my human partner, and the category errors that mean delete: \"when using <skill>, do X\", logging decisions the design doc owns, or anything that is common sense or one step from an indexed memory"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: de3d2151-a51d-4e13-8bd4-cee0e4c48775
-  modified: 2026-08-11T14:31:52.502Z
+  modified: 2026-08-11T20:14:02.172Z
 ---
 
 A memory states what is true, addressed to a reader who was not there. The
@@ -18,8 +18,8 @@ habits make one worse than useless:
 - *Describing what used to be.* State the rule that holds now. A snapshot of
   which repos have migrated, which version is current, or what a file used to
   contain becomes false without warning and gets acted on anyway.
-- *Writing from the author's present.* "I did X and was corrected", "in one
-  session two reviewers…" — the reader has no session, no I, and no way to
+- *Writing from the author's present.* "I did X and was corrected", "in one <!-- hygiene-ok -->
+  session two reviewers…" — the reader has no session, no I, and no way to <!-- hygiene-ok -->
   tell whether the anecdote still generalises. First person and a narrated
   incident are the tell.
 - *Pending or temporal framing.* Anything phrased as still-to-happen — work
@@ -47,6 +47,14 @@ the reader is not in. Name the condition instead of the moment — "if no
 statusline is configured" rather than "here it writes to X" — and version-stamp
 an observation that could age (`CC 2.1.220`) rather than calling it recent.
 
+**"The user" splits two ways.** My human partner is called "my human
+partner", but `user` is also a term of art in most of what these facts
+describe: a user-visible hook channel, git's `protocol.file.allow=user`, the
+end user a contract faces. Rename only where the referent is a person in our
+shared history (ran, said, corrected, pushed back) or the agent's own
+addressee; leave every role in the described system alone. One file can need
+both calls seven lines apart.
+
 ## What another artifact already owns
 
 Recording what belongs somewhere else is the habit that recurs, so it gets
@@ -72,12 +80,13 @@ Shapes seen so far:
   is loaded whole every session in that repo and nowhere else — exactly the
   scope such a rule wants.
 
-**Accuracy is not the test.** David, 2026-07-26: two gitlore memories told the
-agent to write `.claude/handoff*.md` only through the handoff skill — "those two
-memories are trying to do the job of the handoff skill. Category error." Both
-were accurate. The same call landed on a 66 KB `project` memory logging the
-tiered-memory design: "I don't see why it should not be subsumed by the living
-design, it's there precisely for that purpose: record the memory of the design."
+**Accuracy is not the test.** My human partner, 2026-07-26: two gitlore
+memories told the agent to write `.claude/handoff*.md` only through the handoff
+skill — "those two memories are trying to do the job of the handoff skill.
+Category error." Both were accurate. The same call landed on a 66 KB `project`
+memory logging the tiered-memory design: "I don't see why it should not be <!-- hygiene-ok -->
+subsumed by the living design, it's there precisely for that purpose: record
+the memory of the design."
 
 **How to apply:** before saving, ask "what is the new learning?" and keep only
 the answer. Strip the incident and see what is left: a mechanism that holds
@@ -93,12 +102,13 @@ the reasoning that makes it decidable in a new situation; cut every sentence
 that is narration rather than instruction. Name the owner before writing — if a
 skill, a design doc, a README or the code itself states it at the point of use,
 don't restate it. What legitimately stays in memory is what no owner can carry:
-a correction the user made, a failure mode observed in this repo, a constraint
-from outside the artifact's world. Verify coverage before deleting — grep the
-owner for the load-bearing terms rather than trusting a pointer that says it is
-covered. If nothing survives the question, there was no memory to write — an
-empty flush is the normal case. Same test as [[no-speculative-rules]]
-— no incident, no entry — applied to ownership rather than evidence.
+a correction my human partner made, a failure mode observed in this repo, a
+constraint from outside the artifact's world. Verify coverage before
+deleting — grep the owner for the load-bearing terms rather than trusting a
+pointer that says it is covered. If nothing survives the question, there was
+no memory to write — an empty flush is the normal case. Same test as
+[[no-speculative-rules]] — no incident, no entry — applied to ownership
+rather than evidence.
 
 Related: [[design-doc-writing]] states the present-tense rule and the
 future-reader vantage as they apply to docs;
