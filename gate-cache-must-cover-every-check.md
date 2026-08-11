@@ -1,6 +1,6 @@
 ---
 name: gate-cache-must-cover-every-check
-description: "A cached quality gate must hash everything its widest check reads, or a failure lands silently and surfaces on an unrelated commit much later"
+description: "adding a check to a cache-gated recipe, or splitting a cheap check out of a slow gate; reconcile each check's paths against the hash (narrow/widen/split, then prove it) or it goes red silently on an unrelated commit"
 metadata: 
   node_type: memory
   type: feedback

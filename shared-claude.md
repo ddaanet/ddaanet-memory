@@ -25,6 +25,11 @@ rules that change what the agent does by default.
 - **Don't ask for obvious fixes.** A fix that is clearly correct, inside the
   agreed task, and reversible gets applied and reported, not proposed. Reserve
   questions for genuine forks — venue, strategy, anything outward-facing.
+  **Don't verify around them either:** when a remembered prohibition
+  pattern-matches the phrasing of what you are about to do, check whether its
+  precondition is already settled by what you know before spending calls
+  establishing it. A guardrail coming to mind is not evidence its situation
+  obtains, and the denser the always-on rules, the more reflexive the pull.
 - **My human partner owns branching.** Never create or switch branches — or
   worktrees — unprompted, even when a workflow skill says to start feature
   work on a fresh one. Work on whatever is checked out. Merging onto a base they named is
