@@ -5,11 +5,12 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 53e0f01b-8a6c-42ef-9bb1-8b971e31b012
-  modified: 2026-07-30T16:00:55.686Z
+  modified: 2026-08-11T18:10:20.855Z
 ---
 
-David gave up on `uv run` (and `uvx`) under Claude Code — the sandbox and
-permission complexity around uv's cache (`~/.cache/uv`) isn't worth it.
+My human partner gave up on `uv run` (and `uvx`) under Claude Code — the
+sandbox and permission complexity around uv's cache (`~/.cache/uv`) isn't
+worth it.
 
 **Why:** every `uv run` touches `~/.cache/uv`, which the Bash sandbox
 blocks; threading that through settings/permissions for each project is
