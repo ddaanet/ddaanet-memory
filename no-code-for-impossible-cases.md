@@ -5,30 +5,28 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8e7ea954-eab3-4514-8af6-9e6f60aa7d2e
+  modified: 2026-08-11T14:31:50.869Z
 ---
 
 Before handling a case, establish it can occur. Check the data model and
 the upstream source; if they cannot produce the state, do not write code
 for it — no guard, no fallback, no test.
 
-Two corrections in one session on the ghmem discussion renderer:
+The check is usually a cardinality argument. A comment carrying at most
+one `parent_id` cannot produce a cycle reachable from a root — every
+member of a cycle has its parent inside the cycle — so a walk that only
+descends from roots cannot loop, and a `visited` set defends nothing.
+GitHub discussions nest exactly one level, a reply cannot be replied to,
+so arbitrary-depth recursion with an h6 clamp generalizes over a case the
+source cannot emit. In both, the docstring already stated the constraint
+the code was written to violate.
 
-- Added a `visited` set to make a comment walk "cycle-safe". A comment
-  has at most one `parent_id`, so a cycle's members all have their
-  parent inside the cycle, making it unreachable from any root — the
-  walk only descends from roots, so it cannot loop. The guard defended
-  nothing, and dragged in a NamedTuple purely to duck the arg-count lint
-  it caused.
-- Generalized that walk to arbitrary depth with an h6 clamp. GitHub
-  discussions nest exactly one level: a reply cannot be replied to. The
-  existing docstring said so and I wrote a replacement that said so
-  while building the general case anyway.
-
-**Why:** the cost is real (a NamedTuple, a second loop, a warning
-branch, tests) and the benefit is zero. Worse, a passing test for an
-unreachable state reads as verification — it only proves the code
-handles input the system cannot produce, so it makes dead machinery
-look load-bearing and freezes it against later simplification.
+**Why:** the cost is real (a NamedTuple to duck the arg-count lint the
+guard caused, a second loop, a warning branch, tests) and the benefit is
+zero. Worse, a passing test for an unreachable state reads as
+verification — it only proves the code handles input the system cannot
+produce, so it makes dead machinery look load-bearing and freezes it
+against later simplification.
 
 **How to apply:** when my human partner gates a request on a condition
 ("... *if they exist*", "if that can happen"), that is an instruction to

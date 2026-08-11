@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: a3e2f110-a3fe-4f99-bfb6-a2343f2a4110
-  modified: 2026-07-27T21:44:28.305Z
+  modified: 2026-08-10T19:00:51.923Z
 ---
 
 When a fact looks project-local at first glance — a sandbox quirk, an
@@ -14,14 +14,13 @@ scoped to *this repo's content* or to *the class of repo this is* (a
 Claude Code plugin, a git-hooked project, etc.) before filing it under
 project memory.
 
-**Why:** during gitlore's memory proof pass, I initially proposed keeping
-`reference_own_hooks_json_sandbox_erofs` (a sandbox EROFS on a plugin's
-own active `hooks/hooks.json`) as a standalone project-tier fact — it
-mentions gitlore's own repo in its evidence. David's correction: "it
-should go to ddaanet, it affects anything plugin-shaped." The mechanism
-(harness mounts an active plugin config read-only under the sandbox) has
-nothing to do with gitlore specifically — it fires for any Claude Code
-plugin repo with a live `hooks/hooks.json`.
+**Why:** a mechanism that fires for a whole class of repo has as many
+consumers as the class has members, and filing it project-local hides it
+from all but one. Evidence naming the repo where it surfaced is not
+evidence the mechanism depends on that repo — a sandbox EROFS on a
+plugin's own active `hooks/hooks.json` reads as repo-specific, but the
+harness mounts any live plugin config read-only, so it fires for every
+plugin-shaped repo ([[sandbox-effects]]).
 
 **How to apply:** ask "does this fact's *mechanism* depend on something
 unique to this repo, or just on this repo being a member of a class
