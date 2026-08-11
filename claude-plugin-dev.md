@@ -1,11 +1,11 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump; `just release` must be run unsandboxed or it dies at that bump on `mv: inter-device move failed`/`Read-only file system`, leaving a half-done release `resume-release` finishes"
+description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump; `just release` must be run unsandboxed or it dies at that bump on `mv: inter-device move failed`/`Read-only file system`, leaving a half-done release `resume-release` finishes; `update-plugin-dev`'s subtree pull collides with a consumer's own gitlore `memory` submodule ('not our ref' fetch error) — fixed v0.5.2; a plugin's first `just release` bumps one past its scaffolded version — open, unfixed"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-  modified: 2026-08-10T10:47:31.625Z
+  modified: 2026-08-11T19:11:52.720Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev,
 latest tag `v0.2.0` shipped 2026-04-29) is the canonical release
@@ -52,6 +52,32 @@ folds the marketplace bump into the same atomic release.
 - Update toolkit version in a consumer with
   `just update-plugin-dev vX.Y.Z`. As of v0.2.0 the recipe verifies
   `plugin-dev/VERSION` matches the requested ref after pull.
+- **A consumer that also mounts a gitlore `memory` submodule at top
+  level collides with `update-plugin-dev` before v0.5.2.** This repo
+  itself mounts gitlore memory at path `memory`; `git subtree pull`
+  fetches this repo's raw, unprefixed history first, and git's
+  on-demand `fetch.recurseSubmodules` then tries to resolve that
+  gitlink using the *consumer's* registered `memory` submodule URL
+  instead of this repo's — `fatal: … not our ref …`, aborting the pull
+  cleanly before any merge. Fixed in v0.5.2 (`release.just` now runs
+  `git -c fetch.recurseSubmodules=no subtree pull …`), but pulling
+  v0.5.2 itself from an older vendored copy still needs the same
+  override done manually first: `git config fetch.recurseSubmodules
+  no` before `just update-plugin-dev`, `git config --unset
+  fetch.recurseSubmodules` after — the fix only takes effect once the
+  *new* `release.just` is the one running.
+- **A plugin's first `just release` bumps one past its scaffolded
+  version — open, unfixed.** `release.sh` always bumps forward from
+  whatever version is in `plugin.json`, treating it as the *last
+  released* version. But a freshly scaffolded plugin (e.g. via the
+  unrelated official `plugin-dev:create-plugin` skill) starts at
+  `0.1.0`, so a first `just release patch` lands at `0.1.1`, not the
+  conventional first-release `0.1.0`. Worked around once (`prohibitions`
+  0.1.0, 2026-08-11) by hand-creating tag `v0.1.0` on HEAD then running
+  `just resume-release`, which skips the bump/commit step and only
+  needs the target tag to already exist locally. Brief filed at
+  `claude-plugin-dev/plans/brief-first-release-version-conflict.md`
+  proposing a real fix; not yet landed.
 - **Toolkit self-release** (since v0.2.0): `just release` in the
   toolkit's own `justfile` bumps `VERSION`, commits, tags, pushes,
   and creates a GitHub release. No more manual `git tag` dance.
