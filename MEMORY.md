@@ -114,3 +114,4 @@ the project's own memory store.
 - [Verify restart before structural diagnosis](verify-restart-before-structural-diagnosis.md) — a same-session negative result (PATH/new agent not visible) often just needs a harness restart, not a structural cause
 - [Parse, don't regex, structured formats](parse-dont-regex-structured-formats.md) — use a real parser for YAML/JSON/TOML/HTML, never a hand-rolled regex even for "just one field"; regex is for prose token extraction
 - [subagent skips @-import expansion](subagent-skips-at-import-expansion.md) — an Agent-tool subagent's claudeMd block omits `@path` imports a real session resolves; verify with `claude -p`, not a subagent
+- [git subtree ensure_clean unscoped](git-subtree-ensure-clean-unscoped.md) — subtree add/pull/push refuse on ANY dirty path via an internal, unbypassable `git diff-index HEAD`; a pathspec fix at the call site can't work around it
