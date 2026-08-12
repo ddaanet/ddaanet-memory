@@ -21,8 +21,8 @@ replay dies on the original un-migrated line before it ever reaches a later
 correction for the same row.
 
 **Why:** ghmem's `Route.item_updated_at` migration
-(`docs/superpowers/specs/2026-08-11-ghmem-d-reentry-design.md`'s Rollout
-section) assumed "append one corrected event per row, then rebuild" would
+(the micro repo's
+`docs/superpowers/specs/2026-08-11-ghmem-d-reentry-design.md`, Rollout section) assumed "append one corrected event per row, then rebuild" would
 work. That only holds if the append happens before the reducer's strict
 requirement ships in the code actually being run. Once the schema-change
 task and the backfill-script task land in the same branch, that window never

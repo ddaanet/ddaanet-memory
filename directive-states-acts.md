@@ -85,5 +85,6 @@ fixture per [[green-is-not-evidence]]. When a rule is an ordering between the
 *caller's own steps*, it belongs where the steps are described: a prohibition
 must be front-loaded, a procedure defers to its trigger. The split of judgement
 from mechanism is the harness/agent boundary; stating a rule positively in the
-step where it acts rather than as a prohibition is the same economy that
-keeps invented anti-patterns out of a skill body: no incident, no entry.
+step where it acts rather than as a prohibition is the same move that keeps an
+invented guardrail from forbidding the request it was written for — a positive
+ordering constrains sequence without forbidding the action.

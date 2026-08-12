@@ -30,4 +30,5 @@ pass pushes a file past its line cap, split the module along an
 existing seam rather than shaving the prose back to fit — the cap protects
 reviewability, and prose is the first thing a later reader needs. Do the
 judgement yourself: an underspecified style brief affords only
-find-and-replace, and subagents flatten the voice.
+find-and-replace, and the flattening that follows is the brief's fault, not the
+model tier's.

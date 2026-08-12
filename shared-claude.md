@@ -76,8 +76,14 @@ rules that change what the agent does by default.
   touch, as evidence of a concurrent session rather than noise.
 - **Report an artifact's size in bytes, not tokens**, for anything of a few
   KiB — it answers "is this material enough to care?" just as well, with no API
-  key, network or cache. There is no exact offline tokenizer for Claude 3+; for
-  a real token count consult the `claude-api` skill rather than memory.
+  key, network or cache. For a real token count consult the `claude-api` skill
+  rather than memory, but note it covers only the API side: there is no exact
+  offline tokenizer for Claude 3+ and the Claude-specific ones —
+  `@anthropic-ai/tokenizer`, the `claude-tokenizer` Rust crate,
+  `Xenova/claude-tokenizer` — are BPE approximations, rough for 3+, not just
+  `tiktoken`. Cached local wrappers around `messages.count_tokens`:
+  `iota-uz/cc-token` (Go, cache at `~/.cc-token/cache.json`, `--no-cache` to
+  bypass) and edify's `tokens.py`/`token_cache.py`.
 - **Refer to the user as "my human partner"**, never by name, in anything I
   author as myself: memory files, gate summaries, handoffs, internal docs.
   Content written *in their name* for an external audience follows the
@@ -183,26 +189,12 @@ rules that change what the agent does by default.
   setup — is exercised on day 1. Backfill unit tests at the seams the e2e does
   not reach. **Fall back to bottom-up only when the architecture itself is still
   being discovered.**
-- **Before planning a subproject on an existing pipeline, run that pipeline
-  against real data.** Fixtures are written by the same hand as the code, so
-  they encode the same assumptions and cannot disprove them. One live ghmem run
-  against 187 green tests produced nine findings in classes fixtures
-  structurally cannot reach: environment the fixture always provides (nothing
-  created `corpus/`, so a fresh checkout tracebacked), scale (an unindexed
-  foreign key: free at 20 rows, >10 minutes at 3875 items), distribution
-  (weights set by intuition inverted in practice — metric scales differed 40×),
-  boundaries real history crosses (GitHub's nested connections truncate at their
-  first page, clipping the highest-weighted metric on the most-connected items),
-  and code paths with no trigger in real data at all. **Do the read half first —
-  it is reversible:** sync, rebuild, run every read command over the whole
-  corpus rather than one sampled item, and sweep for errors *and* warnings.
-  Hold back anything that writes a non-regenerable ledger until the read half is
-  proven. Measure distributions (p50/p90/max of every quantity a downstream
-  constant is meant to bound), not just "it ran".
 - **A slow job that repeats an expensive unit needs both levers.** Parallelism
   (`bats --jobs`, `make -j`, `xargs -P`) is legitimate but never sufficient
-  alone — pair it with cutting the per-repetition cost (cache, template,
-  memoize). The correction is additive; it does not reject parallelism. And
+  alone — and check the spare cores are there before making it the headline
+  fix: the dev droplet resizes between 1 and 2 vCPUs to save cost when idle, so
+  a fix that only pays off at 2 loses value whenever it is scaled down. Pair it
+  with cutting the per-repetition cost (cache, template, memoize). The correction is additive; it does not reject parallelism. And
   **identifying the repeated unit from a subprocess or call-site count is not
   profiling** — it is a plausible model that can be wrong. Fixture-template
   caching made gitlore's highest-count helper ~3x cheaper per call and moved
@@ -242,7 +234,8 @@ rules that change what the agent does by default.
   locate every point where the signal is interpreted and label each producer
   human vs controlled component. For a controlled producer (a parent agent
   instructed to send exactly `approved`/`rejected:…`) prefer an exact reserved
-  sentinel — fuzzy NL matching there is theatrical. For human free text apply
+  sentinel, or leave the lean original alone — fuzzy NL matching there is
+  theatrical. For human free text apply
   whole-word + negation-aware recognition: a hedge, a question or any negation
   is a rejection, and anything unclear is re-asked rather than proceeded on.
   Where no script sits between the human and the agent, the hardening is an
@@ -273,19 +266,6 @@ rules that change what the agent does by default.
 - **Route a plugin action by what a denial would cost, not by whether one is
   possible.** Intent file plus hook when a denial would strand something unrepeatable
   — a user approval, an ordering guarantee. Direct agent call when it costs one turn.
-- **Mid-SDD, expand the ledger before any compaction — `precompact` will not.**
-  That skill is the memory flush alone and the task is meant to cross compaction
-  in the summary, but SDD explicitly distrusts the summary (controllers that
-  lost their place re-dispatched entire completed task sequences). So record, in
-  the ledger itself: each task's review verdict, the open findings and their
-  resolutions, any in-flight fix wave, and how to VERIFY an incoming subagent
-  report. Losing SDD place is the single most expensive failure in the workflow;
-  the summary paraphrases, git and the ledger do not. **An implementer can also
-  die after staging but before committing or reporting** — confirm the agent is
-  gone, verify the green state YOURSELF (re-run the suite; never trust a dead
-  agent's staged snapshot), then commit the staged tree unchanged. Do not
-  re-dispatch: the work is done and on disk.
-
 ## Tests
 
 - **Automated by default.** Manual tests do not compound; each is a recurring tax.
@@ -328,40 +308,10 @@ rules that change what the agent does by default.
   than absence: an assertion can fail against nothing and still pass against
   both the correct implementation and the plausible-but-forbidden one it exists
   to rule out. That needs the wrong implementation run against the batch — a
-  second run, not a per-test exercise.
-- **Test the invocation path, not just the code.** A test harness invokes code
-  the most convenient way; the runtime does not. Every difference is an untested
-  contract, and mode bits, shebangs, `$PATH` resolution and CWD are all
-  invisible to a green suite: gitlore's `index-sync-post.sh` shipped through 16
-  green tests, three reviews and a lint pass at mode `100644`, which would have
-  failed `Permission denied` (rc=126) on every `Write`/`Edit` in every installed
-  project, because every test ran it as `bash "$POST"`. Assert the invocation
-  contract itself — `[ -x path ]` per hook script — and read the **recorded**
-  mode (`git ls-files -s`), not `ls -l`, since a local `chmod` masks the bug a
-  marketplace clone reproduces. **One layer up, a suite that is not *run* cannot
-  fail:** `make test` hand-listed its `.bats` files and five suites (21 tests)
-  had drifted off the list, including the memory-gate cover — an unlisted suite
-  is indistinguishable from a passing one, so glob the discovery. Green means
-  nothing until you know what ran: check the count and plan lines, not the exit
-  status. Beware the measurement too — a pipe (`make test | tail`) reports the
-  *last* stage's status, so a failing suite reads as exit 0, and two concurrent
-  runs redirected to one log interleave into a garbage count.
-- **Verify a guardrail with a command the system actually issues, expecting
-  ALLOW.** A containment allowlist must permit the contained system's *primary
-  operation*, and that is checked against a real command string from a log or
-  ledger — never a synthetic probe, never by reasoning about the pattern.
-  ghmem's `ghmem-only.sh` allowlist had no space, quote or backtick in its
-  class, while `ghmem route` requires a multi-word quoted note on every topic
-  verdict: the hook blocked the only operation the agents existed to perform, so
-  it had never been enforcing, and the corpus filling with note-bearing routes
-  read as success. Run one must-block case expecting DENY as well; the ALLOW
-  direction is the one that gets skipped and the one that catches an
-  incompatible guard. When a guard and a contract disagree, suspect the guard was
-  never enforcing rather than that the contract bent around it. **After moving or
-  editing a live guard, re-provoke it** and read two things off the denial: the
-  script path the harness attributes it to (proving which copy fired) and a
-  phrase only the new text contains (proving the edit is what runs).
-
+  second run, not a per-test exercise. This is why the ordering matters: tests
+  written before anything can pass them get their red for free, where tests
+  validated against a finished implementation have to manufacture that absence
+  per test.
 ## Code
 
 - **Entry points first, definitions after their users** — including constants. Never
@@ -400,7 +350,9 @@ rules that change what the agent does by default.
   not a hypothetical to build for. **Contrast a case that genuinely occurs** — an
   orphan reply whose parent is missing from the corpus is real, because a
   paginated or incremental fetch can land a reply before its parent; that one
-  earns its handling.
+  earns its handling. Note that writing the constraint down does not stop you:
+  the same session generalized a one-level comment walk to arbitrary depth with
+  an h6 clamp while authoring a docstring saying replies cannot be replied to.
 - **Optional means the source can genuinely omit it** — never optional "to be
   safe", "for robustness", or to make a fixture easier to write. A defaulted
   field cannot distinguish *absent because the source said so* from *absent
@@ -441,7 +393,8 @@ rules that change what the agent does by default.
   filename, hook name, script name — so the at-most-one invariant has nowhere to
   live. Moving the identity into the data (one file whose body says which kind it
   is) makes the collision unrepresentable and collapses the per-instance
-  pipeline. Treat your own "add a check" recommendation as the trigger, and count
+  pipeline. Treat your own "add a check" or "add a mutual check" recommendation as the
+  trigger, and count
   what else is duplicated per instance: constants, validators, entry points,
   failure channels, stale-state sweeps. More than one or two and the merge is the
   finding, not the guard. Sibling-over-parameterisation is often right at two
@@ -506,7 +459,8 @@ rules that change what the agent does by default.
   left by an abandoned run survives forever, more so in a git-ignored tree where
   `git status` never shows it. handoff hit both at once: a leftover
   `.superpowers/sdd/progress.md` made a session running no SDD suppress its own
-  `handoff-todo.md`. Pick most-recently-modified among several matches
+  `handoff-todo.md` *and* append its findings to a ledger headed with a
+  different plan's name. Pick most-recently-modified among several matches
   (alphabetical glob order is not a liveness signal), make the near-miss fail
   **open** (no detection → do the normal thing), verify layout and marker against
   the other tool's own source rather than its docs, keep the detector read-only
@@ -522,15 +476,20 @@ rules that change what the agent does by default.
   a change in the model's SHAPE (nonlinear score, rank fusion, a normalization
   pass) forces a rewrite — "the numbers aren't final" never does, and neither
   `--limit` nor "calibrate first, then optimize" excuses a per-item Python loop
-  that is a reimplemented `GROUP BY`. Where the consumer of an output is
+  that is a reimplemented `GROUP BY` — check whether the aggregate is
+  expressible in SQL before writing the loop, and when a plan defers an
+  optimization "unless calibration shows it matters", ask whether the deferral
+  is really about the model's shape; if it is not, build it properly now,
+  because the calibration consumer is the one that most needs it done right. Where the consumer of an output is
   analysis, emit a data format (CSV with a header, JSONL), not a dense human line
   to be regex'd apart. **And judge a weight by fitting the whole vector, never a
   per-metric sort:** sorting a labelled sample one feature at a time measures
   *marginal* discrimination while a weight is *conditional*, and the gap gets
   useful features deleted. ghmem's `related_items` sorted signal at exactly the
-  41% base rate and remains the weakest lone ranker (AUC 0.595), yet its fitted
+  41% base rate at n=54 while carrying the heaviest weight in `HEAT_WEIGHTS`
+  (3.0), and it remains the weakest lone ranker (AUC 0.595); at n=198 its fitted
   coefficient was +0.243, second largest, and zeroing it cost corpus-weighted AUC
-  (0.818 against 0.843). Before cutting a weight, check what dropping it costs
+  (0.818 against 0.843). Both are true at once. Before cutting a weight, check what dropping it costs
   the full score. When a sample is stratified on the composite, its
   single-metric-versus-composite comparison is handicapped by construction —
   treat any "the part beats the whole" result from it as an artifact until a
@@ -546,21 +505,15 @@ rules that change what the agent does by default.
   twice); and a helper written for cross-project reuse is the one legitimate
   exception — parameterize it (`check-sentinel <name>` → `tmp/.<name>-sentinel`)
   and say so.
-- **`uv` is for `uv sync` only — never `uv run`, never `uvx`, under Claude
-  Code.** Every `uv run` touches `~/.cache/uv`, which the Bash sandbox blocks,
+- **Never `uv run`, never `uvx`, under Claude Code — `uv` is for `uv sync` and
+  `uv tool install`.** Every `uv run` touches `~/.cache/uv`, which the Bash sandbox blocks,
   and threading that through settings and permissions per project is more
   friction than it buys. Rely on direnv to activate the venv (`.envrc` exports
   `VIRTUAL_ENV=$PWD/.venv` and prepends `$VIRTUAL_ENV/bin` to `PATH`), and have
-  recipes call tools by bare name — `pytest`, `ruff`, `mypy`, `docformatter` —
-  never `./.venv/bin/foo`.
-- **Load `/shell-scripting:shell-gotchas` before *reviewing* shell code**, not
-  only when authoring it — a diff of `.sh`/`.bash`/`.bats`/git-hook/Makefile-recipe
-  content. Its value is the catalog ShellCheck cannot see (BSD/macOS divergence,
-  `set -e` status loss, git-hook env leakage, bash 3.2 limits), and its rule
-  "audit the whole touched script, not the diff" changes the unit of review.
-  Invoke it in the same turn the review is requested, before opening the first
-  file; then run shellcheck for the mechanical layer and read for the
-  uncatchable one.
+  recipes call tools by bare name — `pytest`, `ruff`, `mypy` — never
+  `./.venv/bin/foo`. A tool with no venv-compatible release (`docformatter` on
+  Python 3.14) goes in via `uv tool install` and is still called bare, off
+  `~/.local/bin`.
 - **A quiet gate signs off with the list of checks that passed**, accumulated as they
   run — never a bare "OK" or "Green". Silence is ambiguous: a check that printed
   nothing looks exactly like one that never ran. A recap resolves it because a
@@ -584,7 +537,8 @@ rules that change what the agent does by default.
   annotation). Do a fresh-eyes pass yourself first and flag the specific
   high-risk sections — concrete shell snippets, cross-repo paths, file lists,
   anything that must be checked against the world rather than read — as "lines
-  X–Y do Z, worth verifying". For doc edits prefer a revision-only diff
+  X–Y do Z, worth verifying". The brainstorming skill's "spec self-review" step
+  exists for exactly this; do it with rigor rather than ticking the boxes. For doc edits prefer a revision-only diff
   (`revdiff HEAD~1`) over a cumulative `HEAD~N`, and split structurally where
   you can: spec in its own commit, implementation plan in another.
 - **Meet a line-count cap by wrapping honestly, never by cramming.** Hard-wrap
@@ -656,7 +610,8 @@ rules that change what the agent does by default.
 - **No rule or anti-pattern for a failure nobody has seen.** An anti-pattern
   list is a record of defects that happened; plausible-sounding padding dilutes
   the real entries and costs context on every load. Before adding one, name the
-  incident — no incident, no entry. A sharper variant, seen once: an invented
+  incident — no incident, no entry. A sharper variant, seen once and recorded as one instance rather than a rate
+  (whether it generalizes is unknown, but it is cheap to avoid): an invented
   guardrail around a new decision point, phrased as a prohibition, forbade
   exactly what the common request wanted ("when the user says 'handoff and
   commit', forbidding git commands prevents the expected behaviour"). **When a
@@ -685,7 +640,9 @@ rules that change what the agent does by default.
   directly` keeps the agent-vs-machinery contrast), removable intensifier
   (delete), or a referent with no good third-person label (keep). handoff
   deliberately keeps `your post-compaction self` in
-  `skills/precompact/SKILL.md`; do not "fix" it on a later grep sweep.
+  `skills/precompact/SKILL.md` — it asserts the identity continuity that
+  motivates writing the file at all, which `the post-compaction agent` drops.
+  Do not "fix" it on a later grep sweep.
 
 ## Boundaries
 
