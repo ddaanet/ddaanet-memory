@@ -97,8 +97,9 @@ a correction the user made, a failure mode observed in this repo, a constraint
 from outside the artifact's world. Verify coverage before deleting — grep the
 owner for the load-bearing terms rather than trusting a pointer that says it is
 covered. If nothing survives the question, there was no memory to write — an
-empty flush is the normal case. Same test as [[no-speculative-rules]]
-— no incident, no entry — applied to ownership rather than evidence.
+empty flush is the normal case. Same test as the one that keeps invented
+anti-patterns out of a skill body — no incident, no entry — applied to
+ownership rather than evidence.
 
 Related: [[design-doc-writing]] states the present-tense rule and the
 future-reader vantage as they apply to docs;

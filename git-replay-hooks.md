@@ -24,7 +24,8 @@ Verified against git 2.47.3 (2026-07-21) while building gitlore's replay guard.
 The `rebase --continue` gap matters for tests: a guard driven through
 `--continue` passes with **no guard at all** and asserts nothing. Drive the
 hand-made commit at the stop instead — it is both the path that reaches the
-hook and the one users actually take ([[test-the-invocation-path]]).
+hook and the one users actually take — assert the invocation contract, not
+just the behaviour.
 
 **A non-zero exit from `pre-commit` during a replay aborts the REBASE, not a
 commit.** There is no commit to reject; git unwinds the sequence and leaves

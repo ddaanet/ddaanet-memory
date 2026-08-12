@@ -37,7 +37,47 @@ rules that change what the agent does by default.
   the shim and repoint `git config gitlore.hooksDir`.
 - **Run the repo's precommit gate before committing**, unprompted — it is a
   required step, not a suggestion to float. In micro that is `just precommit`.
-- **Commit `memory/` with the code**, never `.gitignore` it.
+  Run the **gate** (`just precommit`, `just green`), never a hand-picked list
+  of suites: picking them is a guess about blast radius, and removing that
+  guess is what the gate is for — worst exactly when the change touches a
+  shared library, which is when a subset looks most obviously sufficient. These
+  gates cache on an input hash, so a re-run over an unchanged tree is free. A
+  single suite while iterating mid-change is fine; the gate goes before saying
+  the work is done. A slow figure recorded in a design doc (gitlore's NFR10
+  puts `just precommit` at 530 s) describes work worth optimizing, not
+  permission to skip it.
+- **Commit `memory/` with the code**, never `.gitignore` it. When a session
+  both fixes something in source and writes the memory documenting it, they
+  ride **one** commit — the source diff plus the memory submodule's gitlink
+  bump, not two. That does not license bundling *unrelated* pending memory work
+  (a gitlink bump from an earlier, separate task) into a later fix's commit:
+  bundle what corresponds, not everything pending.
+- **` M memory` in the parent's `git status --porcelain` is the resting
+  state**, not a dirty tree. Nobody commits inside the memory store; the
+  parent's pre-commit hook records it, gates it, and stages the moved gitlink
+  into whatever parent commit comes next. So a clean-tree assertion or a
+  "submodules must have no uncommitted changes" rule — `ddaa:preflight` has one
+  — must exclude that one path and report it as information, or it is
+  unpassable until someone performs by hand a commit the release was going to
+  make anyway. The exclusion covers **only** that path: untracked and modified
+  files elsewhere in the parent are genuine findings. The one real precondition
+  dirty memory carries is a fresh approved summary before the next parent
+  commit — written after the last memory edit, since the gate compares mtimes —
+  or that commit blocks and says so. That is a commit-time requirement, not a
+  readiness verdict.
+- **On the first turn after a compaction, check the session root** — `PWD`,
+  `CLAUDE_PROJECT_DIR`, and the gitStatus block — against the work the summary
+  describes. A summary says what was being done, never where the session lives,
+  and the narrative is vivid where the environment block is quiet: one such
+  resume ran four commits' worth of work into a repo another session owned, and
+  the `/handoff` activation wipe deleted the *session's own* task file first. If
+  they disagree, say so and stop; do not reconcile it by `cd`-ing. Treat a guard
+  refusal, or a "modified by the user or a linter" notice on a file you did not
+  touch, as evidence of a concurrent session rather than noise.
+- **Report an artifact's size in bytes, not tokens**, for anything of a few
+  KiB — it answers "is this material enough to care?" just as well, with no API
+  key, network or cache. There is no exact offline tokenizer for Claude 3+; for
+  a real token count consult the `claude-api` skill rather than memory.
 - **Refer to the user as "my human partner"**, never by name, in anything I
   author as myself: memory files, gate summaries, handoffs, internal docs.
   Content written *in their name* for an external audience follows the
@@ -100,6 +140,16 @@ rules that change what the agent does by default.
   open") are the rotting class: nothing writes back when the state moves. Name the
   source of truth for the claim's kind and spend one command on it. If it cannot be
   confirmed, downgrade it and say so rather than silently complying.
+- **Two co-maintained artifacts disagree ⇒ get the drift direction from git, not
+  from plausibility.** An index one-liner vs its file's frontmatter
+  `description`, a spec vs code, a doc vs its implementation: do not assume which
+  is fresher or authoritative. Run `git log -S/-p/--stat` on *both* surfaces and
+  present concrete commits (this one changed here, that one didn't). An audit of
+  exactly this found the drift **bidirectional** — sometimes the index line is
+  fresh and the frontmatter stale, sometimes the reverse — so any assumed
+  direction is wrong a large fraction of the time, and a sync built on the wrong
+  assumption propagates staleness the wrong way. The longer text is not
+  automatically the newer one.
 
 ## Deciding and planning
 
@@ -122,6 +172,82 @@ rules that change what the agent does by default.
   reconstructing it by hand costs several and still gets details wrong. That holds
   for gates that are cheap, reversible and self-describing; it is not a licence to
   fire a destructive command and read the error.
+- **Architecture already settled ⇒ start TDD outside-in.** With the design fixed
+  (a design doc, a spec), begin from a red end-to-end test naming the
+  user-facing contract and let its failure modes drive what to build next; do
+  not default to bottom-up unit tests. Bottom-up units can pass while the
+  integration contract is broken — they verify internal consistency, not the
+  behaviour the user cares about. Outside-in tests are black-box by
+  construction, so they survive refactors, the next failure names the next file
+  to write (no speculative helpers), and integration risk — fixtures, stubs, env
+  setup — is exercised on day 1. Backfill unit tests at the seams the e2e does
+  not reach. **Fall back to bottom-up only when the architecture itself is still
+  being discovered.**
+- **Before planning a subproject on an existing pipeline, run that pipeline
+  against real data.** Fixtures are written by the same hand as the code, so
+  they encode the same assumptions and cannot disprove them. One live ghmem run
+  against 187 green tests produced nine findings in classes fixtures
+  structurally cannot reach: environment the fixture always provides (nothing
+  created `corpus/`, so a fresh checkout tracebacked), scale (an unindexed
+  foreign key: free at 20 rows, >10 minutes at 3875 items), distribution
+  (weights set by intuition inverted in practice — metric scales differed 40×),
+  boundaries real history crosses (GitHub's nested connections truncate at their
+  first page, clipping the highest-weighted metric on the most-connected items),
+  and code paths with no trigger in real data at all. **Do the read half first —
+  it is reversible:** sync, rebuild, run every read command over the whole
+  corpus rather than one sampled item, and sweep for errors *and* warnings.
+  Hold back anything that writes a non-regenerable ledger until the read half is
+  proven. Measure distributions (p50/p90/max of every quantity a downstream
+  constant is meant to bound), not just "it ran".
+- **A slow job that repeats an expensive unit needs both levers.** Parallelism
+  (`bats --jobs`, `make -j`, `xargs -P`) is legitimate but never sufficient
+  alone — pair it with cutting the per-repetition cost (cache, template,
+  memoize). The correction is additive; it does not reject parallelism. And
+  **identifying the repeated unit from a subprocess or call-site count is not
+  profiling** — it is a plausible model that can be wrong. Fixture-template
+  caching made gitlore's highest-count helper ~3x cheaper per call and moved
+  `just precommit` not at all (~595 s against a 590–613 s baseline); switching
+  to `bats --timing` found two `@test`s neither model had touched and cut the
+  gate ~20%. Get a per-unit timing breakdown, or wall-clock the *whole* gated
+  command before and after, before implementing a targeted perf fix.
+- **Constrain generated output at the artifact boundary, not mid-stream.** Let
+  an agent generate loosely — scaffolding tokens, priming labels like
+  `**Analysis:**` — and enforce the output constraints in a separate post-hoc
+  pass with the full generated context. Scaffolding is not waste; it is the
+  attention mechanism doing its work, and suppressing it at generation time
+  forces silent compensating reasoning or worse output. Self-review is the cheap
+  form of the second pass, a separate lint the thorough one. **Exception:
+  derived artifacts** — a compressed summary of existing context, e.g. a commit
+  message — need no second pass; the compression *is* the review.
+- **"Reconstructable" is two categories, and only one is safe to drop.**
+  Reconstructable *by the harness* — `git status`, `git log`, the files-touched
+  set, the working tree — is recomputed at read time, free, correct by
+  construction and fresher than any snapshot: drop it and defer. Reconstructable
+  *only by model inference from a paraphrase* — the state of an in-flight task
+  list after a compaction — is lossy and fails **silently**: finished work gets
+  redone with nothing signalling anything went wrong. Before dropping something
+  as reconstructable, name the reconstructor; if it is the model working from
+  compacted context, carry it, and carry only the part inference gets wrong (for
+  a task list, the *open* half — the finished half really is in `git log`, and
+  keeping it is what makes a stale ledger dangerous).
+- **Self-triggering skill when the condition is mechanical; command only when
+  the user must initiate.** A skill whose `description` names a detectable
+  condition (a hook's stderr pattern, an error string) invokes itself when the
+  condition is met, so a missed trigger cannot happen; a command requires the
+  user to know when to run it. Designing a new plugin entry point, ask whether a
+  detectable mechanical condition should trigger it. **If the user must
+  consciously decide — install, one-time setup — keep it a command.**
+- **Harden where a *human* types free text; not a channel whose producer you
+  control.** Before tightening how an approval or verdict signal is recognized,
+  locate every point where the signal is interpreted and label each producer
+  human vs controlled component. For a controlled producer (a parent agent
+  instructed to send exactly `approved`/`rejected:…`) prefer an exact reserved
+  sentinel — fuzzy NL matching there is theatrical. For human free text apply
+  whole-word + negation-aware recognition: a hedge, a question or any negation
+  is a rejection, and anything unclear is re-asked rather than proceeded on.
+  Where no script sits between the human and the agent, the hardening is an
+  *agent instruction*, not a literal regex; keep the detection logic in a script
+  wherever there is a script to host it.
 
 ## Dispatch
 
@@ -147,6 +273,18 @@ rules that change what the agent does by default.
 - **Route a plugin action by what a denial would cost, not by whether one is
   possible.** Intent file plus hook when a denial would strand something unrepeatable
   — a user approval, an ordering guarantee. Direct agent call when it costs one turn.
+- **Mid-SDD, expand the ledger before any compaction — `precompact` will not.**
+  That skill is the memory flush alone and the task is meant to cross compaction
+  in the summary, but SDD explicitly distrusts the summary (controllers that
+  lost their place re-dispatched entire completed task sequences). So record, in
+  the ledger itself: each task's review verdict, the open findings and their
+  resolutions, any in-flight fix wave, and how to VERIFY an incoming subagent
+  report. Losing SDD place is the single most expensive failure in the workflow;
+  the summary paraphrases, git and the ledger do not. **An implementer can also
+  die after staging but before committing or reporting** — confirm the agent is
+  gone, verify the green state YOURSELF (re-run the suite; never trust a dead
+  agent's staged snapshot), then commit the staged tree unchanged. Do not
+  re-dispatch: the work is done and on disk.
 
 ## Tests
 
@@ -176,6 +314,53 @@ rules that change what the agent does by default.
   spaced input first. Default to NUL-delimited forms (`git config -z --get-regexp`,
   `find -print0`, `read -r -d ''`). State a residual bound in a comment rather than
   implying full coverage.
+- **TDD red means a failed assertion, never a missing module.** "Run it, verify
+  it fails (module/command missing)" is not a behavioral test — an ImportError
+  proves nothing about whether the test asserts anything. Stub the SUT importable
+  but inert (no-op or deliberately-wrong return), run, confirm each test fails on
+  its assertion (wrong value, absent raise), then implement to green. An
+  assertion that was green the first time it ran is not evidence either: it has
+  never demonstrated that it discriminates, and no reviewer can recover that
+  history from the finished artifact. **The inert stub is what makes a batch
+  cheap to validate** — run N tests against it once and every red is
+  individually visible, while a test that comes back green has identified itself
+  as vacuous. What it does *not* prove is that a test detects wrongness rather
+  than absence: an assertion can fail against nothing and still pass against
+  both the correct implementation and the plausible-but-forbidden one it exists
+  to rule out. That needs the wrong implementation run against the batch — a
+  second run, not a per-test exercise.
+- **Test the invocation path, not just the code.** A test harness invokes code
+  the most convenient way; the runtime does not. Every difference is an untested
+  contract, and mode bits, shebangs, `$PATH` resolution and CWD are all
+  invisible to a green suite: gitlore's `index-sync-post.sh` shipped through 16
+  green tests, three reviews and a lint pass at mode `100644`, which would have
+  failed `Permission denied` (rc=126) on every `Write`/`Edit` in every installed
+  project, because every test ran it as `bash "$POST"`. Assert the invocation
+  contract itself — `[ -x path ]` per hook script — and read the **recorded**
+  mode (`git ls-files -s`), not `ls -l`, since a local `chmod` masks the bug a
+  marketplace clone reproduces. **One layer up, a suite that is not *run* cannot
+  fail:** `make test` hand-listed its `.bats` files and five suites (21 tests)
+  had drifted off the list, including the memory-gate cover — an unlisted suite
+  is indistinguishable from a passing one, so glob the discovery. Green means
+  nothing until you know what ran: check the count and plan lines, not the exit
+  status. Beware the measurement too — a pipe (`make test | tail`) reports the
+  *last* stage's status, so a failing suite reads as exit 0, and two concurrent
+  runs redirected to one log interleave into a garbage count.
+- **Verify a guardrail with a command the system actually issues, expecting
+  ALLOW.** A containment allowlist must permit the contained system's *primary
+  operation*, and that is checked against a real command string from a log or
+  ledger — never a synthetic probe, never by reasoning about the pattern.
+  ghmem's `ghmem-only.sh` allowlist had no space, quote or backtick in its
+  class, while `ghmem route` requires a multi-word quoted note on every topic
+  verdict: the hook blocked the only operation the agents existed to perform, so
+  it had never been enforcing, and the corpus filling with note-bearing routes
+  read as success. Run one must-block case expecting DENY as well; the ALLOW
+  direction is the one that gets skipped and the one that catches an
+  incompatible guard. When a guard and a contract disagree, suspect the guard was
+  never enforcing rather than that the contract bent around it. **After moving or
+  editing a live guard, re-provoke it** and read two things off the denial: the
+  script path the harness attributes it to (proving which copy fired) and a
+  phrase only the new text contains (proving the edit is what runs).
 
 ## Code
 
@@ -189,10 +374,318 @@ rules that change what the agent does by default.
   symbol means patching every in-repo caller directly, even if that is more files.
   Anything kept only to spare the callers is dead weight that hides the real
   dependency. Reserve compatibility work for genuine published API boundaries.
+- **Cut a capability in one pass, leaving nothing vestigial.** Not tests
+  asserting the *absence* of the removed behaviour, not fixtures or sentinel data
+  standing for the removed inputs, not a now-trivial script kept as its own file
+  or subprocess — a module collapsed to a few lines is inlined into its single
+  caller, not kept as a hollow shell. Half-removals force the reader to
+  reconstruct what is live, and absence-guards grow stale defending behaviour
+  nobody will re-add. Grep for the whole machinery — helpers, constants,
+  fixtures, tests, docs, recipes, inbound references — and convert any
+  absence-guard into the positive contract of what remains. **Retiring memory
+  files is the same pass:** `rm` leaves every surviving `[[link]]` pointing at
+  content nobody will write, so sweep the corpus for inbound links, and where a
+  link carried meaning restate the rule inline rather than dropping the sentence
+  (retiring 24 files cost 40 such rewrites across 30 survivors).
+- **Before handling a case, establish it can occur.** Check the data model and
+  the upstream source; if they cannot produce the state, write nothing for it —
+  no guard, no fallback, no test. A `visited` set to make a comment walk
+  "cycle-safe" defended nothing (a comment has at most one `parent_id`, so a
+  cycle is unreachable from any root) and dragged in a NamedTuple to duck the
+  lint it caused. The cost is real and the benefit zero — worse, a passing test
+  for an unreachable state reads as verification, makes dead machinery look
+  load-bearing, and freezes it against later simplification. When my human
+  partner gates a request on a condition ("… *if they exist*", "if that can
+  happen"), that is an instruction to go check and report what the check found,
+  not a hypothetical to build for. **Contrast a case that genuinely occurs** — an
+  orphan reply whose parent is missing from the corpus is real, because a
+  paginated or incremental fetch can land a reply before its parent; that one
+  earns its handling.
+- **Optional means the source can genuinely omit it** — never optional "to be
+  safe", "for robustness", or to make a fixture easier to write. A defaulted
+  field cannot distinguish *absent because the source said so* from *absent
+  because we stopped asking for it*, and in a decode chain the second is silent
+  whole-corpus data loss: the struct defaults to `None`, the next layer accepts
+  it, the column is quietly empty forever. Requiredness turns that into a loud
+  failure at the boundary that caused it. Read the upstream schema before
+  choosing: required there → required here. ghmem's `authorAssociation` was
+  `str | None = None` everywhere though GraphQL types it
+  `CommentAuthorAssociation!`; dropping it from the query passed every test and
+  nulled the column corpus-wide, and making it required also immediately caught
+  seven drifted fixtures. `mergedBy`/`mergedAt` stayed optional — an Issue node
+  truly has neither. **Where a layer has a different answer from its neighbour
+  that asymmetry is real information: write it down rather than flattening both
+  to optional.**
+- **Do not bake a strong guarantee into every call when a foreseeable caller
+  must relax it.** Where durability, ordering, atomicity or validation conflicts
+  with a known future need (throughput, batching), expose the guarantee as a
+  separate opt-in method the caller invokes at its own checkpoints: removing one
+  from a published contract is a breaking change, adding an opt-in later is not.
+  ghmem's `Ledger.append` fsynced per event, which would have throttled a bulk
+  fetch; it now flushes to the OS (crash-visible) and `Ledger.sync()` delegates
+  to `os.fsync` when the caller wants power-loss durability.
+- **Which layer owns a validation rule is set by the vocabulary the rule needs,
+  not by which layer catches it first.** Before declining to add an outer check
+  on duplication grounds, write the rule out: if it needs knowledge only the
+  inner layer has, leave it inside (two copies of a domain rule drift); if it
+  does not, it is a fact about the request's *shape* and the guard is where it
+  belongs. "The heredoc must carry something" needs no verdict vocabulary; "a
+  topic verdict needs a note" needs all of it. Get it wrong and a malformed
+  command is accepted by the guard, then handled inconsistently downstream on an
+  unrelated field. **Enforce a shape rule at *both* boundaries when a caller can
+  reach the inner layer another way** — ghmem's CLI got the same empty-note
+  rejection so a non-hooked caller cannot do what the hook forbids.
+- **A finding that ends in "add a guard so both cannot fire" is a symptom.** Ask
+  what makes the collision representable at all; the usual answer is a singleton
+  resource modelled as N parallel instances whose identity lives in a **name** —
+  filename, hook name, script name — so the at-most-one invariant has nowhere to
+  live. Moving the identity into the data (one file whose body says which kind it
+  is) makes the collision unrepresentable and collapses the per-instance
+  pipeline. Treat your own "add a check" recommendation as the trigger, and count
+  what else is duplicated per instance: constants, validators, entry points,
+  failure channels, stale-state sweeps. More than one or two and the merge is the
+  finding, not the guard. Sibling-over-parameterisation is often right at two
+  instances and stops paying at three, and the merge means deleting the siblings
+  outright, not leaving shims.
+- **Narrow a guard's accepted class to what writers need, not to what you can
+  prove inert.** "Any run of non-whitespace minus the quote" and "letters, digits
+  and underscores" were equally safe for a heredoc delimiter — a differential
+  harness over 36 exotic delimiters (`$(…)`, backticks, `>`, `|`, `&&`, `*`,
+  `\`, `"`) found no divergence from bash, because the delimiter word is
+  single-quoted — but the whole guarantee rested on one excluded character and
+  reading it took a paragraph of quoting reasoning rather than a look at the
+  pattern. Nobody needs a `$` in a delimiter. **Run the differential test
+  anyway:** it is what tells you whether you narrowed out of caution or
+  necessity, and that answer belongs in the comment.
+- **Parse structured formats; never hand-roll a regex over a grammar** — YAML,
+  JSON, TOML, HTML — even for "just one field" ("don't use regex where you should
+  really use a parser. You know, zalgo and all"). A regex breaks on the inputs
+  the grammar allows but the pattern did not anticipate (quoting, escapes,
+  multiline, nesting) and it fails *silently*, matching the wrong thing rather
+  than erroring. If the proper parser needs a dependency, add the dependency.
+  **Two things are not this:** genuine token extraction from freeform prose
+  (pulling bare `#N` issue references out of markdown), where there is no grammar
+  and a regex validated against real data is right; and structural splitting on
+  an unambiguous delimiter (the `---` frontmatter fence) by explicit line
+  handling. It is the format's *content* that must go through the parser.
+- **No `2>/dev/null`** unless failure is normal and the message expected — and
+  even there, prefer surfacing the message unless it matches expectation. A
+  blanket redirect silences one anticipated message and every unanticipated one
+  with it: two gitlore defects hid behind exactly that (both `git push` sites
+  assumed failure meant unreachable-or-divergence, so a protected branch or
+  `pre-receive` decline started a merge resolution that could not help, with
+  git's explanation discarded; a suppressed `ls -A` let an unreadable directory
+  read as "empty"). In order: **(1) guard the expected failure away** so what
+  remains on stderr is real (`[ -f "$file" ]` before a reader, `[ -e path/.git ]`
+  before a submodule `git -C`, `rev-parse -q --verify MERGE_HEAD` before `merge
+  --abort`); **(2) capture and match** when several failure modes are treated
+  differently — `err=$(cmd 2>&1)` then `case "$err"` on a verified
+  discriminator; **(3) keep the redirect only when provoking the error IS the
+  mechanism** (a write probe, `python3 -c 'import yaml'` feature detection) or
+  when every failure mode is normal and answered by a safe default — and write
+  the reason inline. Never replace git's message with a guess: worktree-remove
+  appended "(locked or uncommitted)" to every failure.
+- **No branch, fallback or diagnostic narrative for a transition between
+  versions of tooling you also control** — a plugin update that has not re-pinned
+  its config key, an old on-disk layout, a half-migrated path. Fix forward:
+  "don't write a special case for the gitlore transition, it has a user base of
+  one." With one user the transition window is a single restart, the branch
+  outlives the case, and its explanatory prose is wrong the moment the transition
+  ends. When a message starts enumerating causes ("installed before this session
+  / updated since / the pinned path moved"), collapse it to one fact plus one
+  recovery act. **Reserve real migration handling for boundaries with users you
+  do not control**, and note that read-only *liveness* detection of a foreign
+  tool's state is a different thing that still applies.
+- **Detecting that a *foreign* tool is mid-run takes more than
+  `[ -f "$known/path" ]`.** Require the current layout **and** a positive
+  identity marker inside the file (a header line naming what it belongs to), and
+  define which one wins when several match. Two independent failure modes make
+  presence-at-a-path a false positive: the layout moves — the other tool
+  relocates its file and often declares the old path a stray, so the one path
+  tested becomes the one guaranteed *not* live — and nothing cleans up, so a file
+  left by an abandoned run survives forever, more so in a git-ignored tree where
+  `git status` never shows it. handoff hit both at once: a leftover
+  `.superpowers/sdd/progress.md` made a session running no SDD suppress its own
+  `handoff-todo.md`. Pick most-recently-modified among several matches
+  (alphabetical glob order is not a liveness signal), make the near-miss fail
+  **open** (no detection → do the normal thing), verify layout and marker against
+  the other tool's own source rather than its docs, keep the detector read-only
+  (another workflow's stale file is never yours to delete), and keep one registry
+  function owning the layout with every consumer interpolating what it prints.
+- **Ground every heuristic constant in data, and never let a pending constant
+  license a placeholder implementation.** A scoring formula, weight or threshold
+  is derived from analysis of the data it will run on — percentiles,
+  known-ground-truth calibration — with the analysis recorded; "always ground
+  heuristic formulas in data analysis" was the correction to a hip-shot heat
+  formula and its 3-PRs/10-commits thresholds. Keep them tunable, tuned from
+  evidence. Meanwhile **weights are parameters: bind them into the query.** Only
+  a change in the model's SHAPE (nonlinear score, rank fusion, a normalization
+  pass) forces a rewrite — "the numbers aren't final" never does, and neither
+  `--limit` nor "calibrate first, then optimize" excuses a per-item Python loop
+  that is a reimplemented `GROUP BY`. Where the consumer of an output is
+  analysis, emit a data format (CSV with a header, JSONL), not a dense human line
+  to be regex'd apart. **And judge a weight by fitting the whole vector, never a
+  per-metric sort:** sorting a labelled sample one feature at a time measures
+  *marginal* discrimination while a weight is *conditional*, and the gap gets
+  useful features deleted. ghmem's `related_items` sorted signal at exactly the
+  41% base rate and remains the weakest lone ranker (AUC 0.595), yet its fitted
+  coefficient was +0.243, second largest, and zeroing it cost corpus-weighted AUC
+  (0.818 against 0.843). Before cutting a weight, check what dropping it costs
+  the full score. When a sample is stratified on the composite, its
+  single-metric-versus-composite comparison is handicapped by construction —
+  treat any "the part beats the whole" result from it as an artifact until a
+  differently drawn sample reproduces it.
+- **A justfile's shared `bash_prolog` is for common foundations only:** a
+  function earns its place by having two or more call sites, and anything called
+  once is inlined into the recipe that calls it — including the tempting
+  `run-<recipe>` wrapper holding a whole body. The prolog is copied between
+  projects, so every function in it is inherited and has to be understood by the
+  next one. Corollaries: early exit is `exit` **in the recipe**, never `return`
+  from a helper; setup like `sync` is called once at **recipe toplevel**, not
+  from inside a helper several recipes reach (or a dependent recipe calls it
+  twice); and a helper written for cross-project reuse is the one legitimate
+  exception — parameterize it (`check-sentinel <name>` → `tmp/.<name>-sentinel`)
+  and say so.
+- **`uv` is for `uv sync` only — never `uv run`, never `uvx`, under Claude
+  Code.** Every `uv run` touches `~/.cache/uv`, which the Bash sandbox blocks,
+  and threading that through settings and permissions per project is more
+  friction than it buys. Rely on direnv to activate the venv (`.envrc` exports
+  `VIRTUAL_ENV=$PWD/.venv` and prepends `$VIRTUAL_ENV/bin` to `PATH`), and have
+  recipes call tools by bare name — `pytest`, `ruff`, `mypy`, `docformatter` —
+  never `./.venv/bin/foo`.
+- **Load `/shell-scripting:shell-gotchas` before *reviewing* shell code**, not
+  only when authoring it — a diff of `.sh`/`.bash`/`.bats`/git-hook/Makefile-recipe
+  content. Its value is the catalog ShellCheck cannot see (BSD/macOS divergence,
+  `set -e` status loss, git-hook env leakage, bash 3.2 limits), and its rule
+  "audit the whole touched script, not the diff" changes the unit of review.
+  Invoke it in the same turn the review is requested, before opening the first
+  file; then run shellcheck for the mechanical layer and read for the
+  uncatchable one.
 - **A quiet gate signs off with the list of checks that passed**, accumulated as they
   run — never a bare "OK" or "Green". Silence is ambiguous: a check that printed
   nothing looks exactly like one that never ran. A recap resolves it because a
   missing check is visibly missing. Failure stays terse.
+
+## Writing docs, plans and specs
+
+- **A plan doc is as small as the work.** When the work is concrete ("edit N
+  files + run M commands"), padding with architecture diagrams,
+  lessons-learned openers, dogfood narratives and self-review checklists feels
+  productive and only adds review burden: a 700-line packaging plan reduced to
+  7 executable steps ("why 700 when 7 would do?"). List the actual executable
+  steps first; under ~10 commands with no genuine design decisions, skip the
+  spec-style template and write a ≤30-line checklist of steps, open decisions
+  and scope notes. **Reserve full spec docs for plans with non-trivial design
+  decisions worth recording across sessions** — plans carrying real FRs, NFRs
+  and alternative analysis fit the template; packaging plans do not.
+- **Never hand a long document over with "look this over."** Large docs hide
+  errors in volume and reviewers — human or LLM — skim instead of inspect
+  ("documents are too large for eyeballs"; a ~680-line plan drew exactly one
+  annotation). Do a fresh-eyes pass yourself first and flag the specific
+  high-risk sections — concrete shell snippets, cross-repo paths, file lists,
+  anything that must be checked against the world rather than read — as "lines
+  X–Y do Z, worth verifying". For doc edits prefer a revision-only diff
+  (`revdiff HEAD~1`) over a cumulative `HEAD~N`, and split structurally where
+  you can: spec in its own commit, implementation plan in another.
+- **Meet a line-count cap by wrapping honestly, never by cramming.** Hard-wrap
+  prose at the repo's ~72-col convention *first*, then measure; if it still
+  exceeds, split on a clean seam. Long unwrapped 150–300-char lines game the
+  number while destroying the reviewability the cap protects ("you are clearly
+  cheating on the line count metric"). Preserve all information across a split —
+  duplicated front matter (constraints, shared types) is fine, dropped content is
+  not. **Cramming has two further forms:** a full interface conveyed as a run-on
+  paragraph (semicolon-chained methods, comma-run dataclass lists) — give each
+  method, dataclass and exception its own bullet with its full signature and
+  return type, which also surfaces elided return types; and, on *source* files,
+  shaving docstrings to fit — prose is the cheapest thing to cut and the first
+  thing a later reader needs, and a file parked at exactly its cap has stopped
+  emitting the signal the cap exists to emit. If trimming is the only way to fit,
+  say so out loud and put the split in front of the human as a decision. **GitHub
+  bodies are the opposite case** — they render every newline as a break, so no
+  hard wrap there. **And the cap is not absolute:** it is a reader-context
+  budget, and a split imposes its own cost (re-reading several docs, chasing
+  cross-references), so accept a bounded overage on one cohesive doc when the
+  split would be *more* human effort — a validated plan ~40 lines over 400 was
+  deliberately kept whole. That tempers the "always split when over" reflex only;
+  the honest-wrap discipline still holds.
+- **A single task's contract running past ~400 lines is the signal to split that
+  task.** Contract size predicts implementation size — a ~400-line contract
+  produced a 1385-line implementation — and catching the overshoot at
+  spec-review time is cheap where discovering it at PR-slicing time is not.
+  Weight contract length as a predictor in the update-vs-split decision rather
+  than judging the contract's size in isolation. The 400-line cap on
+  human-reviewed artifacts is a **soft** reviewability guideline: do not block a
+  commit or agonize over exceeding it in local self-review.
+- **A spec never references its own previous versions.** Scrub "was confusingly
+  similar", "the earlier constraint is dropped", "(good) not (bad)" comparisons
+  against a prior draft: implementers do not know and do not care about earlier
+  versions, and self-referential history is noise. State the surviving design
+  positively. **KEEP rejections of real design alternatives that stand on their
+  own** ("shelling out to `gh api graphql` was rejected: …") — those are
+  decisions, not draft archaeology. Introduce private or opaque references
+  (sibling repos, personal tooling) on first use instead of assuming the reader
+  knows them.
+- **A lasting guideline stays general; the audit is the repo-specific
+  artifact.** Asked to research best practices and produce a reference meant to
+  amortize across releases, do not ground it in the current repo or frame it as
+  an audit input — a research prompt scoped to "ground in THIS project" leaked
+  ~19 "this repo does X" intrusions plus Repo-notes and Review-log sections into
+  a doc meant to be durable, and repo commentary makes a general reference read
+  as a stale one-off. Split the two: the **guideline** is general DO/AVOID rules
+  with neutral illustrative examples, version-grounded but not repo-grounded; the
+  **audit** holds the repo-specific findings and is point-in-time. In a
+  multi-stage research→review→audit pipeline only the audit stage is
+  repo-specific. Confirm the intended scope before delegating the research.
+- **A style brief that states a goal without a method delegates badly.** Given
+  "split em-dash pile-ups" and "unpack telegraphic fragments", subagents
+  converted every em-dash and explanatory colon into a full stop, and a
+  corrective wave left quoted regressions untouched while over-reverting others.
+  The judgement the work needs — *is this edit clearer, or just longer?* — was
+  never briefed, and terse voice reads as "crammed" to an agent told to uncram.
+  Brief the *how*: a worked before/after example of one unpacking, and an
+  explicit "keep the em-dash, split the ideas". Where that cannot be written
+  down, delegate the mechanical verifiable half and keep the rest — structural
+  work with a machine-checkable exit condition ("`check_line_limits.sh` must exit
+  0") delegates fine. Read the full diff before reporting it done. **Two limits
+  on this evidence:** "limp" was a self-assessment, never a confirmed quality
+  drop, and the cause was brief specification, not model tier — do not cite it as
+  a prior that prose degrades down-tier.
+
+## Skills and agent definitions
+
+- **No rule or anti-pattern for a failure nobody has seen.** An anti-pattern
+  list is a record of defects that happened; plausible-sounding padding dilutes
+  the real entries and costs context on every load. Before adding one, name the
+  incident — no incident, no entry. A sharper variant, seen once: an invented
+  guardrail around a new decision point, phrased as a prohibition, forbade
+  exactly what the common request wanted ("when the user says 'handoff and
+  commit', forbidding git commands prevents the expected behaviour"). **When a
+  rule must exist, state it positively in the step where it acts** ("the commit
+  lands before this file is written") rather than as a prohibition on the agent
+  — a positive ordering constrains sequence without forbidding the action.
+- **A skill's `description:` opens with what the skill does**, then the
+  triggers / "Use when…" clause, then optional exclusions. It is shown verbatim
+  in the Claude Code TUI skill list, so a trigger-first description reads as
+  noise and the user cannot tell what the skill is for at a glance. Drop
+  overspecific or stale implementation detail from the tail — mechanics are not
+  a useful TUI summary. Applies to every skill in a plugin, not just the
+  headline one. **Model guidance does not belong in a skill body at all:** which
+  model runs the work is an agent-frontmatter concern, so "run this on Sonnet"
+  in a skill states something it cannot enforce.
+- **The imperative-form rule for skill bodies targets instruction subjects**,
+  not every pronoun. `plugin-dev:skill-development`'s prohibited examples are all
+  second person as the subject of an instruction — `You should create…`,
+  `You need to configure…`. Reflexive intensifiers (`do not verify it
+  yourself`), possessives naming a referent (`your post-compaction self`) and
+  passive objects (`submitted for you`) are not what it targets, and a bare
+  `grep -w you` reports all of them identically — in handoff's two skill bodies,
+  11 hits contained exactly 1 true violation. Classify each hit before
+  rewriting: instruction-subject (rewrite verb-first), load-bearing intensifier
+  (replace the word rather than delete it — `run it yourself` → `run it
+  directly` keeps the agent-vs-machinery contrast), removable intensifier
+  (delete), or a referent with no good third-person label (keep). handoff
+  deliberately keeps `your post-compaction self` in
+  `skills/precompact/SKILL.md`; do not "fix" it on a later grep sweep.
 
 ## Boundaries
 

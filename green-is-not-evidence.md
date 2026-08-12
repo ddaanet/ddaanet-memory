@@ -15,8 +15,9 @@ The fix in every case is the same move: make the fixture carry the
 discrimination, so the assertion has something to be wrong about.
 
 Green is not the bar; green *for the stated reason* is. What counts as having
-watched an assertion fail — and how to get that failure for a whole batch of
-tests at once — is [[genuine-red-not-missing-sut]].
+watched an assertion fail is a **failed assertion**, never a missing module:
+stub the SUT importable but inert, and every test in a batch shows its own red
+in one run.
 
 ## Shapes that pass whatever the code does
 
@@ -172,8 +173,8 @@ outcome, and in a system with several coupled writes (a ledger, a mirror, a
 queue that filters on a different row) there is usually more than one. Writing
 a negative case first and seeing it green feels like red-green, but the red
 never happened; the suite then reports coverage of a branch no test can
-distinguish from its absence — the same failure [[test-the-invocation-path]]
-names one level up, where a whole suite never ran. The structural answers above
+distinguish from its absence — the same failure one level up, where a whole
+suite never ran because nothing listed it. The structural answers above
 cost no separate pass and keep working as the code moves, which is what makes
 them the answer: a validation ritual performed once by hand is a test run by
 hand — behaviour worth checking belongs in the suite, never in a throwaway

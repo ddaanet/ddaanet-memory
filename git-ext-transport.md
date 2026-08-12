@@ -36,5 +36,5 @@ use itself. A scheme allowlist (`http`/`https`/`ssh`/`git`/`file`, scp-like
 `[user@]host:path`, local paths) closes the class independently of git config;
 reject anything whose text before the first colon is followed by a second colon.
 
-See [[harden-human-gates]] for the matching question of *where* a
-guard belongs.
+The matching question is *where* the guard belongs: harden where a human types
+free text, not a channel whose producer you control.

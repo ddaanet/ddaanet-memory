@@ -22,7 +22,7 @@ one level down.
 **Why:** a reader handed `transcript_path` sees the main file alone, and a
 sub-agent's `message.usage` sits in a sibling directory that nothing appends
 from. A `select(.isSidechain != true)` guard on such a reader is code for a
-case the layout makes impossible — [[no-code-for-impossible-cases]].
+case the layout makes impossible, so it should not be written at all.
 
 **How to apply:** parse the file at `transcript_path` unfiltered, and treat the
 segregation as an invariant of the current layout rather than a permanent one.
