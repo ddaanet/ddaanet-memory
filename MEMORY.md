@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-08T22:28:11.508Z
+  modified: 2026-08-12T05:45:54.408Z
 ---
 
 # ddaanet tier index
@@ -14,7 +14,7 @@ Claude Code mechanics, shell and git gotchas. Project-specific facts stay in
 the project's own memory store.
 
 - [check parallelism assumption before perf fix](perf-fix-check-parallelism-assumption.md) — proposing `--jobs`/`-P`/`-j` as the headline speed fix: the assumption about spare cores to check first
-- [sandbox effects](sandbox-effects.md) — index.lock/"Another git process" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume "No conversation found…", $TMPDIR unset, zellij "no active session"; escapes incl. dangerouslyDisableSandbox
+- [sandbox effects](sandbox-effects.md) — index.lock/"Another git process" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume "No conversation found…", $TMPDIR unset, zellij "no active session", empty `ps` for background tasks; escapes incl. dangerouslyDisableSandbox
 - [bats + shellcheck gotchas](bats-shellcheck-gotchas.md) — SC2314 bare `! cmd` asserts nothing; `run missing_fn` exits 127 so negatives pass vacuously; a helper's `${n:-default}` erases the empty-arg case; `grep -qF` matches any ONE line of a multi-line pattern; @test bodies run under errexit; shellcheck lints .bats; `# shellcheck` comment = directive
 - [git refuses ext:: by default](git-ext-transport.md) — `fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` injection finding isn't exploitable on default git — probe the policy first
 - [protocol.file.allow blocks submodule clones](git-protocol-file-allow.md) — `fatal: transport 'file' not allowed`; the child *clone* reads it, so repo config can't fix it — `git -c`
@@ -94,7 +94,7 @@ the project's own memory store.
 - [Provisional values, not provisional code](provisional-values-not-provisional-code.md) — uncalibrated constants: a parameter to bind, or a licence for a placeholder implementation
 - [Ground formulas in data](ground-formulas-in-data.md) — derive from corpus analysis, never hip-shooting
 - [Marginal weakness ≠ misweighting](marginal-weakness-is-not-misweighting.md) — a metric can discriminate at the base rate alone and still earn a heavy weight
-- [Gate cache must cover every check](gate-cache-must-cover-every-check.md) — adding a check to a cache-gated recipe, or splitting a cheap check out of a slow gate; reconcile each check's paths against the hash (narrow/widen/split, then prove it) or it goes red silently on an unrelated commit
+- [Gate cache must cover every check](gate-cache-must-cover-every-check.md) — adding a check to a cache-gated recipe, or splitting a cheap check out of a slow gate; reconcile each check's paths against the hash (narrow/widen/split, then prove it) or it goes red silently on an unrelated commit; a submodule-gitlink input can't be hashed — run that check uncached, ahead of the sentinel
 - [Bash prolog = common foundations](bash-prolog-common-foundations.md) — what belongs in a shared `bash_prolog` vs in a recipe body
 - [Optional means the source can omit it](optional-means-source-can-omit.md) — treating a field as optional, and what a default hides
 - [Edify Python standards](edify-python-standards.md) — uv, click, pytest, ruff-ALL, mypy strict; edify repo is the reference config; justfile shape and the 400-line check_line_limits.sh gate
