@@ -44,7 +44,7 @@ code to copy, or they will look for it. Measured on B2: 874 lines of
 code-carrying steps became 537 as contracts, about 1.6x, and its
 worst task went from ~430 lines to ~190. Budget for that, not the 2.5x
 I first guessed. A task whose contract exceeds ~400 lines is still the
-split signal ([[spec-contract-size-predicts-pr-size]]).
+split signal — contract size predicts implementation size.
 
 Stating a step as a contract also catches errors writing it as code
 hides: B2's task 1 test had asserted a fixed surviving line count,

@@ -16,7 +16,8 @@ event name to a log). So a `--print` harness can exercise the *whole* hook set, 
 just the one event that happened to be verified first. That mattered here: gitlore's
 eval fixture hand-listed `PostToolUse` alone, which left composition, the commit
 gate, recall and add-tier dark in every eval ever run — derive the eval's hook
-wiring from the plugin's real `hooks.json` instead ([[test-the-invocation-path]]).
+wiring from the plugin's real `hooks.json` instead — an eval that exercises a
+different invocation path than production tests nothing about it.
 
 **Because `SessionStart` fires, `claude -p` is not a read-only probe — it is a real session that runs your repo-mutating hooks.** A one-shot `-p` invocation used to *verify* state can destroy the state it was checking. Observed 2026-08-03: two `claude -p` probes confirming a `CLAUDE.md` `@` import resolved also ran gitlore's own `SessionStart`, whose unconditional `git submodule update` re-pinned a memory tier to its recorded gitlink and walked HEAD back off a just-landed merge commit, reverting the merged fact files. Nothing reported it — the probe answered the question it was asked and the damage was in a different file. Before spending a `-p` run on a question about the working tree, ask what this repo's `SessionStart` does; where it writes, verify by reading the tree instead, or take the probe's answer knowing the tree may have moved under it.
 

@@ -155,4 +155,5 @@ framings. **Compactness is cutting connectives, not dropping content** —
 completeness of substance stays. Same instinct applied to hook output:
 [[hook-output-channels]].
 
-Related: [[examine-evidence-drift]], [[loose-generation]].
+Where the doc and its implementation disagree, get the drift direction from git
+history rather than assuming which is authoritative.

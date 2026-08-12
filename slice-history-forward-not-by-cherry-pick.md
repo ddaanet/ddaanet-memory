@@ -49,5 +49,5 @@ routing slice looked like one 662-line batch and turned out to be two
 distinct arguments (what shape routing state is / how a live write
 avoids diverging from a replay) that read better apart.
 
-Related: [[honest-line-count-caps]],
-[[spec-contract-size-predicts-pr-size]].
+A slice past the ~400-line reviewability cap is a split signal, not a licence
+to cram it onto fewer long lines.

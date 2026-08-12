@@ -27,6 +27,7 @@ inside ...` says more, in less, than two flat sentences, so flattening
 it trades terse for limp and is a regression. Context paragraphs go
 *before* a test docstring's `When:`/`Then:` block, never after. If the
 pass pushes a file past its line cap, split the module along an
-existing seam rather than shaving the prose back to fit — see
-[[honest-line-count-caps]]. Do the judgement yourself; subagents
-flatten the voice ([[prose-voice-does-not-delegate]]).
+existing seam rather than shaving the prose back to fit — the cap protects
+reviewability, and prose is the first thing a later reader needs. Do the
+judgement yourself: an underspecified style brief affords only
+find-and-replace, and subagents flatten the voice.

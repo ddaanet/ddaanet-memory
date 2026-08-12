@@ -39,6 +39,6 @@ every line in it. A defect verified in an adopted line is the follow-up change
 this prescribes — deferring it to a later pass ships it, and the merge commit
 makes it look decided.
 
-Related: [[examine-evidence-drift]] (get the drift direction from git
-history — the longer text is not automatically the newer one),
+Get the drift direction from git history rather than assuming one — the longer
+text is not automatically the newer one. Related:
 [[index-compaction-triggers]] (what a corrective pass must restore).

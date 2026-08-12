@@ -9,7 +9,7 @@ metadata:
 ---
 
 Verified empirically 2026-07-20 (git 2.x, Linux) while sweeping `2>/dev/null`
-out of gitlore — see [[no-stderr-suppression]].
+out of gitlore.
 
 **Silent on their normal-absence path** (rc≠0, nothing on stderr) — a redirect
 on these only ever hides a real fault, so delete it:
@@ -42,7 +42,8 @@ without `-q` — capture stdout+stderr instead. This shipped as a live bug in
 gitlore's tier fetch: the divergence arm was unreachable and a diverged tier was
 reported as merely "stale". It survived a suite that already covered ff-only
 rejection, because that test ran its own `git fetch` **without** `-q` — the
-invocation was the bug, not the logic ([[test-the-invocation-path]]).
+invocation was the bug, not the logic: the test exercised a different
+invocation path than production takes.
 
 **Whitespace-safe enumeration:** `git config -z --get-regexp <re>` emits one
 NUL-terminated `key\nvalue` record per match, so `${rec#*$'\n'}` recovers a value

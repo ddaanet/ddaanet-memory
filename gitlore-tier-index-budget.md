@@ -32,4 +32,4 @@ already spent in the target repo. If the sum clears 24.4KB, the mount is
 still correct but it lands with a known-truncating index; say so at the time
 rather than letting a later session discover its project facts silently
 missing. Related: [[gitlore-tier-merge-direction]],
-[[tier-routing-plugin-shaped]].
+[[tier-routing-and-links]].
