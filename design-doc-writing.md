@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-11T20:02:35.580Z
+  modified: 2026-08-12T19:00:44.413Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections:
@@ -84,7 +84,7 @@ handoff's `## Activation` chosen-pattern bullet and
 describing the abandoned
 `@`-ref load chain. The spec reviewer wanted them left as history; the
 code-quality reviewer called them current-behavior descriptions. The
-code-quality framing was correct — fixed in commit `7c0471b`.
+code-quality framing was correct, and they were rewritten as such.
 
 ## Present-tense standing truth
 
