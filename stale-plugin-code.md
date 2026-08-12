@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-11T20:50:32.257Z
+  modified: 2026-08-12T19:00:50.062Z
 ---
 
 One symptom, three causes: the plugin code actually running is not the code you
@@ -38,7 +38,7 @@ Signature — discovered closing **Plan 04 Step 6** (2026-05-24): a marketplace
 session was about to "verify" the **memory-merger** two-turn flow, but still had
 the pre-flatten `commands/gitlore/` layout and the broken agent frontmatter (no
 `name:`, no `allowed-tools:`) — it would have tested old code the repo had already
-fixed (`e205aa6`, `27af3b8`). Check with `find
+fixed. Check with `find
 ~/.claude/plugins/cache/<owner>/<plugin>/<ver>/commands` and by eyeballing
 `agents/*.md` frontmatter. Tell in gitlore: a flat `/gitlore:resolve` in the skill
 list means `--plugin-dir`/fresh cache; double-prefixed `/gitlore:gitlore:resolve`

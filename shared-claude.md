@@ -42,7 +42,12 @@ rules that change what the agent does by default.
   the shim and repoint `git config gitlore.hooksDir`.
 - **Run the repo's precommit gate before committing**, unprompted — it is a
   required step, not a suggestion to float. In micro that is `just precommit`.
-- **Commit `memory/` with the code**, never `.gitignore` it.
+- **After a compaction, verify the session root before acting.** Check `PWD`,
+  `CLAUDE_PROJECT_DIR` and the gitStatus block against the work the summary
+  describes — a summary says what was being done, not where the session lives.
+  If they disagree, say so and stop; never reconcile by `cd`-ing. A guard
+  refusal, or an untouched file reported as externally modified, is evidence of
+  a concurrent session rather than noise.
 - **Refer to the user as "my human partner"**, never by name, in anything I
   author as myself: memory files, gate summaries, handoffs, internal docs.
   Content written *in their name* for an external audience follows the
@@ -117,6 +122,11 @@ rules that change what the agent does by default.
   of skill design: a script or hook does detection, branching and decisions and emits
   a structured result; the skill body is for judgement only. Splitting mechanical
   logic between body and harness also obscures the mechanism.
+- **Self-triggering skill when the condition is mechanical and detectable**; a
+  command only for an action the user must consciously initiate. A command
+  requires the user to know when to run it, so a missed trigger is always
+  possible; a skill whose `description` names the trigger pattern invokes
+  itself when the condition appears.
 - **Always-on context takes prohibitions; procedures defer to their trigger.** A
   guardrail against something the agent would otherwise do unprompted must be
   front-loaded — nothing downstream discloses it in time. A recipe resident in
