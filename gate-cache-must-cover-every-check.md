@@ -1,11 +1,11 @@
 ---
 name: gate-cache-must-cover-every-check
-description: "adding a check to a cache-gated recipe, or splitting a cheap check out of a slow gate; reconcile each check's paths against the hash (narrow/widen/split, then prove it) or it goes red silently on an unrelated commit"
+description: "adding a check to a cache-gated recipe, or splitting a cheap check out of a slow gate; reconcile each check's paths against the hash (narrow/widen/split, then prove it) or it goes red silently on an unrelated commit; a submodule-gitlink input can't be hashed — run that check uncached, ahead of the sentinel"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 22ff8b16-eedb-4ef3-9a9c-5a7a83d05f4f
-  modified: 2026-08-04T10:31:08.085Z
+  modified: 2026-08-11T21:14:52.705Z
 ---
 
 When a gate caches its verdict against a hash of its inputs, that hash
@@ -64,6 +64,21 @@ drawn, and nothing states that dependency. And it must be its own
 recipe, not a second block in the same body: `check-sentinel` sets shell
 variables that `record-sentinel` reads back, so a second call in one
 shebang clobbers the first's state.
+
+**A fourth case defeats all three: an input that is a submodule gitlink.**
+Narrow, widen and split all assume the hash *can* see the tree. It cannot
+here — `git ls-files` yields the submodule's one path and nothing to `cat`,
+so the recorded sha moves only when the submodule is committed, and every
+edit inside it is invisible. gitlore's memory-hygiene checker reads
+`memory/`, a gitlink: cached behind the `precommit` sentinel it would have
+been skipped on precisely the commits that edit a memory file. The fix is
+to run the check **uncached, ahead of the sentinel short-circuit** — cheap
+enough (0.4s against a 7m30s suite) that there is nothing to save.
+
+Note the failure runs the *opposite* direction from the one above. An
+under-covered hash on an ordinary tree goes red at an unrelated moment,
+which is merely confusing; an un-hashable input goes **green on the very
+commit the check exists for**, and nothing ever surfaces it.
 
 Whichever way it is fixed, **prove the coverage** instead of reasoning
 about it: run the gate twice to see `✓ Cached`, append a throwaway

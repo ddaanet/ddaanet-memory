@@ -1,11 +1,11 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\"; escapes incl. dangerouslyDisableSandbox"
+description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", empty `ps` for background tasks; escapes incl. dangerouslyDisableSandbox"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-11T20:02:53.180Z
+  modified: 2026-08-12T05:44:33.697Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -253,6 +253,25 @@ the whole recipe ran unsandboxed). The release succeeded once the log redirect
 used the absolute scratchpad path — including the cross-repo marketplace push to
 `../claude-plugins`, which went through because the classifier evaluates the
 top-level `just release minor`, not the inner `git -C "$MARKETPLACE_DIR" push`.
+
+## `ps` cannot see harness background tasks (sandbox hides them)
+
+The agent's Bash runs in its own PID namespace, so `ps` lists only that shell.
+A Bash call made with `run_in_background` — and everything it spawns — is
+absent from any process listing the agent can take: `ps -eo pid,comm` showed
+two `bash` entries while a background `bats` suite was mid-run and went on to
+complete normally.
+
+**An empty `ps` is therefore not evidence that a background job died.** The
+move it invites is starting the same work in the foreground to check, which
+puts two heavy runs on a box that will not take parallel work; the second
+times out, and both then look like the first one failing.
+
+**How to apply:** treat the task-completion notification and the task's output
+file as the only signals about a background job, and a process listing as no
+signal at all. When waiting on one, key the wait on the command's exit rather
+than on a line of its output that reads as terminal — a bats summary line
+prints before the recipe has run its remaining steps.
 
 ## `--resume` dies because the transcript never persisted (second-order)
 
