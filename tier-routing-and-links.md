@@ -10,7 +10,9 @@ metadata:
 
 Two halves of one moment: deciding a fact belongs in a shared tier rather
 than project memory, and carrying it across without leaving dead pointers
-behind.
+behind. Merged from two facts recorded in sessions
+`a3e2f110-a3fe-4f99-bfb6-a2343f2a4110` (routing) and
+`c1666e33-a938-42c3-a372-e89af689e7f6` (links).
 
 ## Does it belong in the tier?
 

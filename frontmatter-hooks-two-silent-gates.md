@@ -9,8 +9,12 @@ metadata:
 ---
 
 A project subagent's frontmatter `hooks:` can be dropped by **two
-independent gates**, each silent. Both must be clear before the hooks
-attach, so neither one on its own explains an uncontained agent.
+independent gates**, each silent. Either one closed is on its own enough to
+drop the hooks; both must be clear before they attach, so clearing one alone
+does not restore containment.
+
+Merged from two facts recorded in sessions `0e54e20b-7997-422c-b864-72737115682c`
+(trust key) and `ca597732-d159-40c8-adc3-c5e8c88c1ec2` (named dispatch).
 
 ## Gate 1 — the workspace-trust key must be exact
 

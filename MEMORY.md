@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-10T19:07:42.185Z
+  modified: 2026-08-12T11:37:38.487Z
 ---
 
 # ddaanet tier index
@@ -68,3 +68,8 @@ the project's own memory store.
 - [frontmatter hooks silently skipped](frontmatter-hooks-two-silent-gates.md) — two independent gates drop a subagent's `.claude/agents` frontmatter `hooks:` with no error and no UI signal ("Skipping frontmatter hooks", `tengu_agent_hooks_origin_untrusted`): `~/.claude.json` `hasTrustDialogAccepted` must name the exact project path (inherited parent trust hides it, no dialog ever appears), and a dispatch `name` overwrites `agentType` with `customAgentType` so zero hooks register and the agent runs uncontained — check `agentType` in the subagent `.meta.json`, never ask the agent
 - [Verify restart before structural diagnosis](verify-restart-before-structural-diagnosis.md) — a same-session negative result (PATH/new agent not visible) often just needs a harness restart, not a structural cause
 - [Migration backfill needs a runnable window](migration-backfill-needs-window.md) — pairing a NOT NULL schema change with a backfill-by-event script: verify the backfill can run against real legacy data before the reducer enforces the field, not after merging
+- [shell-gotchas before reviewing shell](shell-gotchas-on-review.md) — reviewing `.sh`/`.bats`/hook diffs, not only writing them: load `/shell-scripting:shell-gotchas` first, since shellcheck can't see the BSD/`set -e`/hook-env class
+- [Live data before designing](test-with-live-data-before-designing.md) — before planning the next subproject: real data, not fixtures
+- [Guardrails must permit real commands](guardrail-must-permit-real-commands.md) — ghmem's allowlist hook forbade the notes `route` requires, so it was never enforcing; verify a guard with a command the system actually issues, expecting ALLOW
+- [test the invocation path, not just the code](test-the-invocation-path.md) — testing discovery and the invocation path: `[ -x ]` (a `100644` hook never runs), and whether the suite is listed in `make test`
+- [SDD durable state across compaction](sdd-durable-state-across-compaction.md) — flush the SDD ledger, not just memory, before compacting — `precompact` won't; recovering dead subagents
