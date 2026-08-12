@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 40ca6ee7-236b-45e8-9428-2f7bbdd25844
-  modified: 2026-08-11T19:05:59.034Z
+  modified: 2026-08-12T18:12:29.546Z
 ---
 
 An index line's only job is to let an agent decide read-or-skip. Recall usually
@@ -118,6 +118,13 @@ coming due, and it is a separate act with its own judgement. Observed
 reasoning that 100 bytes would push 100 bytes off the invisible tail. Correct
 about the arithmetic, wrong about which side pays — the reverted line was the
 only route to a fact written that same session.
+
+**Topical overlap is not coverage, and inversion reads exactly like it.** A fact
+written to override an installed skill sits on that skill's own topic, so any
+"is this covered elsewhere?" scan flags it and a quick read of both agrees.
+Retiring it restores the rule it was written to beat. Check which way the claim
+points before counting an owner — three ddaanet facts exist only to contradict
+`writing-skills`, `writing-plans` and `skill-development` respectively.
 
 **Rewriting fact bodies is not a lever at all.** Applying [[memory-writing]] to
 five randomly drawn facts took 7,185 B of file to 6,973 B — 2% — and moved the
