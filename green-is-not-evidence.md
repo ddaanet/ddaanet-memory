@@ -1,11 +1,11 @@
 ---
 name: green-is-not-evidence
-description: "accepting a green test you did not watch fail, yours or inherited: shapes that pass whatever the code does (birth state, algebraic tautology, empty derived states compared, parallel counts all equal, an isolation fixture with nothing to leak, upsert idempotence for teardown, a substring another line satisfies, a downstream effect standing in for the write, the right exception from the wrong guard); structuring a negative against string/path/proxy staleness, the negative/positive pairing over one fixture, a wait-then-proceed gate, and deleting an untestable negative whole"
+description: "accepting a green test you did not watch fail, yours or inherited: shapes that pass whatever the code does (birth state, algebraic tautology, empty derived states compared, parallel counts all equal, same-second twin fixture commits are one object, an isolation fixture with nothing to leak, upsert idempotence for teardown, a substring another line satisfies, a downstream effect standing in for the write, the right exception from the wrong guard); structuring a negative against string/path/proxy staleness, the negative/positive pairing over one fixture, a wait-then-proceed gate, and deleting an untestable negative whole"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: df6d1dc0-1862-40d1-ae3b-48ec59dd93a3
-  modified: 2026-08-04T09:33:33.357Z
+  modified: 2026-08-13T19:23:43.103Z
 ---
 
 A test is evidence only when there is a state of the world in which it fails.
@@ -36,6 +36,15 @@ tests at once — is [[genuine-red-not-missing-sut]].
 - **Parallel values all equal.** Two counts both asserted as `1` cannot detect
   their predicates being exchanged. Where a test pins several parallel numbers,
   make them mutually distinct.
+- **Deterministic twins meant to be strangers.** Two "unrelated" fixture git
+  repos each seeded with an empty commit under the same test identity and
+  message are the *same object* whenever setup lands both in one clock second —
+  commits have no randomness. Any surface that needs the two sides to differ (a
+  consumer's submodule at the same path as a foreign gitlink, so the fetch must
+  fail to resolve one against the other) silently vanishes: the "missing"
+  commit is already present, and the test passes vacuously on fast runs and
+  exercises the collision only when setup straddled a second boundary. Seed
+  distinct content or messages so the twins can never coincide.
 - **An isolation fixture with nothing to leak.** To prove A does not see B's
   rows, B must HAVE rows. A cross-join or a dropped `.correlate()` is invisible
   when only one entity carries the data the leak would pull in.
