@@ -22,6 +22,7 @@ the project's own memory store.
 - [shell-gotchas before reviewing shell](shell-gotchas-on-review.md) — reviewing `.sh`/`.bats`/hook diffs, not only writing them: load `/shell-scripting:shell-gotchas` first, since shellcheck can't see the BSD/`set -e`/hook-env class
 - [design-doc writing](design-doc-writing.md) — where dated rationale goes vs present-tense truth; the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog); `(implemented <date>)` tags are changelog material
 - [skill vs command](skill-vs-command.md) — self-triggering skill when the condition is mechanical/detectable; command only for explicitly user-initiated actions
+- [spec enumerations need re-deriving](spec-enumerations-need-rederiving.md) — a spec that hand-lists the call sites a change must touch: grep the pattern before reading the list, since conformance passes clean while the enumeration is short
 - [examine evidence for drift and lineage](examine-evidence-drift.md) — two co-maintained artifacts diverge, or "the mature sibling lacks X" is cited as evidence: establish drift direction and lineage from git history, never assumption
 - [loose generation + post-hoc fix](loose-generation.md) — where to constrain a generator: the scaffold or the artifact boundary
 - [CC project-dir encoding](cc-project-dir-encoding.md) — `~/.claude/projects/<name>/` = abs path with `[^A-Za-z0-9]`→`-`; to find a transcript search `<session-id>.jsonl`, don't apply the rule; edify's impl is incomplete
