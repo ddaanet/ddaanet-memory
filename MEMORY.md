@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-11T15:35:43.629Z
+  modified: 2026-08-13T19:22:25.820Z
 ---
 
 # ddaanet tier index
@@ -69,7 +69,7 @@ the project's own memory store.
 - [Todo tool is flag-gated](todo-tool-flag-gated.md) — `TodoWrite` has no tool definition; `TaskCreate`/`TaskGet`/`TaskList`/`TaskUpdate` replace it, gated by the server-side `tengu_vellum_ash`
 - [Reconstructable is two categories](reconstructable-two-categories.md) — by-harness vs by-model-inference from a paraphrase
 - [Imperative-form rule scope](imperative-form-scope.md) — the skill-development rule targets instruction subjects ("You should X"), not every pronoun; `your post-compaction self` is a deliberate keep
-- [bundle memory with source](bundle-memory-with-source.md) — which commit a memory update rides — not unrelated pending work
+- [bundle memory with source](bundle-memory-with-source.md) — which commit a memory update rides: a note documenting a change rides with that change, never with unrelated pending work; bare bookkeeping (a pointer bump, settings.json) folds into whatever is convenient, amend included
 - [Green is not evidence](green-is-not-evidence.md) — accepting a green test you did not watch fail, yours or inherited: shapes that pass whatever the code does (birth state, algebraic tautology, empty derived states compared, parallel counts all equal, an isolation fixture with nothing to leak, upsert idempotence for teardown, a substring another line satisfies, a downstream effect standing in for the write, the right exception from the wrong guard); structuring a negative against string/path/proxy staleness, the negative/positive pairing over one fixture, a wait-then-proceed gate, and deleting an untestable negative whole
 - [run the gate, not a suite subset](run-the-gate-not-a-suite-subset.md) — verifying a change before declaring it done: picking the affected suites is the guess the gate exists to remove
 - [directive states acts only](directive-states-acts.md) — writing an agent-facing or script-emitted directive, or a code comment: what to cut from it, and what "remove narration" cuts
@@ -116,4 +116,3 @@ the project's own memory store.
 - [Parse, don't regex, structured formats](parse-dont-regex-structured-formats.md) — use a real parser for YAML/JSON/TOML/HTML, never a hand-rolled regex even for "just one field"; regex is for prose token extraction
 - [subagent skips @-import expansion](subagent-skips-at-import-expansion.md) — an Agent-tool subagent's claudeMd block omits `@path` imports a real session resolves; verify with `claude -p`, not a subagent
 - [git subtree ensure_clean unscoped](git-subtree-ensure-clean-unscoped.md) — subtree add/pull/push refuse on ANY dirty path via an internal, unbypassable `git diff-index HEAD`; a pathspec fix at the call site can't work around it
-- [gitlore recover interrupted merge prep](gitlore-recover-interrupted-merge-prep.md) — an interrupted `push-memory.sh` can orphan a store's `MERGE_HEAD` with no gate able to see it; recover by reconstructing gitlore's own merge-state JSON and re-entering `resolve.sh continue-after-merge`, not a hand-rolled commit

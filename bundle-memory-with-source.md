@@ -1,6 +1,6 @@
 ---
 name: bundle-memory-with-source
-description: "which commit a memory-related change rides — a note that documents something rides with the change it documents; bare bookkeeping (a pointer bump with nothing behind it, settings.json) rides on whatever is convenient, including an amend"
+description: "which commit a memory update rides: a note documenting a change rides with that change, never with unrelated pending work; bare bookkeeping (a pointer bump, settings.json) folds into whatever is convenient, amend included"
 metadata: 
   node_type: memory
   type: feedback
