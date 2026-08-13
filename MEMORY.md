@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-12T05:45:54.408Z
+  modified: 2026-08-13T08:02:23.391Z
 ---
 
 # ddaanet tier index
@@ -75,6 +75,7 @@ the project's own memory store.
 - [index compaction loses triggers](index-compaction-triggers.md) — classify WHEN / HOW / acted-inline before touching a line, and relocate the acted-inline class to CLAUDE.md or shared-claude.md rather than shortening to hit a byte target; gitlore's advisory 25600-byte budget vs CC's 24.4KB loader cap, the gate that silently drops the tail; over budget is NEVER a reason to under-trigger a new/updated fact — pressure means retire, not ship an unroutable line; rewriting fact bodies is not a lever (measured 2%, index unmoved); audit plain words, not just backticked literals
 - [detect liveness, not presence](detect-liveness-not-presence.md) — probing a foreign tool's state file: why `[ -f known/path ]` false-positives
 - [tier mount blows the index budget](gitlore-tier-index-budget.md) — mounting a populated tier imports its whole index; composition orders tier-first, so the consumer's OWN project lines fall past the 24.4KB load cutoff
+- [placeholder memory remote is by design](gitlore-placeholder-remote-is-by-design.md) — a store with no `origin` on a `./.git/gitlore-placeholder` url is a finished install, not a stalled migration: the parent has no remote, so read the PARENT's `git remote -v` before filing it as pending work
 - [gitlore tier merge direction](gitlore-tier-merge-direction.md) — tiers are pinned: where `/gitlore:merge`|`/gitlore:push` land a merge, and which index to edit — never root's block by hand — for a pointer removal, or a wording fix only AFTER propagating
 - [tier routing: plugin-shaped litmus test](tier-routing-plugin-shaped.md) — routing an operational gotcha to ddaanet vs project memory
 - [tier links cross a boundary](tier-links-cross-a-boundary.md) — routing a fact up carries its `[[links]]` verbatim, and ones aimed at project-local siblings go permanently dead, unlike a write-it-later dangle
