@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-07-31T20:52:41.245Z
+  modified: 2026-08-13T16:37:53.258Z
 ---
 
 Verified 2026-07-19 against Claude Code v2.1.215 (Opus 4.8, tmux 3.5a) by
@@ -47,11 +47,13 @@ coarse — it holds only for slash commands, not prose.
   readback happened to sit between the text and the Enter; the continuation
   prose (line 2, ~190 chars, no readback) did not, and needed a manual Enter.
   **Always put a settle delay between the literal send and the first Enter.**
-- **Verify a submit with `is_busy`, never "the composer looks empty".**
-  `is_typing` inspects only the last `❯` line, so an absorbed Enter leaves a
-  multi-line composer that reads as empty — the watcher then reports a
-  successful submit that never happened. "The session went busy" is the only
-  positive evidence.
+- **Never confirm a submit by reading the pane at all** — not "the composer
+  looks empty" (an absorbed Enter leaves a multi-line composer that reads as
+  empty) and not `is_busy` either, which was the 2026-07-20 answer and is
+  wrong: a queued submit is accepted and transcript-logged at once but shows
+  no spinner until its turn starts, and a 103-second compaction showed none
+  either. Confirm against something the harness owns — a file the transition's
+  own `SessionStart` consumes, or a new entry in the session transcript.
 - **Readiness ≠ the `❯` glyph** (still true): the glyph shows while the backend
   is `/rc connecting…`.
 - **tmux socket is unreachable from the agent's sandboxed Bash**
