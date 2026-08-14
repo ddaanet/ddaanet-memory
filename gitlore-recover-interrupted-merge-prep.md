@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 698f43da-45cf-452a-ac3a-b5abc55a1bc6
-  modified: 2026-08-12T11:29:51.174Z
+  modified: 2026-08-14T08:32:07.771Z
 ---
 
 `push-memory.sh`/`resolve.sh`'s `gitlore_prepare_merge` reads the pending
@@ -14,11 +14,11 @@ commit from `HEAD`, not the store's `live` branch. An interruption after its
 the JSON state file leaves a real, clean `MERGE_HEAD` that
 `gitlore_guard_stale_merge_state` cannot detect (it only checks the state
 file's presence). The next run's own checkout silently wipes that `MERGE_HEAD`
-(git's `remove_branch_state` — see [[reference_git_checkout_clears_merge_state]])
+(git's `remove_branch_state` — see [[git-checkout-clears-merge-state]])
 and misreads `pending` as the already-moved `HEAD`, producing "Already up to
 date." / "could not prepare the memory merge" on every retry. Full analysis
 and repro: `gitlore` repo,
-`brief-orphaned-merge-head-no-state-file.md`. As of `afb02b9` gitlore's push
+`brief-orphaned-merge-head-no-state-file.md`. gitlore's push
 path gates on `HEAD`-vs-`live` agreement before publishing, which catches
 most shapes of this early — but not all, and the commit-time sync path
 (`gitlore_sync_tiers_to_live`/`gitlore_sync_memory_to_live`) has no such gate
