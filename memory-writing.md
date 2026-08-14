@@ -1,11 +1,11 @@
 ---
 name: memory-writing
-description: "what to cut (anecdote, tense, now/here/currently/this session), what to version-stamp, when \"the user\" is a term of art rather than my human partner, and the category errors that mean delete: \"when using <skill>, do X\", logging decisions the design doc owns, or anything that is common sense or one step from an indexed memory"
+description: "what to cut (anecdote, tense, now/here/currently/this session), what to version-stamp, when \"the user\" is a term of art rather than my human partner, and the category errors that mean delete: \"when using <skill>, do X\", logging decisions the design doc owns, or anything that is common sense or one step from an indexed memory; new file vs merge — several memories each seeming to lack a trigger name one moment, duplication is the tell, splitting further or hanging it off an agent prompt both fail; which tier — an operational gotcha to ddaanet vs project memory, the plugin-shaped litmus of whether the mechanism needs this repo or the class of repo; routing a fact up carries its `[[links]]` verbatim and ones aimed at project-local siblings go permanently dead, unlike a write-it-later dangle"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: de3d2151-a51d-4e13-8bd4-cee0e4c48775
-  modified: 2026-08-14T08:01:22.807Z
+  modified: 2026-08-14T23:05:26.214Z
 ---
 
 A memory states what is true, addressed to a reader who was not there. The
@@ -112,7 +112,124 @@ nothing survives the question, there was no memory to write — an empty flush
 is the normal case. Same test as [[no-speculative-rules]] — no incident, no
 entry — applied to ownership rather than evidence.
 
+## A new file, or a section in one that exists
+
+When several memory files each read as "good content, unclear when it fires",
+name the moment each one actually fires at before writing a trigger clause into
+any of them. Files with distinct HOW content and a single shared WHEN are one
+memory that was split by topic, and per-file trigger clauses are false
+precision: they route the reader to a third of the material at the moment all
+of it applies.
+
+The tell is duplication. A split that follows a real seam does not repeat
+itself; one that followed topic headings states the same rule twice in two
+files, in near-identical words, because the rule belongs to the moment rather
+than to either topic.
+
+Splitting further never helps — every fragment inherits the same trigger.
+Neither does hanging the content off a specialist agent's prompt: that couples
+a general fact to one consumer and hides it from every other caller.
+
+**Why:** the ddaanet tier carried three test memories that between them stated
+the accumulating-channel rule twice and the vacuous `() == ()` comparison
+twice. Read as topics they looked like authoring, fixture design and review;
+read as moments they were all one — someone is about to accept a green test.
+Merging deduplicated ~2.5KB and produced a single catalogue that is complete at
+the point of use, where each file alone had been a third of an answer.
+
+**How to apply:** before adding a WHEN to a routing line, state the moment in
+one clause. Same clause for two files ⟹ merge and dedup, then spend the
+recovered bytes on a hook rich enough to route the whole catalogue. Different
+clauses ⟹ the split is real and the trigger clauses are the fix. Check the
+residue for anything that fires at a *different* moment and relocate it rather
+than dropping it — the merged file inherits one trigger and only one. Merge for
+routing, never for headroom: the byte gain is near zero, and a merged line must
+still carry every distinctive literal both entries carried
+([[index-compaction-triggers]]). Related: [[green-is-not-evidence]].
+
+## Which tier the fact belongs in
+
+When a fact looks project-local at first glance — a sandbox quirk, an
+environment gotcha, a harness interaction — check whether it is actually
+scoped to *this repo's content* or to *the class of repo this is* (a
+Claude Code plugin, a git-hooked project, etc.) before filing it under
+project memory.
+
+**Why:** a mechanism that fires for a whole class of repo has as many
+consumers as the class has members, and filing it project-local hides it
+from all but one. Evidence naming the repo where it surfaced is not
+evidence the mechanism depends on that repo — a sandbox EROFS on a
+plugin's own active `hooks/hooks.json` reads as repo-specific, but the
+harness mounts any live plugin config read-only, so it fires for every
+plugin-shaped repo ([[sandbox-effects]]).
+
+**How to apply:** ask "does this fact's *mechanism* depend on something
+unique to this repo, or just on this repo being a member of a class
+(plugin, hook-managed repo, submodule-based memory store, …)?" If it is the
+latter, route to `memory/ddaanet/` (or the matching tier), merged into an
+existing topic file if one already exists for that trigger surface —
+don't leave a same-fact stub in the project tier "just in case."
+
+## Links when a fact routes up
+
+When a memory is routed from a project's own store up into a shared tier, its
+`[[links]]` travel with it verbatim. Any that pointed at a **project-local**
+sibling resolve only in the repo that wrote them, and are dead from every
+other consumer of the tier. Strip those pointers as part of the move.
+
+**Why:** mounting the `ddaanet` tier in micro routed 48 facts up. Sixteen of
+them carried `[[ghmem-project]]`, `[[micro-colwrap-project]]`,
+`[[worktree-handoff-root]]` and similar. Nothing was authored wrong — they were
+provenance citations ("**Why:** during ghmem subproject 3
+`[[ghmem-project]]`", "confirmed twice on ghmem's `sync.py`") and they resolved
+correctly while everything lived in one flat directory. The *move* created the
+boundary underneath prose that predated it. This is not the blessed
+write-it-later dangling link: the target is deliberately staying local, so the
+link never becomes valid, and every project accumulates its own local facts
+that are at best tangentially relevant to the others.
+
+**How to apply:** when routing a fact up, strip the `[[...]]` and keep the
+prose that names the incident — "confirmed twice on ghmem's `sync.py`" is
+evidence and belongs in the tier; the pointer is the only part that crossed the
+boundary. Where the link *was* the whole reference ("Related:
+`[[some-project]]`"), delete it; a tier fact stands on its own Why and How-to-
+apply or it is not a tier fact. Watch for two adjacent cases: a link naming a
+*skill* rather than a memory, and one whose target the prose already names, so
+the pointer is pure redundancy.
+
+## Reviewing a proposed update
+
+A proposed memory update gets one of four verdicts — discard, relocate, merge,
+or save as written. Take the questions in order and stop at the first that
+settles it.
+
+1. **Is there an incident?** No incident, no entry ([[no-speculative-rules]]).
+2. **Does another artifact own it** — a skill, a design doc, the code, a
+   CLAUDE.md? Grep that owner for the load-bearing terms before accepting a
+   pointer that claims coverage.
+3. **Would the reader reach it unaided**, or does an indexed memory imply it in
+   one step? Either answer is a discard.
+4. **Who reconstructs it?** A script or the harness recomputing it means drop
+   and defer; a model inferring it from a paraphrase, with the failure silent,
+   means carry it ([[reconstructable-two-categories]]).
+5. **What moment does it fire at?** Same clause as a file already in the store
+   means merge into that file, not a new one.
+6. **Which tier?** Mechanism scoped to the repo, or to the class of repo.
+7. **Does the body survive the strip?** Incident out, first person out,
+   deictics out, present tense in, an ageing observation version-stamped.
+8. **Does the index line route to it?** The distinctive literal a session would
+   arrive holding has to be in the line, and being over the byte cap is never a
+   reason to omit it — that pressure is a retirement decision, taken separately
+   ([[index-compaction-triggers]]).
+
+The fact's diff rides the commit carrying the source change it documents
+([[bundle-memory-with-source]]); administering memory with no parent-side
+content needs no parent commit at all
+([[gitlore-memory-administration-no-parent-commit]]).
+
 Related: [[design-doc-writing]] states the present-tense rule and the
 future-reader vantage as they apply to docs;
 [[index-compaction-triggers]] governs the index line that points at
-the file.
+the file; [[gitlore-tier-merge-direction]] and [[gitlore-tier-index-budget]]
+cover which index a change is authored in and what mounting a populated tier
+costs.

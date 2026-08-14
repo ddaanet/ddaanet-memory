@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 76b63f5f-eb97-4886-b76a-f8cd871faac9
-  modified: 2026-07-30T10:28:25.235Z
+  modified: 2026-08-14T23:05:05.155Z
 ---
 
 `/gitlore:add-tier` on an already-populated tier copies every one of its
@@ -32,4 +32,4 @@ already spent in the target repo. If the sum clears 24.4KB, the mount is
 still correct but it lands with a known-truncating index; say so at the time
 rather than letting a later session discover its project facts silently
 missing. Related: [[gitlore-tier-merge-direction]],
-[[tier-routing-plugin-shaped]].
+[[memory-writing]].
