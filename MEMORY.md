@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-14T18:42:05.913Z
+  modified: 2026-08-14T20:13:52.686Z
 ---
 
 # ddaanet tier index
@@ -21,7 +21,7 @@ the project's own memory store.
 - [protocol.file.allow blocks submodule clones](git-protocol-file-allow.md) — `fatal: transport 'file' not allowed`; the child *clone* reads it, so repo config can't fix it — `git -c`
 - [design-doc writing](design-doc-writing.md) — the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record
 - [spec enumerations need re-deriving](spec-enumerations-need-rederiving.md) — a spec that hand-lists the call sites a change must touch: grep the pattern before reading the list, since conformance passes clean while the enumeration is short
-- [examine evidence for drift and lineage](examine-evidence-drift.md) — two co-maintained artifacts diverge, or "the mature sibling lacks X" is cited as evidence: establish drift direction and lineage from git history, never assumption
+- [examine evidence for drift and lineage](examine-evidence-drift.md) — two co-maintained artifacts diverge, or one is cited as evidence about the other (a sibling, a prior version): establish the relationship from git history, never assumption
 - [loose generation + post-hoc fix](loose-generation.md) — where to constrain a generator: the scaffold or the artifact boundary
 - [CC project-dir encoding](cc-project-dir-encoding.md) — `~/.claude/projects/<name>/` = abs path with `[^A-Za-z0-9]`→`-`; to find a transcript search `<session-id>.jsonl`, don't apply the rule; edify's impl is incomplete
 - [outside-in TDD when architecture is fixed](outside-in-tdd.md) — starting TDD when the architecture is already fixed: e2e first or units first
