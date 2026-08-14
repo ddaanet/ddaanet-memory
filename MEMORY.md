@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-14T08:02:13.825Z
+  modified: 2026-08-14T18:42:05.913Z
 ---
 
 # ddaanet tier index
@@ -19,8 +19,9 @@ the project's own memory store.
 - [CC async task quirks](cc-async-task-notification-quirks.md) — `TaskOutput(block=false)` on a running fork can dump the raw JSONL transcript; a stale task-id can refire "completed" with content unrelated to the original task — trust the agent's own report, not a late notification
 - [git refuses ext:: by default](git-ext-transport.md) — `fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` injection finding isn't exploitable on default git — probe the policy first
 - [protocol.file.allow blocks submodule clones](git-protocol-file-allow.md) — `fatal: transport 'file' not allowed`; the child *clone* reads it, so repo config can't fix it — `git -c`
-- [design-doc writing](design-doc-writing.md) — where dated rationale goes vs present-tense truth; the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog); `(implemented <date>)` tags are changelog material
-- [examine evidence for drift direction](examine-evidence-drift.md) — two co-maintained artifacts diverge: establishing the drift direction rather than assuming a source of truth
+- [design-doc writing](design-doc-writing.md) — the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record
+- [spec enumerations need re-deriving](spec-enumerations-need-rederiving.md) — a spec that hand-lists the call sites a change must touch: grep the pattern before reading the list, since conformance passes clean while the enumeration is short
+- [examine evidence for drift and lineage](examine-evidence-drift.md) — two co-maintained artifacts diverge, or "the mature sibling lacks X" is cited as evidence: establish drift direction and lineage from git history, never assumption
 - [loose generation + post-hoc fix](loose-generation.md) — where to constrain a generator: the scaffold or the artifact boundary
 - [CC project-dir encoding](cc-project-dir-encoding.md) — `~/.claude/projects/<name>/` = abs path with `[^A-Za-z0-9]`→`-`; to find a transcript search `<session-id>.jsonl`, don't apply the rule; edify's impl is incomplete
 - [outside-in TDD when architecture is fixed](outside-in-tdd.md) — starting TDD when the architecture is already fixed: e2e first or units first
