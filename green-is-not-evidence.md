@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: df6d1dc0-1862-40d1-ae3b-48ec59dd93a3
-  modified: 2026-08-04T09:33:33.357Z
+  modified: 2026-08-14T06:11:42.489Z
 ---
 
 A test is evidence only when there is a state of the world in which it fails.
@@ -61,6 +61,15 @@ tests at once — is [[genuine-red-not-missing-sut]].
   raised the right `TriageSessionError`, from the dispatch-ownership guard
   firing first rather than the note check they were named for. When a test
   pins an exception, check nothing upstream raises the same type.
+- **A seam that substitutes for the expression under test.** An override read
+  as `src="${SEAM:-/proc/$pid/cmdline}"` replaces the *whole* expression, so
+  the `$pid` inside it is never evaluated by any test that sets the seam. When
+  every test of the function sets it, the selection has no coverage at all
+  while the green rows read as covering the function. The tell is a seam whose
+  value spans more than the one thing being faked: a single file standing in
+  for a *lookup*, one canned response for a *route*, a stub that also swallows
+  its own argument computation. Put the seam **beneath** the choice — fake the
+  process tree, not the resolved path — so the choice still runs.
 - **A bare negative assertion.** A test asserting something does not happen
   passes before the feature exists, and keeps passing if the guard it protects
   is later deleted. It contributes to the green count while proving nothing.
@@ -150,6 +159,15 @@ guard is load-bearing at all, or what its real justification is.
 Where a feature writes to two channels, pin each independently: dropping one
 must fail its own assertion and leave the other's green, or the two are not
 separately pinned.
+
+**A mutation the test survives has two readings, and the code's is the one to
+check first.** The reflex is to rebuild the test, but a guard whose deletion
+changes nothing observable is a guard doing nothing — usually because a
+broader one beside it already covers the case, the way a bounded walk's depth
+limit covers a self-parent check. Delete the guard and pin the guarantee that
+is actually load-bearing. Its comment goes with it: a comment claiming the
+reason the line did not serve survives the line unless the same pass cuts
+both.
 
 Where a negative genuinely cannot fail — it refutes wording no producer emits
 at all, so the property is untestable by design — delete the whole test rather
