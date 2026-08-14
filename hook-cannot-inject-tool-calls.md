@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 9eca9443-3081-46d5-a1d8-7f881c0f4d41
-  modified: 2026-08-14T08:46:08.725Z
+  modified: 2026-08-14T16:26:16.094Z
 ---
 
 No Claude Code hook can inject a `tool_use`, force a `Read`, or enqueue a tool
@@ -40,6 +40,17 @@ result has to reproduce that tool's result object, not substitute prose for it.
 Budget for establishing the shape before designing around this channel;
 `additionalContext` carries a correction with no shape contract at all, at the
 cost of leaving the original result in context beside it.
+
+**For `Edit` that channel corrects nothing the model reads.** The result object
+is `{filePath, oldString, newString, originalFile, structuredPatch,
+userModified, replaceAll}`, but what reaches the model is a fixed string — `The
+file <path> has been updated successfully. (file state is current in your
+context — no need to Read it back)` — carrying no diff (uniform across 12,407
+`Edit` results in the local transcript corpus; CC 2.1.232). So the agent's model
+of an edited file comes from the edit it asked for, never from the tool's
+report, and rewriting that report cannot move it. A hook that repairs the file
+on disk restores agreement on its own; `additionalContext` is the only channel
+that can say the bytes changed after the tool answered.
 
 **Two limits make emitted bytes the wrong choice when the agent must *edit*
 what it is shown.** A large `additionalContext` is not delivered whole: at
