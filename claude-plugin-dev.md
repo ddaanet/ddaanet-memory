@@ -1,23 +1,26 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra for ddaa's plugins; VERSION file SOT, self-release recipe, marketplace bump; `just release` must be run unsandboxed or it dies at that bump on `mv: inter-device move failed`/`Read-only file system`, leaving a half-done release `resume-release` finishes"
+description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally instead of vendoring, for the PyPI step"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-  modified: 2026-08-14T08:00:44.305Z
+  modified: 2026-08-14T20:58:00.668Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev) is the
 canonical release infrastructure for my human partner's Claude Code plugins
-(`handoff`, `gitmoji`, and others). Repo layout: `release.just` (thin
-recipe wrappers consumers import), `release.sh` (the release flow itself,
-including `--resume`), `version-guard.sh` (PreToolUse hook),
-`check-version.sh` (plugin.json vs marketplace.json drift check, `just
-check-version` + auto pre-flight in `release`), `install.sh` (one-shot
-vendor + wire), `tests/` (hook, release and update-plugin-dev scenario
-suites), `justfile` (toolkit's own `precommit` AND self-`release` recipe),
-`VERSION` (plain text, last-released version), `docs/design.md`,
-`docs/changelog.md` (index + one dated file per change), `CLAUDE.md`.
+(`handoff`, `gitmoji`, and others), vendored per-consumer via `git subtree`
+under a `toolkit/` prefix in the source repo. Contents (per `toolkit/README.md`):
+`release.just` (thin recipe wrappers a consumer imports: `release`,
+`resume-release`, `check-version`, `update-plugin-dev`), `release.sh` (the
+release flow — validates state, bumps `.claude-plugin/plugin.json`, commits,
+tags, pushes, creates a GitHub release, bumps/creates the marketplace.json
+entry; `--resume` probes what already landed and does only what's missing,
+a no-op if everything already landed), `check-version.sh` (plugin.json vs
+marketplace.json drift check, run as `release`'s pre-flight so it refuses to
+start atop an unfinished prior release), `version-guard.sh` (PreToolUse hook
+blocking agent edits to `plugin.json`'s `.version`), `install.sh` (one-shot
+vendor + wire, idempotent).
 
 **Why:** Several plugins had diverged near-identical release recipes,
 and an agent-driven manual edit to `plugin.json` desynced the
@@ -27,40 +30,56 @@ bump into the same atomic release.
 
 **How to apply:**
 
+- **Two tags per toolkit release**: `vX.Y.Z` is the source tag; `dist-vX.Y.Z`
+  is a `git subtree split --prefix=toolkit` of the same commit — root tree
+  is consumer-facing files only. Vendoring the source tag would copy the
+  toolkit repo's own `memory` submodule, `.claude/`, `CLAUDE.md`, justfile
+  into the plugin. **Always vendor/update the `dist-` tag**; `install.sh` and
+  `update-plugin-dev` both refuse a `vX.Y.Z` ref and name the `dist-` one to
+  use instead. Resolve the newest via
+  `git ls-remote --tags --refs --sort=-v:refname <url> 'dist-v*' | head -1`.
 - Consumer plugins vendor at `plugin-dev/` via
-  `git subtree add --prefix=plugin-dev <url> vX.Y.Z --squash`.
-- Run `bash plugin-dev/install.sh` (or `bash /tmp/cpd/install.sh
-  vX.Y.Z` first time) to wire `import 'plugin-dev/release.just'`
-  into the consumer's `justfile` and the version-guard hook into
-  `.claude/settings.json`.
-- Consumer must define a `precommit` recipe (NOT `validate`) — the
-  imported `release` depends on it.
-- Consumer must export `MARKETPLACE_DIR` (typically via `.envrc`) so
-  the release recipe can bump the matching entry in the
-  `claude-plugins` marketplace repo and push it.
+  `git subtree add --prefix=plugin-dev <url> <dist-tag> --squash`, then
+  `bash plugin-dev/install.sh <dist-tag>`, which wires
+  `import 'plugin-dev/release.just'` into the consumer's `justfile` and the
+  version-guard hook into `.claude/settings.json`.
+- Consumer must define a `precommit` recipe (the commit gate) and a
+  `prerelease` recipe (the gate `release` depends on — often just
+  `prerelease: precommit`). `just` fails every recipe immediately with
+  `unknown dependency prerelease` if the consumer omits it.
 - Release commit message convention: `release: X.Y.Z` (gitmoji hook
   rewrites to `🔖 release X.Y.Z`).
-- Plugin manifest version reflects the *last released* version;
-  `just release {patch|minor|major}` bumps from there. Manual edits
-  are blocked by the version-guard hook and the recipe's pre-flight
-  check.
+- Plugin manifest holds the *last released* version; `just release
+  {patch|minor|major}` bumps from there. Manual edits are blocked by the
+  version-guard hook and the recipe's pre-flight check. A plugin that has
+  never been released has nothing to bump from: its first `just release`
+  takes no bump argument and publishes whatever version `plugin.json`
+  already holds; passing a bump on that first call is refused.
 - Update toolkit version in a consumer with
-  `just update-plugin-dev vX.Y.Z`. The recipe verifies
-  `plugin-dev/VERSION` matches the requested ref after pull.
-- **Toolkit self-release**: `just release` in the toolkit's own
-  `justfile` bumps `VERSION`, commits, tags, pushes, and creates a
-  GitHub release.
-- `VERSION` exists because subtree pulls don't propagate tags —
-  consumers had no way to identify the toolkit version they vendored.
-  See toolkit `docs/design.md` "Toolkit version source of truth".
+  `just update-plugin-dev dist-vX.Y.Z` (wraps `git subtree pull`; rejects a
+  dirty tree, refuses a source-tag ref, warns on a branch ref). A plugin
+  vendored before dist refs existed carries the toolkit's leaked working
+  environment under `plugin-dev/` (e.g. a `plugin-dev/memory` gitlink
+  breaking a bare `git submodule status`); the first `dist-` pull deletes
+  all of it in the same commit, no manual cleanup needed.
+- Default branch is auto-detected from `origin/HEAD` — recipes don't
+  hardcode `main`.
 - **Run `just release` with the command sandbox disabled.** The
   marketplace bump is the recipe's last step and its only write outside
   the repo, so under the sandbox it dies there on `mv: inter-device move
-  failed … unable to remove target: Read-only file system` against
-  `$MARKETPLACE_DIR`. Everything before it — version commit, tag, branch
+  failed … unable to remove target: Read-only file system` against the
+  marketplace path. Everything before it — version commit, tag, branch
   push, GitHub release — has already landed, so a sandboxed run leaves a
   half-done release rather than a failed one; `just resume-release`,
   likewise unsandboxed, completes it and is idempotent. See
   [[sandbox-effects]].
-- `edify` is deliberately out of scope (hybrid Python+plugin shape
-  with PyPI publish; keeps its bespoke recipe).
+- `edify` doesn't vendor the toolkit: hybrid Python+plugin shape with a PyPI
+  publish the toolkit's github+marketplace flow doesn't cover. It carries a
+  local `scripts/release.sh`, ported from this toolkit's `release.sh` —
+  `plugin.json` as version SOT, the same per-step probe-before-act shape for
+  `--resume` — with `pyproject.toml` synced from `plugin.json` (never the
+  reverse) and a PyPI-publish step (checks `pypi.org/pypi/<name>/<version>/json`
+  before building) spliced between the tag push and the GitHub release.
+  Release tooling belongs at the repo root: `plugin/` ships verbatim to every
+  plugin install, so MARKETPLACE_DIR paths and PyPI credentials have no
+  business living inside it.
