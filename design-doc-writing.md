@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-07-29T17:12:50.344Z
+  modified: 2026-08-12T19:00:44.413Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections:
@@ -84,7 +84,7 @@ handoff's `## Activation` chosen-pattern bullet and
 describing the abandoned
 `@`-ref load chain. The spec reviewer wanted them left as history; the
 code-quality reviewer called them current-behavior descriptions. The
-code-quality framing was correct — fixed in commit `7c0471b`.
+code-quality framing was correct, and they were rewritten as such.
 
 ## Present-tense standing truth
 
@@ -93,9 +93,9 @@ Phrasings like "no longer true", "X does now fire (contrary to before)",
 "not what it was", "the earlier note said Y" read as museum-keeping: a
 fresh reader who never held the old belief doesn't need the rebuttal,
 and the temporal framing dates and rots. Git history already preserves
-what changed — the diff *is* the changelog. David flagged this twice in
-one session (a memory body and a code comment), explicitly extending it
-from memories to comments and docs.
+what changed — the diff *is* the changelog. My human partner flagged this
+twice in one session (a memory body and a code comment), explicitly
+extending it from memories to comments and docs.
 
 The vantage is the future reader's, not today's. That reader holds none of
 today's state: no pending action, no session about to end, no change halfway
@@ -118,9 +118,9 @@ explains it equally, so a delta isn't visible in one snapshot.
 
 A past decision whose rationale looks thin on re-reading gets
 **re-examined, not treated as settled**; new context or fresh eyes can
-invert it. In the 2026-05-19 handoff brainstorm the user pushed back on
-the "no SessionStart hook, use `@`-ref instead" decision recorded in
-handoff's `## Loading` section (now in
+invert it. In the 2026-05-19 handoff brainstorm my human partner pushed
+back on the "no SessionStart hook, use `@`-ref instead" decision
+recorded in handoff's `## Loading` section (now in
 `docs/changelog/2026-05-19-original-activation-and-loading.md`). Its
 arguments ("no hook overhead", "no race
 conditions") were both negligible in practice, while the cost of the
@@ -129,8 +129,8 @@ mode) was structural. The inversion produced a cleaner architecture.
 
 - When citing a past decision, check whether the *reasons* it gave still
   hold. Don't just relay the conclusion.
-- If the user challenges a documented decision, default to honest
-  re-examination over defending the doc.
+- If my human partner challenges a documented decision, default to
+  honest re-examination over defending the doc.
 - Be willing to write a new spec that inverts an old one. Spec history
   in git is the audit trail; the latest doc is the current answer.
 

@@ -1,11 +1,11 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", sandboxed `claude -p` silently drops every SessionStart hook; escapes incl. dangerouslyDisableSandbox"
+description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` silently drops every SessionStart hook; escapes incl. dangerouslyDisableSandbox"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-11T13:10:04.340Z
+  modified: 2026-08-14T08:00:21.873Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -72,16 +72,16 @@ move, and the sandbox makes an entirely healthy repo look like a crashed one.
 
 ## Strict sandbox mode blocks the escape (no `dangerouslyDisableSandbox`)
 
-When the user has enabled strict sandbox mode (`/sandbox` → "Strict sandbox
-mode"), `dangerouslyDisableSandbox: true` is blocked. Git write operations
-(`git add`, `git commit`) then fail with "Read-only file system" on
+When my human partner has enabled strict sandbox mode (`/sandbox` → "Strict
+sandbox mode"), `dangerouslyDisableSandbox: true` is blocked. Git write
+operations (`git add`, `git commit`) then fail with "Read-only file system" on
 `.git/index.lock`. Strict mode disables the override mechanism entirely; the
 filesystem restriction is enforced at the OS level and cannot be bypassed by the
 agent.
 
-**How to apply:** ask the user to run the command via `! git …`, or to toggle
-sandbox mode first (`/sandbox` → unsandboxed fallback). Do NOT retry the same
-sandboxed command or try workarounds.
+**How to apply:** ask my human partner to run the command via `! git …`, or to
+toggle sandbox mode first (`/sandbox` → unsandboxed fallback). Do NOT retry the
+same sandboxed command or try workarounds.
 
 **Strict mode is a user setting and is often off.** Do not read this section as
 "the escape never works" — check rather than assume. In the 2026-07-21 session
@@ -191,11 +191,11 @@ worktree branch into main.
 For *read-only* inspection of local git state and adjacent filesystem probes —
 `git status`, `log`, `diff`, `show`, `branch`, `rev-parse`, `ls-files`,
 `blame`, `cat .gitconfig`, `ls .claude/`, reading dotfiles — reaching for
-`dangerouslyDisableSandbox: true` is a standing default David set explicitly,
-not a per-case approval to seek: call it directly, without pre-announcing or
-asking. Mutating operations (`git commit`, `push`, `reset`, `checkout -- …`,
-anything that writes) are NOT covered and still follow normal confirmation
-rules.
+`dangerouslyDisableSandbox: true` is a standing default my human partner set
+explicitly, not a per-case approval to seek: call it directly, without
+pre-announcing or asking. Mutating operations (`git commit`, `push`, `reset`,
+`checkout -- …`, anything that writes) are NOT covered and still follow normal
+confirmation rules.
 
 ## Harness-mounted config paths are busy/read-only (sandbox breaks it)
 
@@ -254,6 +254,25 @@ used the absolute scratchpad path — including the cross-repo marketplace push 
 `../claude-plugins`, which went through because the classifier evaluates the
 top-level `just release minor`, not the inner `git -C "$MARKETPLACE_DIR" push`.
 
+## `ps` cannot see harness background tasks (sandbox hides them)
+
+The agent's Bash runs in its own PID namespace, so `ps` lists only that shell.
+A Bash call made with `run_in_background` — and everything it spawns — is
+absent from any process listing the agent can take: `ps -eo pid,comm` showed
+two `bash` entries while a background `bats` suite was mid-run and went on to
+complete normally.
+
+**An empty `ps` is therefore not evidence that a background job died.** The
+move it invites is starting the same work in the foreground to check, which
+puts two heavy runs on a box that will not take parallel work; the second
+times out, and both then look like the first one failing.
+
+**How to apply:** treat the task-completion notification and the task's output
+file as the only signals about a background job, and a process listing as no
+signal at all. When waiting on one, key the wait on the command's exit rather
+than on a line of its output that reads as terminal — a bats summary line
+prints before the recipe has run its remaining steps.
+
 ## `--resume` dies because the transcript never persisted (second-order)
 
 Inside the sandbox the API is reachable, but `~/.claude/projects/` (where session
@@ -266,9 +285,9 @@ returns "Read-only file system"; the identical two-turn resume that failed
 sandboxed returned `subtype: success` unsandboxed.
 
 **Consequence for eval/harness design:** any two-turn (or N-turn) flow relying on
-`--resume` must run **unsandboxed** (`dangerouslyDisableSandbox`, or David's own
-shell). A single-turn connectivity **probe cannot detect this** — it never
-resumes, so it passes sandboxed while the real flow cannot. gitlore's
+`--resume` must run **unsandboxed** (`dangerouslyDisableSandbox`, or my human
+partner's own shell). A single-turn connectivity **probe cannot detect this** —
+it never resumes, so it passes sandboxed while the real flow cannot. gitlore's
 `tests/evals/run-evals.sh` documents this in its header and its probe comment.
 Related: [[classifier-denied-self-config]] (the gitdir is likewise
 write-blocked, which is why the memory-message IPC file lives in the parent

@@ -5,10 +5,10 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-  modified: 2026-08-11T20:05:19.388Z
+  modified: 2026-08-14T08:00:44.305Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev) is the
-canonical release infrastructure for the user's Claude Code plugins
+canonical release infrastructure for my human partner's Claude Code plugins
 (`handoff`, `gitmoji`, and others). Repo layout: `release.just` (thin
 recipe wrappers consumers import), `release.sh` (the release flow itself,
 including `--resume`), `version-guard.sh` (PreToolUse hook),

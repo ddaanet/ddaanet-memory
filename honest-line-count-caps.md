@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 4d8b323c-53e6-4e07-ac83-0926de941a67
-  modified: 2026-07-20T15:22:55.455Z
+  modified: 2026-08-11T19:06:43.040Z
 ---
 
 When an artifact has a line-count cap (e.g. the ghmem spec's 400-line
@@ -33,16 +33,17 @@ type lists). One contract per line — see
 
 **Third form of cramming, on SOURCE files: shaving docstrings to fit.**
 Fixing the ghmem `status` two-population bug pushed `store.py` from 389
-to 406 against the 400-line `check_line_limits.sh` cap, and I trimmed
-the two new docstrings until it landed at exactly 400 — declining to
-decide the `heat_query.py` split because it sat on the open-decisions
-list. Trimming *was* the conservative call there, but it is borrowing
-against the split, not an alternative to it: prose is the cheapest
-thing in the file to cut and the first thing a later reader needs, and
-a file parked at exactly its cap has stopped emitting the signal the
-cap exists to emit — the next line added anywhere breaks the build,
-which reads as a tooling failure rather than as "this module is due to
-be split". If trimming is the only way to fit, say so out loud and put
+to 406 against the 400-line `check_line_limits.sh` cap, and trimming
+the two new docstrings brought it back to exactly 400 — the
+`heat_query.py` split left undecided because it sat on the
+open-decisions list. Trimming *was* the conservative call there, but
+it is borrowing against the split, not an alternative to it: prose is
+the cheapest thing in the file to cut and the first thing a later
+reader needs, and a file parked at exactly its cap has stopped
+emitting the signal the cap exists to emit — the next line added
+anywhere breaks the build, which reads as a tooling failure rather
+than as "this module is due to be split". If trimming is the only way
+to fit, say so out loud and put
 the split in front of the human as a decision; never let the cap be
 satisfied quietly by prose loss.
 
