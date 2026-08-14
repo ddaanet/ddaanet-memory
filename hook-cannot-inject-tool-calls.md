@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 9eca9443-3081-46d5-a1d8-7f881c0f4d41
-  modified: 2026-07-31T09:47:36.648Z
+  modified: 2026-08-14T08:46:08.725Z
 ---
 
 No Claude Code hook can inject a `tool_use`, force a `Read`, or enqueue a tool
@@ -31,6 +31,15 @@ selection stays in a script rather than in agent judgement.
 as well as `PostToolUse` and arrives even when the tool call fails
 ([[hook-output-channels]]), so a deny-reason and the injected
 bodies can land in the same turn.
+
+**`updatedToolOutput` is validated against the tool's own output shape**, and a
+mismatch is rejected with `PostToolUse hook returned updatedToolOutput that does
+not match <tool>'s output shape` (string present in 2.1.232). So rewriting what
+a tool reported is not a free-text channel: a hook that corrects, say, an `Edit`
+result has to reproduce that tool's result object, not substitute prose for it.
+Budget for establishing the shape before designing around this channel;
+`additionalContext` carries a correction with no shape contract at all, at the
+cost of leaving the original result in context beside it.
 
 **Two limits make emitted bytes the wrong choice when the agent must *edit*
 what it is shown.** A large `additionalContext` is not delivered whole: at
