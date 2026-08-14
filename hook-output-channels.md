@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-03T15:11:50.065Z
+  modified: 2026-08-11T20:03:26.046Z
 ---
 
 ## Channel mechanics (verified 2026-06-10; PreToolUse additions 2026-07-17)
@@ -100,10 +100,10 @@ the user…" is model-dependent on the hot path, against NFR1/D7.
 
 `systemMessage` and similar user-facing output: **lowercase, em-dash separator,
 factual, no instructions or actionable phrases.** One short line — enough for the
-user to know what happened, no more. The user named this style in the 2026-05-19
-SessionStart-hook brainstorm ("style for user visible systemWarning (and similar)
-is curt and informative"). No "to fix this, run X" — that is the agent's job via
-`additionalContext`, not the user's. Matching examples:
+user to know what happened, no more. My human partner named this style in the
+2026-05-19 SessionStart-hook brainstorm ("style for user visible systemWarning
+(and similar) is curt and informative"). No "to fix this, run X" — that is the
+agent's job via `additionalContext`, not the user's. Matching examples:
 
 - `handoff loaded — 3.2 KiB, saved 8m ago`
 - `handoff: wiped prior handoff-task.md, handoff.md`

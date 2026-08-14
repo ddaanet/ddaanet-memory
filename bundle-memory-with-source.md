@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 5c5b043b-8460-4841-a796-694a07a15915
-  modified: 2026-08-11T14:38:11.069Z
+  modified: 2026-08-14T08:01:07.170Z
 ---
 
 A memory-related diff takes opposite placement rules depending on whether it
@@ -25,12 +25,12 @@ for something to correspond to. Fold it into whatever commit is most
 convenient, including amending an unrelated commit that just landed; don't
 ask which commit it belongs in and don't split it out.
 
-**Why:** After fixing a bug in `handoff`'s compaction watcher, I proposed
-committing the source fix and the memory submodule's gitlink bump (from
-unrelated earlier work) as two separate commits, offering the split as a
-choice. The user rejected the premise: a memory update belongs with the
-source change it corresponds to, as a standing rule, not a per-commit
-judgment call. Separately, session bookkeeping files got the opposite
+**Why:** After a bug fix in `handoff`'s compaction watcher, the source fix
+and the memory submodule's gitlink bump (from unrelated earlier work) were
+proposed as two separate commits, with the split offered as a choice. My
+human partner rejected the premise: a memory update belongs with the source
+change it corresponds to, as a standing rule, not a per-commit judgment
+call. Separately, session bookkeeping files got the opposite
 correction: "just amend the settings and memory changes to whatever was
 committed last" — these are session bookkeeping, not project history, and
 keeping them dirty to preserve a tidy commit boundary costs more attention

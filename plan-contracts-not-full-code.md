@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: a9133ea6-55ff-41b0-a76f-21cad29dbb69
-  modified: 2026-08-01T14:28:28.871Z
+  modified: 2026-08-11T19:03:49.122Z
 ---
 
 Implementation plans are **contract-style**. Verbatim code belongs in a
@@ -43,7 +43,7 @@ the plan that it deviates — the implementer needs telling there is no
 code to copy, or they will look for it. Measured on B2: 874 lines of
 code-carrying steps became 537 as contracts, about 1.6x, and its
 worst task went from ~430 lines to ~190. Budget for that, not the 2.5x
-I first guessed. A task whose contract exceeds ~400 lines is still the
+first guessed. A task whose contract exceeds ~400 lines is still the
 split signal ([[spec-contract-size-predicts-pr-size]]).
 
 Stating a step as a contract also catches errors writing it as code

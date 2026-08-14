@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: b75fba34-d0f7-49a6-acd4-8c79f04f6b8d
-  modified: 2026-07-21T10:55:56.302Z
+  modified: 2026-08-11T20:02:38.457Z
 ---
 
 Verified against git 2.47.3 (2026-07-21) while building gitlore's replay guard.
@@ -28,10 +28,10 @@ hook and the one users actually take ([[test-the-invocation-path]]).
 
 **A non-zero exit from `pre-commit` during a replay aborts the REBASE, not a
 commit.** There is no commit to reject; git unwinds the sequence and leaves
-history half-replayed for the user to clean up by hand. So any hook that can
-fail — an approval gate, a lint — is far more destructive mid-replay than it is
-on an ordinary commit, which is reason enough to stand the whole hook down
-rather than just the part that writes.
+history half-replayed for my human partner to clean up by hand. So any hook
+that can fail — an approval gate, a lint — is far more destructive mid-replay
+than it is on an ordinary commit, which is reason enough to stand the whole
+hook down rather than just the part that writes.
 
 **Detecting a replay:** test for `rebase-merge`, `rebase-apply`,
 `CHERRY_PICK_HEAD`, `REVERT_HEAD` via `git rev-parse --git-path <name>`.
