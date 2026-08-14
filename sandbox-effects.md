@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-14T08:00:21.873Z
+  modified: 2026-08-14T20:53:14.833Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -369,3 +369,17 @@ need just the model's textual reply and no hook needs to fire around it.
 [[posttooluse-print-mode]] establishes that `SessionStart` fires under
 `--print` at all — that finding was made unsandboxed; this note is the
 sandbox-specific caveat on top of it.
+
+## Sandbox setup itself fails: `apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument`
+
+Distinct from every symptom above (a specific path/socket denied): the
+sandboxing mechanism can fail to initialize at all, so an arbitrary
+command — including a trivial read-only one like `grep` on a local file —
+errors immediately with `apply-seccomp: unshare(CLONE_NEWUSER): Invalid
+argument` and no other output, before the command itself runs. None of the
+file/lock/socket diagnostics above apply, since the error names no path or
+operation.
+
+**How to apply:** this error string alone — no path named, no other
+output — is sufficient evidence to retry with `dangerouslyDisableSandbox:
+true` rather than spending a call diagnosing further.
