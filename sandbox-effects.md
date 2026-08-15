@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-14T22:33:29.168Z
+  modified: 2026-08-15T10:59:23.861Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -162,9 +162,15 @@ Bash hook) detects a `git status` command and flips `dangerouslyDisableSandbox`
 in place, so it runs unsandboxed transparently. Caveats: detection is
 best-effort (an unrecognised `git status` stays sandboxed), and it deliberately
 does NOT cover `git add -A` (also fails sandboxed, but too dangerous to
-auto-unsandbox). Its notice goes to `systemMessage` (user channel, not model
-context), so the agent may never learn a command was auto-unsandboxed — do NOT
-read a clean sandboxed `git status` as evidence the sandbox itself is clean.
+auto-unsandbox). It reports on both channels — `systemMessage` for the user and
+`additionalContext` for the model — so the rewrite is visible in the tool
+result, and the notice itself says the reading proves nothing about a sandboxed
+`git status`. Detection splits the command on shell operators but the rewrite
+carries the whole `tool_input` through, so a compound containing a `git status`
+segment runs unsandboxed in its entirety; it also returns
+`permissionDecision: "allow"`, which settles the permission gate rather than
+deferring to it. Do NOT read a clean sandboxed `git status` as evidence the
+sandbox itself is clean.
 
 **Slash-command context is sandboxed too.** Commands like
 `/commit-commands:commit` auto-inject a `git status` into their `## Context`
