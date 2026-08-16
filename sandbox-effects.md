@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-15T22:49:25.615Z
+  modified: 2026-08-16T17:44:54.565Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -115,12 +115,25 @@ Decompiled from CC 2.1.233 and confirmed by probe:
 - **One matching segment unsandboxes the entire call**, neighbours included, and
   the decision is static rather than reachability-aware: `false && git status;
   <payload>` frees the whole call while the decoy never runs.
-- **It does not grant approval.** The sandbox auto-allow shortcut is skipped
-  precisely when the command is not sandboxed, so deny/ask rules and the
-  auto-mode classifier still evaluate it — a `Bash(sudo:*)` deny rule refused a
-  call carrying an excluded segment. Gating is therefore equivalent to an
-  agent-declared `dangerouslyDisableSandbox`, minus the round-trip. Contrast the
-  `unsandbox-git-status` plugin below, which returns `permissionDecision:
+- **It does not grant approval — but that rarely costs a classifier call.** The
+  sandbox auto-allow shortcut is skipped precisely when the command is not
+  sandboxed, so deny/ask rules and then the rest of the permission pipeline still
+  evaluate it — a `Bash(sudo:*)` deny rule refused a call carrying an excluded
+  segment. What catches it next is a **sandbox-independent read-only auto-allow**
+  (decision reason `Read-only command is allowed`), which sits ahead of the
+  auto-mode classifier and never consults sandbox state: `git log`, `git diff`,
+  `git show`, `ls -a` and `find` are allowed locally whether sandboxed or not, so
+  unsandboxing them is free. The classifier is reached only where that validator
+  refuses. It requires **every** segment to pass, and rejects: any subshell or
+  `compound_statement` anywhere, any `&`, any unquoted `$VAR`, a `cd` in the same
+  call as any git segment, the git global options `-C`/`-c`/`--git-dir`/
+  `--work-tree` (and `--exec-path`, `--config-env`, `--bare`, `--attr-source`,
+  `--shallow-file`), and any git segment when sandboxing is enabled globally and
+  cwd is not the session's original cwd. So the cheap shape is a bare
+  `git <subcommand>` from the original cwd; `cd <dir> && git …`, `(cd <dir> &&
+  git …)` and `git -C <dir> …` each forfeit it. Gating is otherwise equivalent to
+  an agent-declared `dangerouslyDisableSandbox`, minus the round-trip. Contrast
+  the `unsandbox-git-status` plugin below, which returns `permissionDecision:
   "allow"` and so settles the gate itself.
 - **Settings reload live.** `excludedCommands`, `autoAllowBashIfSandboxed` and
   `permissions.deny` each took effect mid-session in both directions, with no
