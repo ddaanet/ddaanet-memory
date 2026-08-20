@@ -1,11 +1,11 @@
 ---
 name: design-doc-writing
-description: "the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record"
+description: "the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record; an oversized decision splits into its own reference file, hub+pointer, when sentence trimming plateaus"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-14T18:42:52.155Z
+  modified: 2026-08-20T09:43:35.896Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections: functional
@@ -51,6 +51,26 @@ earlier point-fixes" narratives are all changelog material: in the design they
 are noise, and they rot. Dates that *ground a claim* stay wherever the claim is
 — "verified against CC 2.1.150", "measured over 76 bullets", "eval over 528
 transcripts" — because deleting them turns evidence into assertion.
+
+## Splitting an oversized subsystem
+
+Sentence-level trimming of narration has a hard ceiling — cutting further
+starts removing the argument that stops a settled decision from being
+re-litigated, which is the document's actual job (measured: ~5.6% before
+the ceiling). When a living doc has grown too bulky to serve as
+loaded-before-touching-anything context, measure per-section and
+per-decision byte totals before assuming the fix is wording: a single
+decision that has become a subsystem rather than a call typically
+dominates disproportionately (measured: one entry at 28% of the whole
+document, on par with all the other decisions combined). The fix is the
+same hub-and-file split already used for the changelog, applied
+recursively to a decision instead of the whole doc: move the oversized
+decision's content into its own `docs/references/<subsystem>.md`, and
+shrink the entry in the living doc to a motivation paragraph plus a
+pointer — the same stub shape a superseded decision already takes.
+Numbered sub-decisions inside the moved cluster still resolve as bare
+citations (`D26`, `D30`, …) elsewhere in the living doc; a reader who
+doesn't know where one lives finds it one hop away, from the hub entry.
 
 ## The state layer
 
