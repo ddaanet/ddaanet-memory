@@ -1,11 +1,11 @@
 ---
 name: design-doc-writing
-description: "the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record; an oversized decision splits into its own reference file, hub+pointer, when sentence trimming plateaus"
+description: "the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record; splitting an oversized doc — measure first, dominant-entry vs flat/need-time cut, hub+pointer stubs"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-20T09:43:35.896Z
+  modified: 2026-08-20T17:54:13.907Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections: functional
@@ -59,18 +59,34 @@ starts removing the argument that stops a settled decision from being
 re-litigated, which is the document's actual job (measured: ~5.6% before
 the ceiling). When a living doc has grown too bulky to serve as
 loaded-before-touching-anything context, measure per-section and
-per-decision byte totals before assuming the fix is wording: a single
-decision that has become a subsystem rather than a call typically
-dominates disproportionately (measured: one entry at 28% of the whole
-document, on par with all the other decisions combined). The fix is the
-same hub-and-file split already used for the changelog, applied
-recursively to a decision instead of the whole doc: move the oversized
-decision's content into its own `docs/references/<subsystem>.md`, and
-shrink the entry in the living doc to a motivation paragraph plus a
-pointer — the same stub shape a superseded decision already takes.
-Numbered sub-decisions inside the moved cluster still resolve as bare
-citations (`D26`, `D30`, …) elsewhere in the living doc; a reader who
-doesn't know where one lives finds it one hop away, from the hub entry.
+per-decision byte totals before assuming the fix is wording.
+
+Two shapes come out of that measurement and they take different cuts.
+**One entry dominates** — a decision that has become a subsystem rather
+than a call (measured: one entry at 28% of the whole document, on par with
+all the other decisions combined). Move its content into its own
+`docs/references/<subsystem>.md` and shrink the entry to a motivation
+paragraph plus a pointer, the same stub shape a superseded decision takes.
+**The distribution is flat** — the commoner case, and the one that defeats
+a search for a dominant subsystem: a section is large because it
+enumerates many small things, none over ~10%. Then the boundary is
+*need-time* — what a reader needs while building or debugging one
+component against what they need to understand the system — and it cuts
+across the doc's own headings rather than along them. Measured on gitlore:
+an Architecture section split badly by component and well by
+install-time-vs-design, and 25 decisions whose largest was 9% split into
+four need-time clusters, together taking the doc from 38 ktok to 22 ktok.
+
+Splitting *raises* total bytes; the saving is entirely in the reader not
+following most pointers, so the cut only pays where skipping is safe.
+Every argument that leaves must leave a one-line statement of its
+conclusion behind — a reader who cannot see that a decision was made
+re-litigates it, and that failure is silent. Numbered sub-decisions inside
+a moved cluster still resolve as bare citations (`D26`, `D30`, …)
+elsewhere in the living doc; a reader who doesn't know where one lives
+finds it one hop away, from the hub entry. Past a few reference files the
+crosslinking is load-bearing and nothing enforces it: a decision with no
+stub line, or a pointer that stops resolving, needs a checker.
 
 ## The state layer
 
