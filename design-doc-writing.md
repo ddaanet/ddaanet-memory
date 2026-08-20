@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-20T17:54:13.907Z
+  modified: 2026-08-20T22:18:14.381Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections: functional
@@ -79,14 +79,46 @@ four need-time clusters, together taking the doc from 38 ktok to 22 ktok.
 
 Splitting *raises* total bytes; the saving is entirely in the reader not
 following most pointers, so the cut only pays where skipping is safe.
+Measured over one document's four passes: the graph grew 9.4% (58.5 →
+64.0 ktok) while the entry point fell 73% (56.8 → 15.2 ktok). The
+overhead is flat at ~1,650 tokens a pass — pointers, conclusion stubs,
+each node's own framing — so the return is decided by how self-contained
+the moved material is, not by how far along the split is. A cluster that
+moved whole returned 30:1; a mechanism that had to be re-stitched with
+pointers from several places returned 2:1, and that was the second pass
+of four, not the last. A ratio near 1:1 means the material was never
+separable, not that the document has run out of room.
 Every argument that leaves must leave a one-line statement of its
 conclusion behind — a reader who cannot see that a decision was made
-re-litigates it, and that failure is silent. Numbered sub-decisions inside
+re-litigates it, and that failure is silent.
+
+**The class that leaks is pointers to open work**, not argument or
+mechanism: those have sections that carry them into a node whole, while a
+lead — "`bats -T` reports per-test timings, so the breakdown comes free" —
+attaches to whatever paragraph states the problem and survives only if
+that paragraph travels verbatim. A compressed tail drops it with no trace.
+Audit for it by splitting the pre-split doc into sentences, discarding
+those found verbatim anywhere in the new graph, and ranking the remainder
+by how much of their distinctive vocabulary (backticked identifiers, long
+words) survives. Measured over one four-pass split: 852 sentences, 245
+rewritten rather than moved, 12 under 85% vocabulary coverage, and exactly
+one genuine loss — the rest being museum narrative whose load-bearing half
+survived, corrections of prior belief, or claims that survived compressed. Numbered sub-decisions inside
 a moved cluster still resolve as bare citations (`D26`, `D30`, …)
 elsewhere in the living doc; a reader who doesn't know where one lives
 finds it one hop away, from the hub entry. Past a few reference files the
 crosslinking is load-bearing and nothing enforces it: a decision with no
 stub line, or a pointer that stops resolving, needs a checker.
+
+The invariant that checker enforces is **a conclusion is reachable before
+its argument**, not *every decision has a hub line*. A cluster that has
+become a subsystem takes one hub entry rather than one line per
+sub-decision, and its sub-decisions conclude in the moved file's own
+opening summary — the stricter reading flags the whole cluster. Only the
+hub's own bullets are required to point at an argument that exists
+somewhere. Worth checking alongside: that each reference file's heading
+enumeration matches the bodies it actually holds, since a stale
+enumeration reads as coverage.
 
 ## The state layer
 
