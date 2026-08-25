@@ -92,6 +92,23 @@ Every argument that leaves must leave a one-line statement of its
 conclusion behind — a reader who cannot see that a decision was made
 re-litigates it, and that failure is silent.
 
+**The hub has a floor, and it is reached before you expect.** Once every
+mechanism has moved out, what is left is the six mandated sections, a
+component map, one conclusion line per decision and one line per rejected
+alternative — and none of it compresses. Rewording returns almost nothing
+against a hard-wrapping formatter, which refills the lines you emptied;
+measured on one pass, six sections reworded for concision came back four
+lines shorter. So budget the hub by *measuring* after the planned moves
+rather than estimating: one plan's estimate was 96 lines under on
+Architecture alone, which turned "a light concision pass" into two
+unplanned moves. Demoting the conclusion lines into each node's opening
+summary is not a lever, though the coverage rule accepts it: a reader
+weighing a new decision needs every conclusion and every rejected name in
+front of them, or they traverse the graph before they can decide. What does
+work at the floor is folding the rejected-alternative names under the
+decision group they protect (one *Rejected* line per group, no separate
+index) and rewording each conclusion to fit one wrapped line.
+
 **The class that leaks is pointers to open work**, not argument or
 mechanism: those have sections that carry them into a node whole, while a
 lead — "`bats -T` reports per-test timings, so the breakdown comes free" —
