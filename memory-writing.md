@@ -1,11 +1,11 @@
 ---
 name: memory-writing
-description: "what to cut (anecdote, tense, now/here/currently/this session), what to version-stamp, when \"the user\" is a term of art rather than my human partner, and the category errors that mean delete: \"when using <skill>, do X\", logging decisions the design doc owns, or anything that is common sense or one step from an indexed memory; new file vs merge — several memories each seeming to lack a trigger name one moment, duplication is the tell, splitting further or hanging it off an agent prompt both fail; which tier — an operational gotcha to ddaanet vs project memory, the plugin-shaped litmus of whether the mechanism needs this repo or the class of repo; routing a fact up carries its `[[links]]` verbatim and ones aimed at project-local siblings go permanently dead, unlike a write-it-later dangle"
+description: "what to cut (anecdote, tense, now/here/currently/this session), what to version-stamp, when \"the user\" is a term of art rather than my human partner, and the category errors that mean delete: \"when using <skill>, do X\", logging decisions the design doc owns, or anything that is common sense or one step from an indexed memory; new file vs merge — several memories each seeming to lack a trigger name one moment, duplication is the tell, splitting further or hanging it off an agent prompt both fail; which tier — an operational gotcha to ddaanet vs project memory, the plugin-shaped litmus of whether the mechanism needs this repo or the class of repo, then the relevance test (true anywhere != relevant everywhere; name the other member that MEETS the symptom, since tier lines compete for a capped index); routing a fact up carries its `[[links]]` verbatim and ones aimed at project-local siblings go permanently dead, unlike a write-it-later dangle"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: de3d2151-a51d-4e13-8bd4-cee0e4c48775
-  modified: 2026-08-14T23:05:26.214Z
+  modified: 2026-08-26T19:24:25.373Z
 ---
 
 A memory states what is true, addressed to a reader who was not there. The
@@ -169,6 +169,33 @@ unique to this repo, or just on this repo being a member of a class
 latter, route to `memory/ddaanet/` (or the matching tier), merged into an
 existing topic file if one already exists for that trigger surface —
 don't leave a same-fact stub in the project tier "just in case."
+
+**Class membership is necessary, not sufficient — the second test is
+relevance.** A mechanism can belong to the class and still have exactly one
+consumer, so ask which *other* member will actually meet the symptom, and name
+it. Truth is the wrong test: a fact holds in every repo and is still
+project-local when only one repo's code can encounter it. Claude Code's
+worktree `cwd` and `$CLAUDE_PROJECT_DIR` payload shapes are the harness's
+behaviour and hold identically everywhere, yet the symptoms — a
+walk-up-from-`cwd` root check finding nothing, a guard deciding against a
+deleted cwd — reach only code that resolves a project root from
+`$CLAUDE_PROJECT_DIR`, which is one plugin's job description, so they stay in
+that plugin's own store. My human partner, 2026-08-26: "it being true anywhere
+does not make it relevant everywhere."
+
+**Why the asymmetry favours staying local:** a tier line is loaded by every
+session in every mounting repo, and the index is capped — entries past the
+loader cutoff are dropped silently, with no warning at either write or read
+time ([[gitlore-tier-index-budget]]). Tier lines therefore compete for a
+bounded budget instead of accumulating freely, so a weak promotion costs more
+than its own bytes: it crowds entries that route better. Demoting later costs a
+file move and one index line; a wrong promotion taxes every repo silently.
+Being the repo that *discovered* a fact is not an argument for promoting it,
+and neither is a prior session having already promoted it. Separate the
+*behaviour* from its *encoding*: how a given repo's code handles the mechanism
+is always project-local, and usually belongs in that repo's design doc rather
+than memory at all. Check whether the portable half is already covered by an existing tier
+fact before adding a new one.
 
 ## Links when a fact routes up
 
