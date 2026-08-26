@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-16T17:44:54.565Z
+  modified: 2026-08-26T07:38:31.000Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -133,8 +133,8 @@ Decompiled from CC 2.1.233 and confirmed by probe:
   `git <subcommand>` from the original cwd; `cd <dir> && git …`, `(cd <dir> &&
   git …)` and `git -C <dir> …` each forfeit it. Gating is otherwise equivalent to
   an agent-declared `dangerouslyDisableSandbox`, minus the round-trip. Contrast
-  the `unsandbox-git-status` plugin below, which returns `permissionDecision:
-  "allow"` and so settles the gate itself.
+  the retired `unsandbox-git-status` plugin below, which returned
+  `permissionDecision: "allow"` and so settled the gate itself.
 - **Settings reload live.** `excludedCommands`, `autoAllowBashIfSandboxed` and
   `permissions.deny` each took effect mid-session in both directions, with no
   restart — so a probe does not need a fresh session.
@@ -167,8 +167,8 @@ zero-byte file too. Three things make this read as a real problem when it is
 not: they show as untracked (`??`) in `git status`; they appear part-way
 through a session, so an early `git status` in the same session showed none of
 them; and they are visible with the sandbox OFF (both via
-`dangerouslyDisableSandbox` and via the `unsandbox-git-status` hook), so "it is
-only the sandboxed view" does not explain them away. Do not delete them, do not
+`dangerouslyDisableSandbox` and via `excludedCommands`), so "it is only the
+sandboxed view" does not explain them away. Do not delete them, do not
 commit them, do not raise them as a finding.
 
 **The mask is `/dev/null`, and the set is closed.** Measured 2026-08-15 in
@@ -239,26 +239,33 @@ unconditionally, before it compares local and remote heads, so inside the
 sandbox it cannot even reach the point of reporting the marketplace already
 correct.
 
-**`git status` is auto-handled.** The `unsandbox-git-status` plugin (a PreToolUse
-Bash hook) detects a `git status` command and flips `dangerouslyDisableSandbox`
-in place, so it runs unsandboxed transparently. Caveats: detection is
-best-effort (an unrecognised `git status` stays sandboxed), and it deliberately
-does NOT cover `git add -A` (also fails sandboxed, but too dangerous to
-auto-unsandbox). It reports on both channels — `systemMessage` for the user and
-`additionalContext` for the model — so the rewrite is visible in the tool
-result, and the notice itself says the reading proves nothing about a sandboxed
-`git status`. Detection splits the command on shell operators but the rewrite
-carries the whole `tool_input` through, so a compound containing a `git status`
-segment runs unsandboxed in its entirety; it also returns
-`permissionDecision: "allow"`, which settles the permission gate rather than
-deferring to it. Do NOT read a clean sandboxed `git status` as evidence the
-sandbox itself is clean.
+**`git` is excluded user-wide; the `unsandbox-git-status` plugin is retired
+(2026-08-26).** `~/.claude/settings.json` carries `sandbox.excludedCommands:
+["git:*", "find:*", "ls:*", "claude:*"]`, so every git invocation runs
+unsandboxed with no hook and no per-call flag — the section above describes the
+matcher. The plugin (a PreToolUse Bash hook that detected `git status` and
+flipped `dangerouslyDisableSandbox` in place) was retired in favour of that
+exclusion, removed from the `ddaanet` marketplace and its repo archived. Why:
+`git:*` covers every git shape, not the hook's best-effort `git status` subset;
+it is honoured in strict mode; and it does not settle the permission gate,
+whereas the hook paired `updatedInput` with `permissionDecision: "allow"` —
+which pre-approves the *whole* call, classifier never consulted, for anything
+chained alongside the `git status` (confirmed live: `true && git status
+--porcelain` ran). The fix for a hook that must rewrite is `updatedInput`
+alone, which re-runs the full pipeline over the rewritten input. The one shape
+the exclusion misses that the hook caught is a `git status` nested in `( … )`,
+`$( … )` or `sh -c`; that shape is being removed at its source (`cwd-safety`).
+The plugin's other deliberate gap carries over: `git add -A` also fails
+sandboxed and is still not auto-unsandboxed by anything but `git:*` itself.
+Do NOT read a clean unsandboxed `git status` as evidence the sandbox itself is
+clean — nothing announces the exclusion in the tool result.
 
 **Slash-command context is sandboxed too.** Commands like
 `/commit-commands:commit` auto-inject a `git status` into their `## Context`
-block — that injection runs sandboxed (the auto-unsandbox plugin doesn't reach
-it), so it lists the home dotfiles as untracked and can read as "nothing staged,
-untracked files present" when the tree is actually clean. Never act on that
+block — that injection runs sandboxed (the retired plugin never reached it, and
+whether `excludedCommands` does is unverified), so it lists the home dotfiles as
+untracked and can read as "nothing staged, untracked files present" when the
+tree is actually clean. Never act on that
 injected listing directly: re-run `git status` unsandboxed first. Never
 stage/commit the materialized dotfiles (`.bashrc`, `.gitconfig`, `.zshrc`, …) —
 committing them pollutes the repo with personal config. Confirmed 2026-05-24: a
