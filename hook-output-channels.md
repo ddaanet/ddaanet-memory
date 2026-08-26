@@ -47,6 +47,20 @@ So "exit 0 on every path so we never block a Write" is over-broad reasoning that
 lands on the right answer: `exit 0` is right for *visibility*, not for
 non-blocking.
 
+**`PreToolUse` JSON `permissionDecision` (verified CC 2.1.246).** `deny` on
+stdout + `exit 0` blocks the call like `exit 2` does, and additionally carries
+`systemMessage`; either way it blocks *the one call, not the turn* — the agent
+gets the reason and continues. `ask` forces a human prompt in every permission
+mode, auto included: a hook cannot hand a decision to the auto-mode classifier,
+so an `ask` that prompts too often is fixed by narrowing the hook's trigger,
+never by expecting the classifier to absorb it. `allow` skips the prompt but
+not `permissions.deny`/`ask` rules. The classifier itself scores safety, not
+convention — it passes an unprompted `Edit` of a pre-existing file in a sibling
+repo even against a CLAUDE.md rule or a custom `autoMode.soft_deny` — so a
+convention-level gate on `Write`/`Edit` needs a hook; only Bash-path writes are
+covered by the sandbox's write allowlist. Evidence: prohibitions
+`docs/design.md`, "Off-project note drops pass without asking".
+
 **Unresolved tension — re-verify before relying on it.** The 2026-06-10 finding
 says stderr reaches the user only on exit 2 / `--verbose`. The docs (fetched
 2026-07-15, `code.claude.com/docs/en/hooks-guide.md`) instead describe *any*
