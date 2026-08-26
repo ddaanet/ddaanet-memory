@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-14T20:13:52.686Z
+  modified: 2026-08-26T07:57:18.458Z
 ---
 
 # ddaanet tier index
@@ -42,6 +42,7 @@ the project's own memory store.
 - [hooks cannot inject tool calls](hook-cannot-inject-tool-calls.md) — no `injectToolCall`/`forceRead`/`requestTool`/`forceToolUse` field exists — only block, `updatedInput`, `updatedToolOutput`, `additionalContext`; a large `additionalContext` is spilled to a file with only ~2KB inlined, and injected text still leaves `Edit` needing a `Read`
 - [hook output channels](hook-output-channels.md) — `systemMessage` vs `additionalContext` vs stderr (`additionalContext` is honoured at PreToolUse too), that `systemMessage` renders ANSI, what a hook ERROR does, and that only exit 2 blocks (PreToolUse only)
 - [CC worktree memory freeze](cc-worktree-memory-freeze.md) — in-process `EnterWorktree` chdirs but never moves projectRoot, so `CLAUDE_PROJECT_DIR`/`PATH`/`autoMemoryDirectory` stay at the launch repo and auto-memory strands there; cwd≠`CLAUDE_PROJECT_DIR` is the D15 drift signal
+- [CC worktree cwd and project-dir shapes](cc-worktree-cwd-shapes.md) — a `sessionKind:"bg"` worktree session sets `$CLAUDE_PROJECT_DIR` to the worktree path itself, so a walk-up-from-`cwd` check finds nothing; a deleted worktree cwd falls back to the main repo (`cd` there silently no-ops); `ExitWorktree` no-ops for a worktree the session did not create via `EnterWorktree`
 - [test the invocation path, not just the code](test-the-invocation-path.md) — testing discovery and the invocation path: `[ -x ]` (a `100644` hook never runs), and whether the suite is listed in `make test`
 - [git replay hooks](git-replay-hooks.md) — `rebase --continue` does NOT fire `pre-commit` (2.47.3), but cherry-pick/revert `--continue` and a hand commit/`--amend` at the stop DO; a non-zero exit aborts the REBASE, not a commit; detect via `--git-path rebase-merge|rebase-apply|CHERRY_PICK_HEAD|REVERT_HEAD`; `MERGE_HEAD` is not a replay
 - [no stderr suppression](no-stderr-suppression.md) — `2>/dev/null` in a script or a diff: a guard, then capture-and-match, then a justified redirect
