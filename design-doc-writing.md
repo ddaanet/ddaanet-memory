@@ -1,11 +1,11 @@
 ---
 name: design-doc-writing
-description: "the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record"
+description: "the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record; splitting an oversized doc — measure first, dominant-entry vs flat/need-time cut, hub+pointer stubs"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-14T18:42:52.155Z
+  modified: 2026-08-20T22:18:14.381Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections: functional
@@ -51,6 +51,91 @@ earlier point-fixes" narratives are all changelog material: in the design they
 are noise, and they rot. Dates that *ground a claim* stay wherever the claim is
 — "verified against CC 2.1.150", "measured over 76 bullets", "eval over 528
 transcripts" — because deleting them turns evidence into assertion.
+
+## Splitting an oversized subsystem
+
+Sentence-level trimming of narration has a hard ceiling — cutting further
+starts removing the argument that stops a settled decision from being
+re-litigated, which is the document's actual job (measured: ~5.6% before
+the ceiling). When a living doc has grown too bulky to serve as
+loaded-before-touching-anything context, measure per-section and
+per-decision byte totals before assuming the fix is wording.
+
+Two shapes come out of that measurement and they take different cuts.
+**One entry dominates** — a decision that has become a subsystem rather
+than a call (measured: one entry at 28% of the whole document, on par with
+all the other decisions combined). Move its content into its own
+`docs/references/<subsystem>.md` and shrink the entry to a motivation
+paragraph plus a pointer, the same stub shape a superseded decision takes.
+**The distribution is flat** — the commoner case, and the one that defeats
+a search for a dominant subsystem: a section is large because it
+enumerates many small things, none over ~10%. Then the boundary is
+*need-time* — what a reader needs while building or debugging one
+component against what they need to understand the system — and it cuts
+across the doc's own headings rather than along them. Measured on gitlore:
+an Architecture section split badly by component and well by
+install-time-vs-design, and 25 decisions whose largest was 9% split into
+four need-time clusters, together taking the doc from 38 ktok to 22 ktok.
+
+Splitting *raises* total bytes; the saving is entirely in the reader not
+following most pointers, so the cut only pays where skipping is safe.
+Measured over one document's four passes: the graph grew 9.4% (58.5 →
+64.0 ktok) while the entry point fell 73% (56.8 → 15.2 ktok). The
+overhead is flat at ~1,650 tokens a pass — pointers, conclusion stubs,
+each node's own framing — so the return is decided by how self-contained
+the moved material is, not by how far along the split is. A cluster that
+moved whole returned 30:1; a mechanism that had to be re-stitched with
+pointers from several places returned 2:1, and that was the second pass
+of four, not the last. A ratio near 1:1 means the material was never
+separable, not that the document has run out of room.
+Every argument that leaves must leave a one-line statement of its
+conclusion behind — a reader who cannot see that a decision was made
+re-litigates it, and that failure is silent.
+
+**The hub has a floor, and it is reached before you expect.** Once every
+mechanism has moved out, what is left is the six mandated sections, a
+component map, one conclusion line per decision and one line per rejected
+alternative — and none of it compresses. Rewording returns almost nothing
+against a hard-wrapping formatter, which refills the lines you emptied;
+measured on one pass, six sections reworded for concision came back four
+lines shorter. So budget the hub by *measuring* after the planned moves
+rather than estimating: one plan's estimate was 96 lines under on
+Architecture alone, which turned "a light concision pass" into two
+unplanned moves. Demoting the conclusion lines into each node's opening
+summary is not a lever, though the coverage rule accepts it: a reader
+weighing a new decision needs every conclusion and every rejected name in
+front of them, or they traverse the graph before they can decide. What does
+work at the floor is folding the rejected-alternative names under the
+decision group they protect (one *Rejected* line per group, no separate
+index) and rewording each conclusion to fit one wrapped line.
+
+**The class that leaks is pointers to open work**, not argument or
+mechanism: those have sections that carry them into a node whole, while a
+lead — "`bats -T` reports per-test timings, so the breakdown comes free" —
+attaches to whatever paragraph states the problem and survives only if
+that paragraph travels verbatim. A compressed tail drops it with no trace.
+Audit for it by splitting the pre-split doc into sentences, discarding
+those found verbatim anywhere in the new graph, and ranking the remainder
+by how much of their distinctive vocabulary (backticked identifiers, long
+words) survives. Measured over one four-pass split: 852 sentences, 245
+rewritten rather than moved, 12 under 85% vocabulary coverage, and exactly
+one genuine loss — the rest being museum narrative whose load-bearing half
+survived, corrections of prior belief, or claims that survived compressed. Numbered sub-decisions inside
+a moved cluster still resolve as bare citations (`D26`, `D30`, …)
+elsewhere in the living doc; a reader who doesn't know where one lives
+finds it one hop away, from the hub entry. Past a few reference files the
+crosslinking is load-bearing and nothing enforces it: a decision with no
+stub line, or a pointer that stops resolving, needs a checker.
+
+The invariant that checker enforces is **a conclusion is reachable before
+its argument**, not *every decision has a hub line*. A cluster that has
+become a subsystem takes one hub entry rather than one line per
+sub-decision, and its sub-decisions conclude in the moved file's own
+opening summary — the stricter reading flags the whole cluster. Only the
+hub's own bullets are required to point at an argument that exists
+somewhere. Worth checking alongside: that each reference file's heading
+enumeration matches the bodies it actually holds, since a stale
+enumeration reads as coverage.
 
 ## The state layer
 

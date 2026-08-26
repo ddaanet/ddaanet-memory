@@ -1,6 +1,6 @@
 ---
 name: uv-direnv-venv
-description: "no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`"
+description: "no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`; the venv python3 shadows the system one, so every module scripts on PATH probe for goes in the dev group (`need … PyYAML`)"
 metadata: 
   node_type: memory
   type: feedback
@@ -21,3 +21,12 @@ more friction than it buys.
 **direnv** to activate the venv: `.envrc` exports `VIRTUAL_ENV=$PWD/.venv`
 and prepends `$VIRTUAL_ENV/bin` to `PATH` directly. Test/build recipes
 then call bare `pytest` (etc.) off PATH — no `uv run` wrapper.
+
+**The venv's `python3` shadows the system one for every script on PATH**, so
+the dev group must carry every module those scripts probe for, not only the
+tools the recipes call. In gitlore, adding a venv for one tool (rumdl)
+turned the hook-wiring suite red — `need mikefarah/yq or python3 with
+PyYAML` — because `wire-*.sh` run whatever `python3` is on PATH and the
+venv's had no `yaml`. The system python having PyYAML was an undeclared
+dependency of the gate; `pyyaml` in the dev group is what made it
+reproducible. Calling the tool by path instead keeps the hidden dependency.
