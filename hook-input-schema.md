@@ -1,6 +1,6 @@
 ---
 name: hook-input-schema
-description: "base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch (twice in one turn is normal); NO event carries token counts (context size comes from transcript `usage`); `additionalContext` lands mid-turn, `continue:false` halts one"
+description: "`tool_input.file_path` is NOT always absolute; base stdin = `session_id`/`transcript_path`/`cwd` + optional `prompt_id`/`permission_mode`/`agent_id`/`agent_type`/`model`/`session_title`; no worktree-root field; `CwdChanged` observational; `WorktreeCreate` provides a path, doesn't gate; `PostToolBatch` fires per tool batch (twice in one turn is normal); NO event carries token counts (context size comes from transcript `usage`); `additionalContext` lands mid-turn, `continue:false` halts one"
 metadata: 
   node_type: memory
   type: reference
@@ -38,6 +38,14 @@ Beyond the classic events the input union covers `WorktreeCreate {name}`,
 `PostToolBatch`, `PostToolUseFailure`, `PostCompact`, `Setup`, `SubagentStart`,
 `StopFailure`, `PermissionRequest`, `PermissionDenied`, `MessageDisplay`,
 `Elicitation`/`ElicitationResult`, `TaskCreated`/`TaskCompleted`.
+
+`tool_input.file_path` on `Write`/`Edit` is **not** always absolute, whatever
+the tool's own contract says. `PreToolUse` sees what the model emitted, before
+any harness normalization, so a path guard that assumes a leading `/` — a
+`*/<segment>/*` glob, a prefix comparison — silently misses the relative form.
+Measured over a local transcript corpus 2026-08-27: 131 of ~4100 values were
+repo-root-relative (`plans/x.md`, `scripts/install.sh`, `START.md`). A hook
+resolving one has only its own process cwd to resolve it against.
 
 **`PostToolBatch` fires once per tool batch, not once per user turn.** A batch is
 one assistant message's worth of calls, so a turn in which the agent takes three
