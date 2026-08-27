@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 6fdf0ecf-96bd-4ca8-aab2-d54dc98d915a
-  modified: 2026-07-27T21:41:44.034Z
+  modified: 2026-08-27T11:49:46.186Z
 ---
 
 Claude Code's in-process worktree feature (the `EnterWorktree` tool) is incompatible
@@ -24,7 +24,9 @@ empirically 2026-06-10 (CC 2.1.170); re-verified against the 2.1.219 bundle 2026
   `autoMemoryDirectory` are process env / launch state that a `chdir` cannot move.
   So auto-memory written from the worktree lands on the LAUNCH repo's memory
   tree/branch, not the worktree's. (`ExitWorktree` does reset `projectRoot` when it
-  restores the cwd.)
+  restores the cwd — but only for a worktree this session entered via
+  `EnterWorktree`; for a background worktree session, where `CLAUDE_PROJECT_DIR`
+  *is* the worktree path, it is a no-op and there is no in-process exit at all.)
 - **A fresh `claude` whose cwd is the worktree resolves correctly** — the shim
   recomputes `git rev-parse --show-toplevel`. The only broken path is the in-process
   tool; any fresh shell launch from the worktree dir is fine.
