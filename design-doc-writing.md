@@ -1,6 +1,6 @@
 ---
 name: design-doc-writing
-description: "the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record; splitting an oversized doc — measure first, dominant-entry vs flat/need-time cut, hub+pointer stubs"
+description: "the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record; splitting an oversized doc — measure first, dominant-entry vs flat/need-time cut, hub+pointer stubs, and the node-loading instructions the hub and CLAUDE.md must carry"
 metadata: 
   node_type: memory
   type: feedback
@@ -108,6 +108,29 @@ front of them, or they traverse the graph before they can decide. What does
 work at the floor is folding the rejected-alternative names under the
 decision group they protect (one *Rejected* line per group, no separate
 index) and rewording each conclusion to fit one wrapped line.
+
+**A split ships with its loading instructions, or the nodes go unread.** A
+`docs/references/` graph only pays if the agent opens the node before it
+touches the mechanism, and nothing in Claude Code loads a node for it: the hub
+is what gets read (or `@`-imported), and a pointer inside a section the agent
+skimmed is not a trigger. So the split is not done until two files carry the
+instruction. The hub's opening states the shape ("this document is a hub;
+`docs/references/` holds one node per mechanism; read the node before making a
+claim about, or changing, the mechanism it argues") and every requirement and
+decision stub names its node inline — a reader at the FR is one hop from the
+argument. The repo's `CLAUDE.md` carries a routing table from what the agent
+touches to what it reads first: code symbols, FR ids and decision ids in one
+column, the node path in the other, plus the commit rule (hub conclusion and
+node argument change together). Symbols are the load-bearing column — an agent
+about to edit `_worktree_root` matches on the name, not on a prose description
+of worktree handling. Whether an always-on instruction reliably causes the
+read is not established; it is the current mechanism, and the routing table is
+the part that has the best chance because it matches the token the agent is
+already looking at. Enforce the graph's shape mechanically alongside: a
+formatter that hard-wraps the prose so a line count means something, and a
+gate that fails a hub or node over the cap (400 lines) and any pointer that
+stops resolving — `rumdl` with MD013 reflow at 80 columns plus a `check-docs`
+recipe in gitlore and cwd-safety.
 
 **The class that leaks is pointers to open work**, not argument or
 mechanism: those have sections that carry them into a node whole, while a
