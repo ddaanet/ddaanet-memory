@@ -1,6 +1,6 @@
 ---
 name: genuine-red-not-missing-sut
-description: "TDD red = failed assertion (stub-then-assert), never a missing module, and green-at-first is not evidence; one inert-stub run reds a whole batch but proves absence not wrongness; plan interfaces one contract per line"
+description: "TDD red = failed assertion (stub-then-assert), never a missing module, and green-at-first is not evidence; one inert-stub run reds a whole batch but proves absence not wrongness; plan interfaces one contract per line; mutate the SUT in place — a test relocated to a temp dir rebinds `repo_root` from `$0` and reds for the wrong reason"
 metadata:
   node_type: memory
   type: feedback
@@ -41,6 +41,20 @@ correct implementation and the plausible-but-forbidden one it exists to
 rule out. That case needs the wrong implementation run against the
 batch — a second run, not a per-test exercise. Shapes to look for while
 reading the output: [[green-is-not-evidence]].
+
+**Manufacture the red by mutating the SUT in place, never by relocating the
+test.** A shell test that resolves its own root —
+`repo_root="$(cd "$(dirname "$0")/.." && pwd)"` — rebinds when the test file is
+copied to a temp directory and repointed at an old copy of the script.
+Fixtures, payload paths and `cwd` values then all name the wrong tree, and
+cases fail for reasons unrelated to the change under test: a `-e`-versus-`-d`
+probe run from a relocated copy reported eight failures where mutating the
+script in place reported one, and only the one was signal. This runs the
+opposite way from a vacuous green — it manufactures *red*, so a defect that
+does not exist clears the "watch it fail" bar and gets a fix written for it.
+Save a copy of the script, mutate it where it lives, restore after. A
+red-check recipe handed over in a plan or a skill is where this arrives; check
+it against the suite's own root resolution before following it.
 
 **Interface contracts one-per-line.** In a contract-style plan,
 conveying a full interface as a run-on paragraph (semicolon-chained

@@ -101,7 +101,7 @@ the project's own memory store.
 - [Plans carry contracts, not code](plan-contracts-not-full-code.md) — how much code a plan carries; writing-plans demands full bodies and must be overridden
 - [Honest line-count caps](honest-line-count-caps.md) — plan/PR line caps: wrapping vs cramming, and never shaving docstrings to fit
 - [Spec contract size predicts PR size](spec-contract-size-predicts-pr-size.md) — the 400-line PR cap is soft; a task's contract size predicts its impl overshoot
-- [Genuine red, not missing SUT](genuine-red-not-missing-sut.md) — TDD red = failed assertion (stub-then-assert), never a missing module, and green-at-first is not evidence; one inert-stub run reds a whole batch but proves absence not wrongness; plan interfaces one contract per line
+- [Genuine red, not missing SUT](genuine-red-not-missing-sut.md) — TDD red = failed assertion (stub-then-assert), never a missing module, and green-at-first is not evidence; one inert-stub run reds a whole batch but proves absence not wrongness; plan interfaces one contract per line; mutate the SUT in place — a test relocated to a temp dir rebinds `repo_root` from `$0` and reds for the wrong reason
 - [Don't bake in guarantees](dont-bake-in-guarantees.md) — a guarantee a later caller must relax belongs in an opt-in method, not every call (fsync → `Ledger.sync()`)
 - [No code for impossible cases](no-code-for-impossible-cases.md) — "if they exist" means go check the data model, not build for it
 - [Shape rules are not duplication](shape-rules-are-not-duplication.md) — which layer a validation rule belongs in: ask what vocabulary the rule needs
