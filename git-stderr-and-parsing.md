@@ -72,7 +72,10 @@ submodule *named* with a space it yields part of the key.
 linked one. With an exported CDPATH, `cd "$(git rev-parse --git-common-dir)"`
 therefore resolves against CDPATH *and* makes `cd` echo the destination, so the
 command substitution captures a two-line, wrong path. Always
-`CDPATH='' cd -- "$(…)"`.
+`CDPATH='' cd -- "$(…)"`. Same trap for `git -C <dir> rev-parse --git-path
+<name>`: relative to `<dir>` for a plain repo (`.git/<name>`), absolute only
+when `<dir>` is a gitfile submodule — so a caller whose cwd is not `<dir>`
+creates the file in the wrong place. Use `--absolute-git-dir` and append.
 
 **`stat` flavor:** probe once (`stat -c '%Y' .` succeeds on GNU, fails on
 BSD/macOS) and memoize, rather than `stat -c … 2>/dev/null || stat -f …` per
