@@ -1,11 +1,11 @@
 ---
 name: stale-plugin-code
-description: "running plugin code ≠ what you edited: `/plugin update` no-ops on unchanged version, skill bodies need `/reload-plugins`, `hooks.json` events frozen at session start, `settings.local.json` not"
+description: "running plugin code ≠ what you edited: `/plugin update` no-ops on unchanged version, skill bodies need `/reload-plugins`, `hooks.json` events frozen at session start, `settings.local.json` not; a release reaches a project at its NEXT session start, minutes after that session froze the old root, so a nested `claude -p` runs a newer version than its parent"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-12T19:00:50.062Z
+  modified: 2026-08-27T08:59:57.092Z
 ---
 
 One symptom, three causes: the plugin code actually running is not the code you
@@ -33,6 +33,20 @@ own `installPath` under `cache/<owner>/<plugin>/<version>/`. Repos routinely sit
 at different versions (2026-07-31: `home` at 0.4.3, `gitmoji` at 0.3.0, user
 scope at 0.4.4), so the newest directory in the cache is not what a given repo
 loads — read the record, not the listing.
+
+**A release reaches a project lazily, and after that project's session has
+already frozen the old root.** With marketplace `autoUpdate` on, a project
+entry moves to the new version at the *first session start in that project*
+after the release, and the record write lands a few minutes into that session
+— after `CLAUDE_PLUGIN_ROOT` was resolved. Observed 2026-08-26: gitlore 0.5.0
+tagged 08-10, and each repo's `lastUpdated` stamped on its own next session
+(08-10, 08-13, 08-25, 08-26 …); the 08-26 session started 06:06Z on the frozen
+0.4.4 root, its record moved to 0.5.0 at 06:13Z, and a nested `claude -p` run
+from that session at 08:36Z resolved the root afresh and ran 0.5.0. So a
+long-lived session and any child process it spawns can run *different* plugin
+versions, and a repo idle since a release runs the old one for exactly one more
+session. To pin which version a transcript ran, grep it for
+`plugins/cache/<owner>/<plugin>/<version>/`.
 
 Signature — discovered closing **Plan 04 Step 6** (2026-05-24): a marketplace
 session was about to "verify" the **memory-merger** two-turn flow, but still had
