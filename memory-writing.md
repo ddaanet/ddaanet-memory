@@ -250,7 +250,7 @@ settles it.
    ([[index-compaction-triggers]]).
 
 The fact's diff rides the commit carrying the source change it documents
-([[bundle-memory-with-source]]); administering memory with no parent-side
+([[commit-bundling]]); administering memory with no parent-side
 content needs no parent commit at all
 ([[gitlore-memory-administration-no-parent-commit]]).
 
