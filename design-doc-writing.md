@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-20T22:18:14.381Z
+  modified: 2026-08-28T11:00:47.202Z
 ---
 
 A design doc is a living doc, not a one-off spec. Six sections: functional
@@ -107,7 +107,11 @@ weighing a new decision needs every conclusion and every rejected name in
 front of them, or they traverse the graph before they can decide. What does
 work at the floor is folding the rejected-alternative names under the
 decision group they protect (one *Rejected* line per group, no separate
-index) and rewording each conclusion to fit one wrapped line.
+index) and rewording each conclusion to fit one wrapped line. A hub at its
+cap is never a reason to leave a new conclusion out — by that logic nothing
+could be added again; it is the signal to move the largest hub-only detail
+(a requirement carrying its own measurements, say) into a node, verbatim,
+and leave the requirement and its lever behind.
 
 **A split ships with its loading instructions, or the nodes go unread.** A
 `docs/references/` graph only pays if the agent opens the node before it
