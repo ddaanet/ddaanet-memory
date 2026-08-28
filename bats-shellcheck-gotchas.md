@@ -172,5 +172,29 @@ does not begin with the word `shellcheck` (e.g. "Missing shellcheck ...") — it
 is otherwise a self-inflicted lint error. Applies to `.bats` files too, since
 they are linted.
 
+## A function invoked through `run` does not see the test body's variables
+
+A helper defined inside a `@test` body and invoked as `run helper` fails with
+`bats.NN.src: line N: <var>: unbound variable` when its body reads a variable
+the test set — under bats 1.11.1, with or without `export`. The failure is
+whatever the test's `set -u` does to it, and the surrounding assertion fails on
+a missing artifact rather than the real cause, which reads as "the override
+never ran".
+
+Recompute inside the helper instead of capturing, and use `$BATS_TEST_TMPDIR`
+for a sentinel file — bats sets it in the environment the helper does see:
+
+```bash
+helper() {
+  probe() { [ -f "$(state_file memory)" ] && echo present > "$BATS_TEST_TMPDIR/seen"; }
+  function_under_test
+}
+run --separate-stderr helper
+[ "$(cat "$BATS_TEST_TMPDIR/seen")" = present ]
+```
+
+Shadowing a sourced function this way to drive a failure path *does* work — the
+override is visible where the test's variables are not.
+
 Related: [[hook-output-channels]] for the exit-2/systemMessage
 channels the shell-scripting plugin's shellcheck-on-edit hook uses.
