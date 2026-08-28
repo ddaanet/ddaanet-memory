@@ -1,6 +1,6 @@
 ---
 name: green-is-not-evidence
-description: "accepting a green test you did not watch fail, yours or inherited: shapes that pass whatever the code does (birth state, algebraic tautology, empty derived states compared, parallel counts all equal, same-second twin fixture commits are one object, an isolation fixture with nothing to leak, upsert idempotence for teardown, a substring another line satisfies, a downstream effect standing in for the write, the right exception from the wrong guard); structuring a negative against string/path/proxy staleness, the negative/positive pairing over one fixture, a wait-then-proceed gate, and deleting an untestable negative whole"
+description: "a test that stays green with the code it names deleted, or green you never watched fail (inherited, subagent-authored): the fixture-satisfied shapes and the rebuild for each; a substring or `--partial` another line satisfies; a negative that reds against working code (a gate that waits then proceeds); fixture twins that coincide inside one clock second; a seam that replaces the whole expression; and writing a negative that cannot go vacuous — absent-string/path/proxy staleness, pairing over one fixture, decoy-first ordering, exact-block equality, errexit skipping it behind a positive, deleting an untestable one whole"
 metadata: 
   node_type: memory
   type: feedback
@@ -218,8 +218,9 @@ this hardest to green you did not write — inherited or subagent-authored work
 development it is not an occasional risk, so budget one wrong-reason test per
 task and let a reviewer a rung above the implementer hunt it — which needs the
 red phase dispatched separately from the green one, or nobody ever saw the test
-fail. It pairs with the sibling lesson that briefs themselves misdescribe the
-code.
+fail. It pairs with [[spec-enumerations-need-rederiving]]: the brief that
+dispatched the work misdescribes the code in the same way — a hand-listed
+enumeration that conformance passes clean against.
 
 Related: [[bats-shellcheck-gotchas]] — the specific bats mechanisms
 (`run missing_function` exits 127 before the code exists; `run` is a subshell
