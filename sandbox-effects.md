@@ -9,172 +9,81 @@ metadata:
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
-command sandbox distorting git, filesystem, transcript, and IPC operations.
-Each section stands alone.
+command sandbox distorting git, filesystem, transcript and IPC operations. Each
+section stands alone and is keyed by the symptom an agent arrives holding.
 
-## Stranded `.git/index.lock` (sandbox breaks it)
+**Baseline the rest of the file assumes:** `/sandbox` set to *unsandboxed
+fallback* (not strict), auto mode on, and user-scope
+`sandbox.excludedCommands: ["git:*", "find:*", "ls:*", "claude:*"]`. Under that
+configuration every top-level `git`, `find`, `ls` and `claude` segment already
+runs outside the sandbox with no flag, so most sections below are met only
+where the exclusion does not reach: a command nested in `( … )`, `$( … )` or
+`sh -c`, a `just` recipe or script that runs git internally, or a machine
+without the entries.
 
-A `git add` run inside the Bash sandbox can succeed at staging while failing to
-remove `.git/index.lock`. Nothing looks wrong until the *next* command: `git
-commit` runs its `pre-commit` hook, the hook's own `git add` tries to take the
-lock, and git reports `Unable to create '.git/index.lock': File exists. Another
-git process seems to be running` — naming a concurrent process that does not
-exist. Re-running the identical command with `dangerouslyDisableSandbox: true`
-succeeds.
+| symptom | section |
+|---|---|
+| `Unable to create '.git/index.lock': File exists` | `.git/index.lock` |
+| `.bashrc`/`.zshrc`/`.claude/skills` as untracked; `can only add regular files` | Phantom dotfiles |
+| a slash command's `## Context` lists phantom dotfiles | Phantom dotfiles |
+| `Device or resource busy` / `Read-only file system` on `.claude/settings.json`, `.git/config`, `hooks/hooks.json` | Harness-mounted config paths |
+| `Read-only file system` from `git -C <other-worktree>`, `cp`/`mv` into another repo | Sibling worktree writes |
+| `$TMPDIR` expands empty, `/foo.log: Permission denied`; a benign compound denied | Leaving the sandbox |
+| `ps` shows nothing but your own shell | `ps` |
+| `No conversation found with session ID` | `--resume` |
+| `There is no active session!` from zellij | zellij |
+| a `SessionStart` side effect never happened after `claude -p` | `claude -p` |
+| `apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument` | Sandbox setup fails |
 
-Observed 2026-07-21 in gitlore: `git add <file> && git commit` in one sandboxed
-Bash call. Staging succeeded (`git status` showed `A `), the commit aborted, and
-git cleaned the lock on abort — by the time you look the evidence is destroyed.
+## `.git/index.lock`: one error string, three causes
 
-Diagnostic that settles it: `GIT_TRACE=1 git commit` unsandboxed. It prints
-`run_command: GIT_EDITOR=: GIT_INDEX_FILE=.git/index .../hooks/pre-commit` —
+`fatal: Unable to create '.git/index.lock': File exists. Another git process
+seems to be running` names a concurrent process that usually does not exist.
+Three causes share the string, and the correct action is opposite between them,
+so run the discriminator before touching anything:
+
+1. **Run the existence test unsandboxed** — `ls -la .git/index.lock` with
+   `dangerouslyDisableSandbox: true`.
+2. **Path absent unsandboxed → a mask.** The sandbox can present
+   `.git/index.lock` itself as a masked path, so `git commit`/`git add` fail
+   over a lock that does not exist. Tells: the message is self-contradictory
+   (creation *failed*, yet a file is *there*), a zero-byte lock, no git process
+   in `ps`, a sandboxed `ls` that showed nothing a moment earlier. Leave it
+   alone and re-run the command unsandboxed. This can start mid-session;
+   earlier commits in the same session went through sandboxed.
+3. **Path absent, but the failure came right after a sandboxed `git add` → a
+   stranded lock.** A `git add` inside the sandbox can stage successfully while
+   failing to remove the lock; the *next* command's `pre-commit` hook runs its
+   own `git add`, cannot take the lock, and the commit aborts — after which git
+   cleans the lock, so the evidence is destroyed by the time you look. Observed
+   2026-07-21 in gitlore on `git add <file> && git commit` in one sandboxed
+   call. Re-running the identical command unsandboxed succeeds.
+4. **Path persists unsandboxed, no process holds it (`fuser` empty), an
+   unsandboxed write fails the same way → genuinely stale.** `rm` it; the write
+   recovers and it does not reappear. On 2026-07-23 a `.git/config.lock` looked
+   exactly like a mask (`-r--r--r-- … 0`, synthetic-identical
+   birth/mtime/ctime) and was real: an orphan from a `git config` write killed
+   mid-rename two days earlier, plausibly OOM, surfacing as `could not lock
+   config file .git/config: File exists` from gitlore's `SessionStart` hook.
+
+The 0-byte/read-only shape alone proves nothing. Deleting a lock you have not
+proven stale is the dangerous move, and the sandbox makes an entirely healthy
+repo look like a crashed one.
+
+**Do not "fix" the hook in response.** `GIT_TRACE=1 git commit` unsandboxed
+prints `run_command: GIT_EDITOR=: GIT_INDEX_FILE=.git/index …/hooks/pre-commit`,
 proving git has NOT taken `index.lock` when `pre-commit` runs, so a hook's bare
-`git add` is legitimate and a lock present at that moment is a leftover, not
-contention.
+`git add` is legitimate. A staging hook's `GIT_INDEX_FILE` capture/restore
+([[git-hook-env-leak]]) is a different bug with the same error string: that one
+fires under `-a`/pathspec commits where git really does hold the lock, and it
+fails sandboxed or not — an unsandboxed retry succeeding is what rules it out.
 
-Do not "fix" the hook in response. A staging hook's `GIT_INDEX_FILE`
-capture/restore ([[git-hook-env-leak]]) is a different bug with the
-same error string: that one fires under `-a`/pathspec commits where git really
-does hold the lock. Distinguish by whether an unsandboxed retry succeeds — a
-real hook bug fails either way.
+## Phantom dotfiles: the `/dev/null` masks
 
-## A masked lock file fakes a crashed repo — and a real stale lock looks identical
-
-Distinct from the stranded lock above: the sandbox can mask `.git/index.lock`
-itself, so `git commit`/`git add` fails `fatal: Unable to create
-'.git/index.lock': File exists` over a lock that does not exist at all. The
-stock advice — "a git process may have crashed; remove the file manually" — is
-the wrong move. The tell is that the message is self-contradictory (creation
-*failed*, yet a file is *there*), plus a zero-byte lock, no git process in
-`ps`, and a sandboxed `ls` that showed nothing a moment earlier. Confirm by
-running `ls` on the lock with `dangerouslyDisableSandbox: true` — the path does
-not exist — then re-run the commit unsandboxed, which succeeds. This can start
-mid-session; earlier commits in the very same session went through sandboxed.
-
-**The discriminator, because a genuinely stale lock has the same surface
-signature.** On 2026-07-23 a `SessionStart:clear` error — `could not lock
-config file .git/config: File exists`, from gitlore's session hook
-(`cc-hooks/session-start.sh` writes `git config gitlore.hooksDir` /
-`commitCommand` every session) — showed a `.git/config.lock` that looked
-exactly like a mask: `-r--r--r-- … 0`, synthetic-identical birth/mtime/ctime.
-It was real. What separated them: it **persisted with
-`dangerouslyDisableSandbox: true`** (a mask vanishes; a real lock does not), an
-unsandboxed `git config` write failed the same way, and no process held it
-(`fuser` empty) — a genuine orphaned lock from a `git config` write killed
-mid-rename two days earlier, plausibly OOM.
-
-So the 0-byte/read-only shape alone proves nothing, and the correct action is
-opposite in the two cases: leave a mask alone and retry unsandboxed; `rm` a
-real stale lock, after which the write recovers and it does not reappear.
-Always run the unsandboxed existence test, then `rm`-and-retry, before deciding
-which one you have — deleting a lock you have not proven stale is the dangerous
-move, and the sandbox makes an entirely healthy repo look like a crashed one.
-
-## Strict sandbox mode blocks the escape (no `dangerouslyDisableSandbox`)
-
-When my human partner has enabled strict sandbox mode (`/sandbox` → "Strict
-sandbox mode"), `dangerouslyDisableSandbox: true` is blocked. Git write
-operations (`git add`, `git commit`) then fail with "Read-only file system" on
-`.git/index.lock`. Strict mode disables the override mechanism entirely; the
-filesystem restriction is enforced at the OS level and cannot be bypassed by the
-agent.
-
-**How to apply:** ask my human partner to run the command via `! git …`, or to
-toggle sandbox mode first (`/sandbox` → unsandboxed fallback). Do NOT retry the
-same sandboxed command or try workarounds.
-
-**Strict mode is a user setting and is often off.** Do not read this section as
-"the escape never works" — check rather than assume. In the 2026-07-21 session
-recorded under `$TMPDIR` below, strict mode was *not* in force and
-`dangerouslyDisableSandbox` worked normally; that is why the `just release` run
-there succeeded with it.
-
-## `excludedCommands` unsandboxes the WHOLE call (the standing escape)
-
-`~/.claude/settings.json` `sandbox.excludedCommands` runs listed commands
-outside the sandbox with no per-call flag, and is honoured in strict mode too.
-Decompiled from CC 2.1.233 and confirmed by probe:
-
-- **Entries are permission-rule patterns, not plain strings.** `foo bar` is
-  exact; `foo bar:*` is a prefix matching `foo bar` or `foo bar` + a space +
-  anything; an unescaped `*` is a glob. So a plain `"git status"` entry covers
-  only the bare literal — measured across a 45-day transcript corpus at **2.8%**
-  of real `git status` traffic, because `--short`, `--porcelain` and
-  `git -C <dir> status` all miss it. Prefix entries anchor at the segment start,
-  so no entry can express "any `git status`" once `-C`/`-c` prefixes are in play.
-- **Splitting** is a tree-sitter-bash parse, cut at `&&`, `||`, `|`, `;`, `&`
-  and newline. Nesting is never descended into: `( … )`, `$( … )`, `sh -c '…'`
-  and `if …; fi` are compared whole, so they never match — nesting fails closed.
-- **Comparison is on source text**, per segment. Leading `VAR=value` assignments
-  and trailing redirections are outside the compared span, and wrapper commands
-  are unwrapped — `timeout 5 git status` matches a `git status` entry, as do
-  `time`, `nice`, `stdbuf`, `nohup`, `command`, `builtin`, `noglob`. `LD_*`,
-  `DYLD_*` and `PATH=` assignments are deliberately NOT stripped. Double spaces,
-  quoted arguments, `/bin/ls`, an extra argument, and pre-expansion `$VAR` all
-  defeat the match.
-- **One matching segment unsandboxes the entire call**, neighbours included, and
-  the decision is static rather than reachability-aware: `false && git status;
-  <payload>` frees the whole call while the decoy never runs.
-- **It does not grant approval — but that rarely costs a classifier call.** The
-  sandbox auto-allow shortcut is skipped precisely when the command is not
-  sandboxed, so deny/ask rules and then the rest of the permission pipeline still
-  evaluate it — a `Bash(sudo:*)` deny rule refused a call carrying an excluded
-  segment. What catches it next is a **sandbox-independent read-only auto-allow**
-  (decision reason `Read-only command is allowed`), which sits ahead of the
-  auto-mode classifier and never consults sandbox state: `git log`, `git diff`,
-  `git show`, `ls -a` and `find` are allowed locally whether sandboxed or not, so
-  unsandboxing them is free. The classifier is reached only where that validator
-  refuses. It requires **every** segment to pass, and rejects: any subshell or
-  `compound_statement` anywhere, any `&`, any unquoted `$VAR`, a `cd` in the same
-  call as any git segment, the git global options `-C`/`-c`/`--git-dir`/
-  `--work-tree` (and `--exec-path`, `--config-env`, `--bare`, `--attr-source`,
-  `--shallow-file`), and any git segment when sandboxing is enabled globally and
-  cwd is not the session's original cwd. So the cheap shape is a bare
-  `git <subcommand>` from the original cwd; `cd <dir> && git …`, `(cd <dir> &&
-  git …)` and `git -C <dir> …` each forfeit it. Gating is otherwise equivalent to
-  an agent-declared `dangerouslyDisableSandbox`, minus the round-trip. Contrast
-  the retired `unsandbox-git-status` plugin below, which returned
-  `permissionDecision: "allow"` and so settled the gate itself.
-- **Settings reload live.** `excludedCommands`, `autoAllowBashIfSandboxed` and
-  `permissions.deny` each took effect mid-session in both directions, with no
-  restart — so a probe does not need a fresh session.
-
-## Phantom home dotfiles and sibling-worktree writes (sandbox breaks them)
-
-In the gitlore repo the sandbox distorts some git/filesystem operations
-(verified 2026-07-17).
-
-1. **Phantom dotfiles.** A sandboxed working-tree read surfaces user-home
-   dotfiles absent from the repo — `.bashrc`, `.zshrc`, `.bash_profile`,
-   `.zprofile`, `.profile`, `.gitconfig`, `.ripgreprc`, `.idea`, `.vscode`,
-   `.mcp.json`. So a sandboxed `git status` reports spurious untracked files.
-   Ground truth: the repo's real dotfiles are only `.claude .claude-plugin
-   .editorconfig .envrc .git .gitignore .gitlore .gitmodules`.
-2. **Sibling-worktree writes blocked.** The sandbox grants write access only to
-   the current worktree (`.`) plus `.git`. From a linked worktree, a git op
-   writing a *sibling* path fails with `Read-only file system` — e.g. `git -C
-   <main-root> merge/push <branch>` (finishing a worktree branch into main) or
-   `git worktree remove <other>`. The merge half-prints "Updating …" then aborts
-   cleanly (no `MERGE_HEAD`), so retry unsandboxed.
-
-**Two masking shapes, and the newer one lands inside the repo.** The original
-form is a character device (`crw-rw-rw- nobody nogroup`) standing in for a
-deny-listed path. Since 2026-07-20 deny-listed paths also appear as **zero-byte
-read-only regular files** (`-r--r--r-- … 0`) — `.bashrc`, `.bash_profile`, and
-`.claude/{agents,commands,hooks,skills,workflows,routines,launch.json,
-scheduled_tasks.json}` — and a path that ought to be a DIRECTORY gets a
-zero-byte file too. Three things make this read as a real problem when it is
-not: they show as untracked (`??`) in `git status`; they appear part-way
-through a session, so an early `git status` in the same session showed none of
-them; and they are visible with the sandbox OFF (both via
-`dangerouslyDisableSandbox` and via `excludedCommands`), so "it is only the
-sandboxed view" does not explain them away. Do not delete them, do not
-commit them, do not raise them as a finding.
-
-**The mask is `/dev/null`, and the set is closed.** Measured 2026-08-15 in
-gitlore by diffing sandboxed listings against unsandboxed ones: 22 paths stat as
-`crw-rw-rw- nobody nogroup 1, 3` — device 1,3 is `/dev/null`. The set is every
-file a repository could use to hijack execution:
+The sandbox bind-mounts `/dev/null` over a closed set of paths in the
+**session's project root** — every file a repository could use to hijack
+execution. Measured 2026-08-15 in gitlore by diffing sandboxed listings against
+unsandboxed ones, 22 paths stat as `crw-rw-rw- nobody nogroup 1, 3`:
 
 ```
 .bash_profile .bashrc .gitconfig .idea .mcp.json .profile .ripgreprc
@@ -184,184 +93,263 @@ file a repository could use to hijack execution:
 .git/config.lock .git/config.worktree
 ```
 
-Scope is **the session's project root**, not the cwd, and it reaches into
-`.claude/` and `.git/`. A listing of a subdirectory is clean even with the cwd
-set there, and `find -maxdepth 1 -type c` returns zero in other repo roots — so
-cross-repo commands are unaffected, and a deny predicate can be anchored to
-`CLAUDE_PROJECT_DIR`. The two `.git/` entries are why `git checkout`/`reset
---hard` hit "Device or resource busy" on `.git/config`.
+Scope is the project root, not the cwd: a listing of a subdirectory is clean
+with the cwd set there, and `find -maxdepth 1 -type c` returns zero in other
+repo roots, so cross-repo commands are unaffected and a deny predicate can be
+anchored to `CLAUDE_PROJECT_DIR`. The two `.git/` entries are why `git
+checkout`/`reset --hard` hit `Device or resource busy` on `.git/config` (next
+section). A second masking shape exists: since 2026-07-20 deny-listed paths have
+also appeared as **zero-byte read-only regular files** (`-r--r--r-- … 0`), a
+path that ought to be a directory getting a zero-byte file too.
 
-**Every masked name begins with a dot, which decides who sees them.** Measured
-the same day: plain `ls` shows **none**; `ls -a` shows them; `find` lists them
-unconditionally; `rg` shows none (ripgrep skips hidden by default); `grep -r`
-finds nothing in them, because a `/dev/null` mask reads as immediate EOF. So the
-corrupted commands are `ls -a`, `find`, `du`, `tree` and the `git status`
-family — not `grep`, and not plain `ls`. `rg` is immune and is the clean
-workaround.
-
-**The magnitude, so the noise is recognisable:** sandboxed, `git ls-files
+**Every masked name begins with a dot, which decides who sees them.** Plain
+`ls` shows none; `ls -a` shows them; `find` lists them unconditionally; `rg`
+shows none (hidden skipped by default); `grep -r` finds nothing in them, since
+a `/dev/null` mask reads as immediate EOF; `cat`/`head` of one returns empty.
+So the corrupted commands are `ls -a`, `find`, `du`, `tree` and the `git status`
+family — `git status` reports them as `??`, and sandboxed `git ls-files
 --others --exclude-standard` reported 19 untracked paths in gitlore where the
-truth was 3.
-
-**They are real files while a sandbox is in effect, and the sandbox need not be
-yours.** They materialize on the filesystem whenever *some* agent is running a
-sandboxed Bash command, and are visible to every process for as long as that
-lasts — which is why an unsandboxed reader sees them and why they come and go
-rather than accumulating. With parallel subagents this is not rare: a
-controller's own unsandboxed `git status` shows a clean tree one moment and
-fourteen phantom dotfiles the next, purely because a subagent happened to be
-mid-`Bash` call. So absence proves nothing about a later moment, and presence
-says nothing about the repo — do not conclude from one clean reading that
-`git add -A` is safe here, and always stage explicit pathspecs when any other
-agent is live.
+truth was 3. Nothing in the output marks them as artefacts.
 
 **They break `git add -A` under the sandbox**: `error: .bash_profile: can only
 add regular files, symbolic links or git-directories`, and the whole `add`
-aborts. Stage with explicit pathspecs. Re-running the same `git add -A` with
-`dangerouslyDisableSandbox: true` is a second way out only when yours is the
-only sandbox in play — the auto classifier lets it through, and with no sandbox
-in effect the stand-ins are not there to choke on (verified with `git add -An`)
-— but per the paragraph above it does nothing while another agent is mid-`Bash`
-call, since the files are real for every process for as long as that lasts.
+aborts. Stage explicit pathspecs. (`git add -A` is prohibited on its own merits
+regardless; and an explicit pathspec still strands the lock sandboxed, per the
+section above — the exclusion is what fixes both.)
 
-`.envrc` vars pass through the sandbox: `MARKETPLACE_DIR` and the `DIRENV_*`
-vars are present in the sandboxed env (direnv runs in the launching shell). The
-variable arriving does not make the path it names writable. A sandboxed `just
-release` gets through the bump, commit, tag, `git push` and `gh release create`,
-then dies on the marketplace step: `mv` of the `mktemp` file onto
-`$MARKETPLACE_DIR/.claude-plugin/marketplace.json` reports `inter-device move
-failed … unable to remove target: Read-only file system`. Every step before it
-is irreversible, so the plugin is left tagged and published against a stale
-marketplace entry (confirmed 2026-07-30, gitlore 0.4.4). Run the whole recipe
-unsandboxed. `just resume-release` (plugin-dev >= 0.5.0) recovers a half-landed
-one, but only unsandboxed: its `bump_marketplace` runs that `mv`
-unconditionally, before it compares local and remote heads, so inside the
-sandbox it cannot even reach the point of reporting the marketplace already
-correct.
+**They can be visible with the sandbox off.** Unsandboxed readers — via
+`dangerouslyDisableSandbox` and via `excludedCommands` — have seen the masks
+while some other agent was mid-`Bash` call: a controller's own unsandboxed `git
+status` showed a clean tree one moment and fourteen phantom dotfiles the next
+with parallel subagents live. The observation is repeated; the causal reading
+("real for every process while any sandbox is live") is **not established** — a
+2026-08-16 probe saw an unsandboxed `!`-expansion return the full mask listing
+once with a sandboxed background task live, and three later runs under the same
+conditions were clean. Treat it as: one clean reading proves nothing about a
+later moment, and presence says nothing about the repo. Do not delete them, do
+not commit them (committing pollutes the repo with personal config), do not
+raise them as a finding.
 
-**`git` is excluded user-wide; the `unsandbox-git-status` plugin is retired
-(2026-08-26).** `~/.claude/settings.json` carries `sandbox.excludedCommands:
-["git:*", "find:*", "ls:*", "claude:*"]`, so every git invocation runs
-unsandboxed with no hook and no per-call flag — the section above describes the
-matcher. The plugin (a PreToolUse Bash hook that detected `git status` and
-flipped `dangerouslyDisableSandbox` in place) was retired in favour of that
-exclusion, removed from the `ddaanet` marketplace and its repo archived. Why:
-`git:*` covers every git shape, not the hook's best-effort `git status` subset;
-it is honoured in strict mode; and it does not settle the permission gate,
-whereas the hook paired `updatedInput` with `permissionDecision: "allow"` —
-which pre-approves the *whole* call, classifier never consulted, for anything
-chained alongside the `git status` (confirmed live: `true && git status
---porcelain` ran). The fix for a hook that must rewrite is `updatedInput`
-alone, which re-runs the full pipeline over the rewritten input. The one shape
-the exclusion misses that the hook caught is a `git status` nested in `( … )`,
-`$( … )` or `sh -c`; that shape is being removed at its source (`cwd-safety`).
-The plugin's other deliberate gap carries over: `git add -A` also fails
-sandboxed and is still not auto-unsandboxed by anything but `git:*` itself.
-Do NOT read a clean unsandboxed `git status` as evidence the sandbox itself is
-clean — nothing announces the exclusion in the tool result.
+**A slash command's `## Context` block is a Bash call.** The injection is
+`` !`cmd` `` expansion in the command body (`commit-commands/commands/commit.md`
+carries `` - Current git status: !`git status` ``), and decompiling CC 2.1.233
+shows it executed through the ordinary Bash tool `call` with a bare
+`{command}` — so the sandbox decision and the `excludedCommands` match apply
+exactly as to a typed call (confirmed live 2026-08-16: an excluded `git status`
+expansion saw the real tree, an unmatched one saw the masks), while
+**`PreToolUse` hooks do not run on that path**, and several `` !` `` blocks in
+one body run concurrently. Under `git:*` the listing is real. Without it, never
+act on the injected listing: re-run `git status` unsandboxed first (a
+2026-05-24 `/commit` context showed ~14 untracked dotfiles where the
+unsandboxed tree had one build artefact).
 
-**Slash-command context is sandboxed too.** Commands like
-`/commit-commands:commit` auto-inject a `git status` into their `## Context`
-block — that injection runs sandboxed (the retired plugin never reached it, and
-whether `excludedCommands` does is unverified), so it lists the home dotfiles as
-untracked and can read as "nothing staged, untracked files present" when the
-tree is actually clean. Never act on that
-injected listing directly: re-run `git status` unsandboxed first. Never
-stage/commit the materialized dotfiles (`.bashrc`, `.gitconfig`, `.zshrc`, …) —
-committing them pollutes the repo with personal config. Confirmed 2026-05-24: a
-`/commit` context showed ~14 untracked dotfiles + `scripts/__pycache__/`; the
-unsandboxed tree had only the build artifact, nothing to commit.
-
-**How to apply:** run any *other* sandboxed command that reads the working tree,
-or that writes to a sibling worktree, with `dangerouslyDisableSandbox: true`.
-Cues: phantom `.bashrc`/`.zshrc` in a listing; `Read-only file system` from a
-`git -C <other-worktree>` op; the same error from a plain `cp`/`mv` into another
-repo — the write allowlist covers the session's working directories and nothing
-else. **Retry unsandboxed rather than reaching for a tool that is not under the
-command sandbox.** Where the user's own prompt asked for the write, the auto
-classifier lets the retry through, so routing around the denial buys nothing and
-loses the shell. Relevant to finishing a development branch when merging a
-worktree branch into main.
-
-For *read-only* inspection of local git state and adjacent filesystem probes —
-`git status`, `log`, `diff`, `show`, `branch`, `rev-parse`, `ls-files`,
-`blame`, `cat .gitconfig`, `ls .claude/`, reading dotfiles — reaching for
-`dangerouslyDisableSandbox: true` is a standing default my human partner set
-explicitly, not a per-case approval to seek: call it directly, without
-pre-announcing or asking. Mutating operations (`git commit`, `push`, `reset`,
-`checkout -- …`, anything that writes) are NOT covered and still follow normal
-confirmation rules.
-
-## Harness-mounted config paths are busy/read-only (sandbox breaks it)
+## Harness-mounted config paths are busy/read-only
 
 The harness mounts certain paths as busy/read-only/char-devices:
 `.claude/settings.json`, `.claude/settings.local.json`, `.git/config`,
-`.mcp.json`, `.gitconfig`, `.gitmodules` and similar. The sandbox additionally
-denies writes to `.claude/settings.json` outright. Any operation that unlinks or
-rewrites one of them *in place* fails under the sandbox with **"Device or
-resource busy"** or **"Read-only file system"**:
+`.mcp.json`, `.gitconfig`, `.gitmodules` and similar, and the sandbox denies
+writes to `.claude/settings.json` outright. Any operation that unlinks or
+rewrites one *in place* fails under the sandbox with `Device or resource busy`
+or `Read-only file system`:
 
-- `git checkout <branch>` and `git reset --hard` — they cannot unlink or
-  overwrite the protected files.
-- `git branch -d` — warns "could not write `.git/config`"; the branch is deleted
-  anyway.
+- `git checkout <branch>` and `git reset --hard` — cannot unlink or overwrite
+  the protected files.
+- `git branch -d` — warns "could not write `.git/config`"; the branch is
+  deleted anyway.
 - Tools doing an atomic `mktemp` + `mv` into these paths (e.g.
   `claude-plugin-dev`'s `install.sh` settings-merge), because the `mktemp`
   lands on a different device.
 - **A plugin's own `hooks/hooks.json`, when it is the active hooks config for
-  the current session.** In gitlore's own repo, a sandboxed `git checkout`/`git
-  merge --ff-only` that needs to change `hooks/hooks.json`'s content dies with
-  `unable to unlink old 'hooks/hooks.json': Read-only file system` — the
-  sandbox (or a harness-level mount under it) holds the file read-only
-  regardless of the write-allowlist, because it's this session's own live
-  hooks config. Every other file in the same checkout/merge updates normally;
-  only the active `hooks.json` is special. Confirmed 2026-07-24 merging a
-  branch into `main`: identical command succeeded once retried unsandboxed.
+  the session.** In gitlore's own repo a sandboxed `git checkout`/`git merge
+  --ff-only` that changes `hooks/hooks.json` dies with `unable to unlink old
+  'hooks/hooks.json': Read-only file system` — the live hooks config is held
+  read-only regardless of the write allowlist; every other file in the same
+  merge updates normally. Confirmed 2026-07-24; the identical command succeeded
+  unsandboxed.
 
-**How to apply:** run those operations with `dangerouslyDisableSandbox: true`.
-When `checkout` + `merge` choke on the protected files, a plain `git reset --hard
-<branchtip>` unsandboxed completes the fast-forward cleanly. Note that the
-harness `Edit` tool *can* write `.claude/settings.json` even though a raw git
-unlink cannot — but the classifier still refuses `enabledPlugins`
-([[classifier-denied-self-config]]).
+**How to apply:** run those operations unsandboxed (`git:*` does this for the
+git forms). When `checkout` + `merge` choke on the protected files, a plain
+`git reset --hard <branchtip>` unsandboxed completes the fast-forward cleanly.
+Writes to `.claude/settings.json` go through the built-in **`update-config`**
+skill ("configure the Claude Code harness via settings.json"): verified on CC
+2.1.233 writing `sandbox.excludedCommands` to user scope via `Edit`, which the
+classifier did not refuse. Whether that route also clears the `enabledPlugins`
+denial ([[classifier-denied-self-config]]) is untested. The contrast stands
+either way: a harness tool is not under the command sandbox, a raw git unlink
+of the same path is.
 
 **Recovering a merge interrupted mid-way by this failure:** a `git merge
 --ff-only` that dies on `hooks/hooks.json` can leave the working tree
-PARTIALLY updated to the target branch's content for files processed before
-the failure, while HEAD stays at the pre-merge commit (git does not roll back
-files it already wrote). Before retrying, `git status` and diff any "modified"
-files against the merge target — if they already match the target exactly,
-`git checkout HEAD -- <files>` to reset to the pre-merge commit and remove any
-untracked new files the target added, THEN retry the merge unsandboxed in one
-shot, rather than resuming piecemeal.
+PARTIALLY updated to the target's content for files processed before the
+failure, while HEAD stays at the pre-merge commit (git does not roll back files
+it already wrote). Before retrying, `git status` and diff any "modified" files
+against the merge target — if they already match it exactly, `git checkout
+HEAD -- <files>`, remove any untracked new files the target added, THEN retry
+the merge unsandboxed in one shot rather than resuming piecemeal.
 
-## `$TMPDIR` is unset when unsandboxed (cost of taking the escape)
+## Sibling worktree writes
 
-When a Bash tool call runs with `dangerouslyDisableSandbox=true`, `$TMPDIR` is
-**unset** (the sandbox is what exports it). A redirect like `cmd >
-"$TMPDIR/foo.log"` then expands to `/foo.log` and dies with `Permission denied`.
-Use the absolute scratchpad directory path in unsandboxed commands instead of
-`$TMPDIR`.
+The sandbox's write allowlist covers the session's working directories plus
+`.git` and nothing else. From a linked worktree, a git op writing a *sibling*
+path fails with `Read-only file system` — `git -C <main-root> merge/push
+<branch>` (finishing a worktree branch into main), `git worktree remove
+<other>` — and so does a plain `cp`/`mv` into another repo. The merge
+half-prints "Updating …" then aborts cleanly (no `MERGE_HEAD`). Retry
+unsandboxed; where the user's own prompt asked for the write, the auto
+classifier lets the retry through, so routing around the denial with a tool
+that is not under the command sandbox buys nothing and loses the shell.
 
-Hit while running `just release minor` (needs network for `git push`/`gh`, so
-the whole recipe ran unsandboxed). The release succeeded once the log redirect
-used the absolute scratchpad path — including the cross-repo marketplace push to
-`../claude-plugins`, which went through because the classifier evaluates the
-top-level `just release minor`, not the inner `git -C "$MARKETPLACE_DIR" push`.
+## Leaving the sandbox: the two escapes and what they cost
 
-## `ps` cannot see harness background tasks (sandbox hides them)
+**Per call:** `dangerouslyDisableSandbox: true` on the Bash tool. **Standing:**
+`sandbox.excludedCommands` in `~/.claude/settings.json` (mechanism in the next
+section), honoured in strict mode too.
+
+**Strict mode blocks the per-call flag.** With `/sandbox` set to *Strict
+sandbox mode*, `dangerouslyDisableSandbox` is refused and git writes fail with
+`Read-only file system` on `.git/index.lock`; the exclusions still apply. Ask
+my human partner to run the command via `! git …` or to toggle the mode — do
+not retry the same sandboxed command. Strict mode is a user setting and is
+usually off in ddaanet repos: check rather than assume.
+
+**The read-only-inspection default.** Reaching for `dangerouslyDisableSandbox`
+to read local git state or a masked path is a standing default my human
+partner set explicitly, not a per-case approval to seek: call it directly,
+without pre-announcing or asking. Under the baseline exclusions it has little
+left to do — every top-level `git`/`ls`/`find` segment is already outside —
+and it fires on a symptom rather than while composing: a phantom dotfile in a
+listing, an empty `cat` of a `.claude/` path, a `git status` that ran inside
+`( … )`, `$( … )`, `sh -c` or a recipe, or a segment the matcher missed (a
+quoted argument, a double space, `/bin/ls`). Mutating operations (`git commit`,
+`push`, `reset`, `checkout -- …`, anything that writes) are NOT covered and
+follow normal confirmation rules.
+
+**Cost 1 — `$TMPDIR` is unset when unsandboxed.** The sandbox is what exports
+it, so `cmd > "$TMPDIR/foo.log"` expands to `/foo.log` and dies with
+`Permission denied`. Use the absolute scratchpad path in any unsandboxed call.
+Hit on `just release minor` (network for `git push`/`gh`, so the whole recipe
+ran unsandboxed); the release went through once the log redirect used the
+absolute path — including the cross-repo marketplace push, because the
+classifier evaluates the top-level `just release minor`, not the inner
+`git -C "$MARKETPLACE_DIR" push`.
+
+**Cost 2 — an unsandboxed command reaches the classifier, and it denies benign
+compounds unpredictably.** Sandboxed commands are auto-allowed
+(`autoAllowBashIfSandboxed`) with no classifier call; leaving the sandbox by
+either escape moves the command *into* classifier evaluation unless the
+read-only validator (next section) clears it. Observed 2026-08-16 after the
+exclusions were written: `ls -a | wc -l; echo …`, `find … | wc -l; echo …` and
+`claude --version; echo …` were each refused while `ls -a; echo …`,
+`find …; echo …`, `git log …; echo …` and a bare `claude --version` passed. No
+stable rule separates them — the pipe is not it. Mitigation is shape, not
+settings: keep an excluded command in its own call rather than appending a
+compound to it. A classifier call is one model call over cached context with no
+generation, cheaper than an agent turn, so batching `cd <E> && git status` into
+one call still beats splitting it.
+
+**Cost 3 — a recipe that must run unsandboxed must run *entirely* so.**
+`.envrc` vars pass through the sandbox (`MARKETPLACE_DIR`, `DIRENV_*` — direnv
+runs in the launching shell), but the variable arriving does not make the path
+it names writable. A sandboxed `just release` gets through the bump, commit,
+tag, `git push` and `gh release create`, then dies on the marketplace step:
+`mv` of the `mktemp` file onto `$MARKETPLACE_DIR/.claude-plugin/marketplace.json`
+reports `inter-device move failed … unable to remove target: Read-only file
+system`. Every step before it is irreversible, so the plugin is left tagged and
+published against a stale marketplace entry (confirmed 2026-07-30, gitlore
+0.4.4). `just resume-release` (plugin-dev >= 0.5.0) recovers a half-landed one,
+but only unsandboxed: its `bump_marketplace` runs that `mv` unconditionally,
+before comparing local and remote heads. `git:*` does not reach a git call
+inside a recipe — `just` is the top-level segment.
+
+## `excludedCommands` unsandboxes the WHOLE call
+
+Decompiled from CC 2.1.233 and confirmed by probe (`${TMPDIR-UNSET}` is the
+discriminator: `/tmp/claude-1000` sandboxed, `UNSET` not):
+
+- **Entries are permission-rule patterns, not plain strings.** `foo bar` is
+  exact; `foo bar:*` is a prefix matching `foo bar` or `foo bar` + a space +
+  anything; an unescaped `*` is a glob. A plain `"git status"` entry covers only
+  the bare literal — 2.8% of real `git status` traffic across a 45-day
+  transcript corpus, since `--short`, `--porcelain` and `git -C <dir> status`
+  all miss it. Prefix entries anchor at the segment start, so `git status:*`
+  cannot reach `git -C <dir> status` (31.6% of git-bearing calls); only `git:*`
+  covers every shape, which is why the baseline carries it.
+- **Splitting** is a tree-sitter-bash parse, cut at `&&`, `||`, `|`, `;`, `&`
+  and newline. Nesting is never descended into: `( … )`, `$( … )`, `sh -c '…'`
+  and `if …; fi` are compared whole, so they never match — nesting fails closed,
+  and so does a parse failure: a call whose heredoc delimiter is never closed
+  is one unmatched segment, so its `git status` ran sandboxed and listed the
+  masks (2026-08-28).
+  A heredoc body can never trigger a match either (only the command word is
+  compared), and cannot smuggle a write past the read-only validator (the
+  capability comes from the command word, not the channel).
+- **Comparison is on source text**, per segment. Leading `VAR=value`
+  assignments and trailing redirections are outside the compared span, and
+  wrapper commands are unwrapped — `timeout 5 git status` matches a
+  `git status` entry, as do `time`, `nice`, `stdbuf`, `nohup`, `command`,
+  `builtin`, `noglob`. `LD_*`, `DYLD_*` and `PATH=` assignments are
+  deliberately NOT stripped. Double spaces, quoted arguments, `/bin/ls`, an
+  extra argument, and pre-expansion `$VAR` all defeat the match.
+- **One matching segment unsandboxes the entire call**, neighbours included, and
+  the decision is static rather than reachability-aware: `false && git status;
+  <payload>` frees the whole call while the decoy never runs. Nothing in the
+  tool result or the transcript records that a call ran unsandboxed.
+- **It does not grant approval — but that rarely costs a classifier call.** The
+  sandbox auto-allow shortcut is skipped precisely when the command is not
+  sandboxed, so deny/ask rules and then the rest of the permission pipeline
+  still evaluate it — a `Bash(sudo:*)` deny rule refused a call carrying an
+  excluded segment. What catches it next is a **sandbox-independent read-only
+  auto-allow** (decision reason `Read-only command is allowed`), which sits
+  ahead of the auto-mode classifier and never consults sandbox state: `git
+  log`, `git diff`, `git show`, `ls -a` and `find` are allowed locally whether
+  sandboxed or not, so unsandboxing them is free. The classifier is reached only
+  where that validator refuses. It requires **every** segment to pass, and
+  rejects: any subshell or `compound_statement` anywhere, any `&`, any unquoted
+  `$VAR`, a `cd` in the same call as any git segment, the git global options
+  `-C`/`-c`/`--git-dir`/`--work-tree` (and `--exec-path`, `--config-env`,
+  `--bare`, `--attr-source`, `--shallow-file`), and any git segment when
+  sandboxing is enabled globally and cwd is not the session's original cwd. So
+  the cheap shape is a bare `git <subcommand>` from the original cwd;
+  `cd <dir> && git …`, `(cd <dir> && git …)` and `git -C <dir> …` each forfeit
+  it. Gating is otherwise equivalent to an agent-declared
+  `dangerouslyDisableSandbox`, minus the round-trip.
+- **`` !`cmd` `` expansions in a slash command or skill body are matched too**
+  (previous section), and `PreToolUse` hooks do not run on that path.
+- **Settings reload live.** `excludedCommands`, `autoAllowBashIfSandboxed` and
+  `permissions.deny` each took effect mid-session in both directions, with no
+  restart — a probe does not need a fresh session.
+
+**Why `git:*` rather than a hook.** The `unsandbox-git-status` plugin — a
+`PreToolUse` Bash hook that detected `git status` and flipped
+`dangerouslyDisableSandbox` in place — is retired, removed from the `ddaanet`
+marketplace and its repo archived. It paired `updatedInput` with
+`permissionDecision: "allow"`, which pre-approves the *whole* call with the
+classifier never consulted, for anything chained alongside the `git status`
+(confirmed live: `true && git status --porcelain` ran). A hook that must rewrite
+returns `updatedInput` alone, which re-runs the full pipeline over the rewritten
+input. The exclusion covers every git shape rather than a best-effort
+`git status` subset, is honoured in strict mode, and does not settle the gate.
+The one shape the hook caught and the exclusion misses is a git command nested
+in `( … )`, `$( … )` or `sh -c`; `cwd-safety` used to manufacture that shape by
+wrapping `cd <dir> && …` in a subshell and instead appends `cd <root>` as a
+trailing line, so what remains is the genuine residue (`echo "[$(git -C
+memory/ddaanet ls-files X)]"`) and git run inside recipes. Do NOT read a clean
+unsandboxed `git status` as evidence the sandbox itself is clean — nothing
+announces the exclusion in the tool result.
+
+## `ps` cannot see harness background tasks
 
 The agent's Bash runs in its own PID namespace, so `ps` lists only that shell.
 A Bash call made with `run_in_background` — and everything it spawns — is
 absent from any process listing the agent can take: `ps -eo pid,comm` showed
 two `bash` entries while a background `bats` suite was mid-run and went on to
-complete normally. The gap is total rather than partial — `ps aux` returned 5
-lines sandboxed against 141 for the identical command unsandboxed (2026-08-15).
+complete normally. The gap is total — `ps aux` returned 5 lines sandboxed
+against 141 for the identical command unsandboxed (2026-08-15).
 
 **An empty `ps` is therefore not evidence that a background job died.** The
 move it invites is starting the same work in the foreground to check, which
-puts two heavy runs on a box that will not take parallel work; the second
-times out, and both then look like the first one failing.
+puts two heavy runs on a box that will not take parallel work; the second times
+out, and both then look like the first one failing.
 
 **How to apply:** treat the task-completion notification and the task's output
 file as the only signals about a background job, and a process listing as no
@@ -369,32 +357,34 @@ signal at all. When waiting on one, key the wait on the command's exit rather
 than on a line of its output that reads as terminal — a bats summary line
 prints before the recipe has run its remaining steps.
 
-## `--resume` dies because the transcript never persisted (second-order)
+## `--resume` dies because the transcript never persisted
 
-Inside the sandbox the API is reachable, but `~/.claude/projects/` (where session
-transcripts are written) is read-only. So a `claude --print` turn completes and
-returns a `session_id`, yet its transcript is never persisted — and a following
-`claude --print --resume <id>` fails with "No conversation found with session
-ID". The Agent SDK's `query()` has the same failure (it also spawns a subprocess
-and resumes by id). Verified 2026-07-17: `touch ~/.claude/projects/.probe`
-returns "Read-only file system"; the identical two-turn resume that failed
-sandboxed returned `subtype: success` unsandboxed.
+Inside the sandbox the API is reachable, but `~/.claude/projects/` (where
+session transcripts are written) is read-only. So a `claude --print` turn
+completes and returns a `session_id`, yet its transcript is never persisted —
+and a following `claude --print --resume <id>` fails with "No conversation found
+with session ID". The Agent SDK's `query()` has the same failure (it also spawns
+a subprocess and resumes by id). Verified 2026-07-17: `touch
+~/.claude/projects/.probe` returns "Read-only file system"; the identical
+two-turn resume that failed sandboxed returned `subtype: success` unsandboxed.
 
-**Consequence for eval/harness design:** any two-turn (or N-turn) flow relying on
-`--resume` must run **unsandboxed** (`dangerouslyDisableSandbox`, or my human
-partner's own shell). A single-turn connectivity **probe cannot detect this** —
-it never resumes, so it passes sandboxed while the real flow cannot. gitlore's
+**Consequence for eval/harness design:** any two-turn (or N-turn) flow relying
+on `--resume` must run **unsandboxed** (`dangerouslyDisableSandbox`, the
+`claude:*` exclusion for a top-level call, or my human partner's own shell). A
+single-turn connectivity **probe cannot detect this** — it never resumes, so it
+passes sandboxed while the real flow cannot. gitlore's
 `tests/evals/run-evals.sh` documents this in its header and its probe comment.
 Related: [[classifier-denied-self-config]] (the gitdir is likewise
 write-blocked, which is why the memory-message IPC file lives in the parent
 worktree).
 
 **So `just prerelease` and `just release` must run unsandboxed** — `release`
-depends on `prerelease`, which runs `just evals`, which is exactly such a flow.
-Sandboxed it fails at `pass^5` in a way that looks like it indicts the scenarios
-or the code, and does not: every run of an affected scenario fails identically,
-0/5 rather than flaky. Two signatures name the cause. Every two-turn scenario
-reports `No conversation found with session ID: … turn 2 yielded no result`, and
+depends on `prerelease`, which runs `just evals`, which is exactly such a flow,
+and `claude:*` does not reach a `claude` inside a recipe. Sandboxed it fails at
+`pass^5` in a way that looks like it indicts the scenarios or the code, and does
+not: every run of an affected scenario fails identically, 0/5 rather than
+flaky. Two signatures name the cause. Every two-turn scenario reports `No
+conversation found with session ID: … turn 2 yielded no result`, and
 `05-recall` reports `no session transcript captured` from its assertion, which
 reads the transcript to tell an injected body from a self-issued Read. A third
 tell is upstream of the evals and visible on every trial: `direnv: error open …
@@ -402,35 +392,18 @@ read-only file system` from the install step. Diagnose from these before
 suspecting a scenario — and note that piping the gate into `tail` reports the
 pipeline's exit status, so a failing run looks like exit 0.
 
-## Cross-repo push needs `/add-dir` (classifier, not sandbox — the authorization escape)
+## zellij IPC socket is outside the sandbox
 
-When working in gitlore, pushing to the sibling `~/code/claude-plugins`
-marketplace repo (needed whenever a plugin entry or version changes) is **denied
-by the auto-mode classifier** — reason "external repo outside the trusted source
-control org" — even though pushes to gitlore itself (the session cwd) go through.
-
-What does *not* fix it: removing the `Bash(git push:*)` **ask** directives from
-user config. Ask rules only control prompting; their absence is not
-authorization, so the classifier still denies.
-
-What fixes it: either an explicit **allow** rule
-(`"permissions":{"allow":["Bash(git push:*)"]}`), or — cleanest — `/add-dir
-~/code/claude-plugins`, which makes the repo a session working directory and the
-classifier then trusts pushes to it. Confirmed 2026-05-23: after `/add-dir`, the
-identical `git -C ~/code/claude-plugins push origin main` succeeded.
-
-## zellij IPC socket is outside the sandbox (sandbox breaks it)
-
-In a zellij session (`ZELLIJ_SESSION_NAME=...`), calling `zellij run --floating`,
-`zellij action new-pane`, etc. from the Bash tool returns "There is no active
-session!" under the default sandbox, even with explicit `--session <name>`. The
-session exists (`zellij list-sessions` shows "current") but zellij's IPC unix
-socket (typically under `/tmp/zellij-<uid>/zellij-<session>/`) is not reachable
-from the sandbox.
+In a zellij session (`ZELLIJ_SESSION_NAME=...`), calling `zellij run
+--floating`, `zellij action new-pane`, etc. from the Bash tool returns "There
+is no active session!" under the default sandbox, even with explicit `--session
+<name>`. The session exists (`zellij list-sessions` shows "current") but
+zellij's IPC unix socket (typically under `/tmp/zellij-<uid>/zellij-<session>/`)
+is not reachable from the sandbox.
 
 **Fix:** call Bash with `dangerouslyDisableSandbox: true`. The first symptom is
-"no active session" from any zellij subcommand that needs to talk to the running
-daemon (verified with `zellij --version` 0.44.3).
+"no active session" from any zellij subcommand that needs to talk to the
+running daemon (verified with `zellij --version` 0.44.3).
 
 **Affects:** the `/revdiff:revdiff` skill launcher (`launch-revdiff.sh`) — it
 picks the zellij branch when `ZELLIJ` is set and falls silently because the
@@ -440,49 +413,54 @@ CC. Once sandbox-disabled, the floating pane appears immediately.
 
 ## Sandboxed `claude -p` silently drops every `SessionStart` hook
 
-A `claude -p <prompt>` spawned from inside the command sandbox needs to
-`mkdir` a per-hook scratch dir under `~/.claude/session-env/<session-id>/`
-before running each `SessionStart` hook, and that path sits outside the
-sandbox's write allowlist. Every registered `SessionStart` hook across every
-plugin — not just the one you're chasing — then fails with `EROFS:
-read-only file system, mkdir '.../session-env/<id>'`. This surfaces only in
-`[ERROR]`/`[DEBUG]` log lines (`-d hooks --debug-file <path>`); the turn
-itself completes and returns its normal reply, so nothing in the visible
-output signals that every `SessionStart` side effect was skipped.
+A `claude -p <prompt>` spawned from inside the command sandbox needs to `mkdir`
+a per-hook scratch dir under `~/.claude/session-env/<session-id>/` before
+running each `SessionStart` hook, and that path sits outside the sandbox's
+write allowlist. Every registered `SessionStart` hook across every plugin —
+not just the one you're chasing — then fails with `EROFS: read-only file
+system, mkdir '.../session-env/<id>'`. This surfaces only in
+`[ERROR]`/`[DEBUG]` log lines (`-d hooks --debug-file <path>`); the turn itself
+completes and returns its normal reply, so nothing in the visible output
+signals that every `SessionStart` side effect was skipped — the strictest
+silent failure in this file, and the reason `claude:*` is in the baseline
+exclusions.
 
-Symptom: a fix that depends on a `SessionStart` hook's side effect appears
-to do nothing even after the documented remedy. Confirmed 2026-08-11:
-gitlore's `git config gitlore.hooksDir` (repointed to the current plugin
-version every `SessionStart`, [[stale-plugin-code]]) stayed pinned at the
-old version through two sandboxed `claude -p ping` calls in the target
-repo — the standard "start a session there" remedy — and only updated once
-retried with `dangerouslyDisableSandbox: true`.
+Symptom: a fix that depends on a `SessionStart` hook's side effect appears to
+do nothing even after the documented remedy. Confirmed 2026-08-11: gitlore's
+`git config gitlore.hooksDir` (repointed to the current plugin version every
+`SessionStart`, [[stale-plugin-code]]) stayed pinned at the old version through
+two sandboxed `claude -p ping` calls in the target repo — the standard "start a
+session there" remedy — and only updated once retried with
+`dangerouslyDisableSandbox: true`.
 
-**How to apply:** run any `claude -p`/`--print` invocation whose *point* is
-a `SessionStart` (or other) hook's side effect with
-`dangerouslyDisableSandbox: true`. A sandboxed one is fine only when you
-need just the model's textual reply and no hook needs to fire around it.
+**How to apply:** a top-level `claude -p` is unsandboxed by the exclusion; one
+inside a recipe (`just evals`, `just release`) or a script is not, and needs the
+whole call unsandboxed whenever its *point* is a hook's side effect. A
+sandboxed one is fine only when you need just the model's textual reply.
 [[posttooluse-print-mode]] establishes that `SessionStart` fires under
-`--print` at all — that finding was made unsandboxed; this note is the
+`--print` at all — that finding was made unsandboxed; this is the
 sandbox-specific caveat on top of it.
 
 ## Sandbox setup itself fails: `apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument`
 
 Distinct from every symptom above (a specific path/socket denied): the
-sandboxing mechanism can fail to initialize at all, so an arbitrary
-command — including a trivial read-only one like `grep` on a local file —
-errors immediately with `apply-seccomp: unshare(CLONE_NEWUSER): Invalid
-argument` and no other output, before the command itself runs. None of the
-file/lock/socket diagnostics above apply, since the error names no path or
-operation.
+sandboxing mechanism can fail to initialize at all, so an arbitrary command —
+including a trivial read-only `grep` on a local file — errors immediately with
+`apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument` and no other output,
+before the command itself runs. None of the file/lock/socket diagnostics above
+apply, since the error names no path or operation.
 
-**How to apply:** this error string alone — no path named, no other
-output — is sufficient evidence to retry with `dangerouslyDisableSandbox:
-true` rather than spending a call diagnosing further.
+**It is transient, so the remedy is a plain retry, not an unsandboxed one.**
+The standing-policy cause that would make retrying pointless does not obtain on
+the ddaanet box (`kernel.unprivileged_userns_clone = 1`,
+`user.max_user_namespaces = 2147483647`); `unshare(2)` returns `EINVAL` for
+`CLONE_NEWUSER` in a multithreaded caller, a per-invocation condition, and the
+box OOMs near 2 GB, so a transient failure at namespace setup is the live
+reading. Confirmed 2026-08-15 three times: the byte-identical command retried
+unchanged succeeded. The retry is not perfectly reliable — one multi-statement
+command failed twice consecutively and went through once split into smaller
+single-purpose calls.
 
-**It is transient, and a byte-identical retry often clears it** — twice on
-2026-08-15 the same sandboxed command succeeded on the second attempt. But the
-retry is not reliable: a multi-statement command failed twice consecutively and
-only went through once split into smaller single-purpose calls. Treat one
-unchanged retry as worth a call, and splitting the command as the next move
-before escalating.
+**How to apply:** retry the identical command once, unchanged. If it fails the
+same way immediately, split it. Escape the sandbox only after both, rather than
+giving it up on first sight.

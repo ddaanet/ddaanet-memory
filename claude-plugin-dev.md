@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: project
   originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-  modified: 2026-08-14T20:58:00.668Z
+  modified: 2026-08-28T13:27:48.163Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev) is the
 canonical release infrastructure for my human partner's Claude Code plugins
@@ -84,7 +84,11 @@ bump into the same atomic release.
   push, GitHub release — has already landed, so a sandboxed run leaves a
   half-done release rather than a failed one; `just resume-release`,
   likewise unsandboxed, completes it and is idempotent. See
-  [[sandbox-effects]].
+  [[sandbox-effects]]. Unsandboxed is necessary and not sufficient: the
+  marketplace lives in a sibling repo, and the push into it is refused by
+  the auto-mode classifier as an *external repo outside the trusted source
+  control org* regardless of the flag, until my human partner has run
+  `/add-dir` on that repo ([[classifier-denied-self-config]]).
 - `edify` doesn't vendor the toolkit: hybrid Python+plugin shape with a PyPI
   publish the toolkit's github+marketplace flow doesn't cover. It carries a
   local `scripts/release.sh`, ported from this toolkit's `release.sh` —
