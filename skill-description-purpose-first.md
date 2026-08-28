@@ -39,8 +39,7 @@ beside them — `gitlore:install`, one short clause, under 20 tokens;
 That matters past style. Moving an always-loaded line — a memory index entry,
 say — into a command rather than a skill does not make it free: the lever is
 description length, not the command-versus-skill choice, and a description
-carrying the routing surface the index line carried is a lateral move
-([[index-compaction-triggers]]).
+carrying the routing surface the index line carried is a lateral move.
 
 Model guidance does not belong in a skill body either. Which model runs the
 work is an agent-frontmatter concern, so a skill that says "run this on Sonnet"
