@@ -1,6 +1,6 @@
 ---
 name: classifier-denied-self-config
-description: "auto-mode denials on agent self-configuration: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push; INCIDENTAL writes only, not user-named ones; a bare `rm` is denied where `git rm` passes"
+description: "auto-mode denials on agent self-configuration: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push (*external repo outside the trusted source control org*; `/add-dir` or an allow rule); INCIDENTAL writes only, not user-named ones; a bare `rm` is denied where `git rm` passes"
 metadata: 
   node_type: memory
   type: feedback
@@ -35,15 +35,20 @@ else. The classifier weighs whether an action is what the user asked for, so a
 user-named action — a submodule push behind an explicit `/gitlore:push` — is a
 different case: unobserved, not known-denied.
 
-**Resolution confirmed for the cross-repo case:** a release script (gitlore's
-own `plugin-dev/release.just`) needed to bump a sibling repo's file
-(`../claude-plugins/.claude-plugin/marketplace.json`) and got denied under
-`dangerouslyDisableSandbox`. My human partner ran `/add-dir` on that sibling
-repo; the identical write, commit, and push then succeeded with no
-`dangerouslyDisableSandbox` at all. `/add-dir` durably grants the directory
-project-scope status, which satisfies both the sandbox's write-allowlist and
-the classifier's "another repository" objection — a stronger, session-lasting
-fix than a one-off flag.
+**The cross-repo push, in full.** Pushing to a sibling repo — gitlore's
+`plugin-dev/release.just` bumping and pushing
+`../claude-plugins/.claude-plugin/marketplace.json` — is denied with the verdict
+*external repo outside the trusted source control org*, while pushes to the
+session cwd's own repo go through, and `dangerouslyDisableSandbox` does not
+change it. Removing the `Bash(git push:*)` **ask** directives from user config
+does not help either: ask rules only control prompting, and their absence is
+not authorization. Two things fix it. An explicit **allow** rule
+(`"permissions":{"allow":["Bash(git push:*)"]}`), or — cleaner — `/add-dir
+<sibling-repo>` run by my human partner, which durably grants the directory
+project-scope status and satisfies both the sandbox's write allowlist and the
+classifier's "another repository" objection: after it the identical `git -C
+~/code/claude-plugins push origin main` succeeded with no flag at all
+(confirmed 2026-05-23 and again on the release-script case).
 
 **Why:** the location is the problem, not the tool. So the escape is never a
 different tool — it is a different *writer*, and there are two:
