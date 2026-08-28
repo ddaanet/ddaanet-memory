@@ -1,6 +1,6 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally instead of vendoring, for the PyPI step"
+description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; `just --list` after a subtree pull; unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally, not vendored, for the PyPI step"
 metadata: 
   node_type: memory
   type: project
@@ -62,6 +62,18 @@ bump into the same atomic release.
   environment under `plugin-dev/` (e.g. a `plugin-dev/memory` gitlink
   breaking a bare `git submodule status`); the first `dist-` pull deletes
   all of it in the same commit, no manual cleanup needed.
+  **Run `just --list` before considering the pull done** — a toolkit
+  version that requires a consumer-side change (the `prerelease` recipe was
+  one) makes `just` refuse to compile *any* recipe, so the breakage is
+  invisible until the next unrelated recipe run. Land the consumer-side fix
+  as its own commit, separate from the subtree-pull merge commit: the merge
+  commit is toolkit content, the fix is the consumer repo's own.
+  Crossing more than a patch version, read the toolkit's `docs/changelog.md`
+  first — its pointer lines carry the version and say outright when a release
+  is breaking. Read it from the source checkout at `~/code/claude-plugin-dev`
+  (`git -C ~/code/claude-plugin-dev show <tag>:docs/changelog.md` for a
+  specific tag), not from `plugin-dev/`: the `dist-` tree ships no `docs/`,
+  and the vendored copy stays a version behind until the pull lands.
 - Default branch is auto-detected from `origin/HEAD` — recipes don't
   hardcode `main`.
 - **Run `just release` with the command sandbox disabled.** The
