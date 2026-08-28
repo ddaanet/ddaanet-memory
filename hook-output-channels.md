@@ -1,6 +1,6 @@
 ---
 name: hook-output-channels
-description: "`systemMessage` vs `additionalContext` vs stderr (`additionalContext` is honoured at PreToolUse too), that `systemMessage` renders ANSI, what a hook ERROR does, that exit 2 or JSON `deny` blocks the call not the turn (PreToolUse only), that `ask` prompts the human in every mode — never the classifier, which passes out-of-repo `Edit`s"
+description: "`systemMessage` vs `additionalContext` vs stderr (`additionalContext` is honoured at PreToolUse too), that `systemMessage` renders ANSI, what a hook ERROR does, that exit 2 or JSON `deny` blocks the call not the turn (PreToolUse only), that `ask` prompts the human in every mode — never the classifier, which passes out-of-repo `Edit`s; `allow`+`updatedInput` bypasses the classifier over the rewritten command"
 metadata: 
   node_type: memory
   type: reference
@@ -54,7 +54,31 @@ gets the reason and continues. `ask` forces a human prompt in every permission
 mode, auto included: a hook cannot hand a decision to the auto-mode classifier,
 so an `ask` that prompts too often is fixed by narrowing the hook's trigger,
 never by expecting the classifier to absorb it. `allow` skips the prompt but
-not `permissions.deny`/`ask` rules. The classifier itself scores safety, not
+not `permissions.deny`/`ask` rules.
+
+**`allow` + `updatedInput` is a permission bypass, not a rewrite (bundle read
+of CC 2.1.233, checked against 2.1.246–247).** The two are separable and the
+difference is the whole gate. `updatedInput` *alone* → the caller replaces the
+working input and runs the **full** pipeline over the rewritten command: deny
+and ask rules, the read-only auto-allow, then the auto-mode classifier.
+`updatedInput` **with** `permissionDecision: "allow"` → the caller treats the
+call as settled by the hook; the only re-check is a narrow one for a matching
+deny rule, a matching ask rule, or two fixed ask reasons, a `passthrough` from
+rule matching yields `null`, and the classifier is never consulted. So a hook
+that inspects a *prefix* and rewrites — the shape of every `cd`-restore or
+unsandbox helper — pre-approves an **arbitrary tail** it never looked at.
+Emit `updatedInput` on its own and let the pipeline decide; there is no turn
+cost, since the rewrite still saves the block-and-reissue turn and a read-only
+tail is auto-allowed locally anyway. Not probe-observable from inside a
+session: deny and ask rules are re-checked under `allow` too, so neither
+discriminates, classifier verdicts are not persisted, and a Bash
+`toolUseResult` carries no permission decision — the bypass leaves no trace in
+the transcript. The durable check is a unit assertion that the key is
+**absent**; an assertion written against the working output will instead
+*require* the bypass. Two plugins shipped this: `unsandbox-git-status`
+(retired 2026-08-26, confirmed live with `true && git status --porcelain`
+running unchecked) and `cwd-safety` (FR5a/FR5c restore rewrite, fixed
+2026-08-28). See [[sandbox-effects]]. The classifier itself scores safety, not
 convention — it passes an unprompted `Edit` of a pre-existing file in a sibling
 repo even against a CLAUDE.md rule or a custom `autoMode.soft_deny` — so a
 convention-level gate on `Write`/`Edit` needs a hook; only Bash-path writes are
