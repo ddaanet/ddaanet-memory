@@ -1,6 +1,6 @@
 ---
 name: skill-description-purpose-first
-description: "a skill or command `description:` is TUI-visible *and* injected every session: purpose, then \"Use when\", then exclusions; a plugin command costs context exactly like a skill (both under `/context`'s Skills), so length is the lever, not command-vs-skill"
+description: "a `description:` is TUI-visible *and* injected every session: purpose, then \"Use when\", then exclusions; a plugin command costs context exactly like a skill (both under `/context`'s Skills), so length is the lever, not command-vs-skill; `allowed-tools` GRANTS and never restricts — `Skill(plugin:name)`, `Agent(Name)`"
 metadata: 
   node_type: memory
   type: feedback
@@ -45,3 +45,14 @@ Model guidance does not belong in a skill body either. Which model runs the
 work is an agent-frontmatter concern, so a skill that says "run this on Sonnet"
 is stating something it cannot enforce — put it on the agent definition
 instead.
+
+**`allowed-tools` grants, it does not restrict.** A command's or skill's
+`allowed-tools` pre-approves the listed tools for the turn that invokes it.
+Every other tool stays callable and falls back to the session's normal
+permission rules, so leaving one out costs a permission prompt, never a block —
+plugin-dev's own `command-development` skill calls it "which tools command can
+use", which reads as a whitelist and is wrong. The entries are permission
+patterns rather than tool names: `Skill(<plugin>:<name>)` pre-approves one
+skill and a bare `Skill` any of them, `Agent(<AgentName>)` a subagent dispatch.
+`Agent` is the dispatch tool; the `Task*` tools are the unrelated
+background-task feature. Verified against the CC 2.1.250 docs.
