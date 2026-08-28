@@ -323,12 +323,12 @@ discriminator: `/tmp/claude-1000` sandboxed, `UNSET` not):
 `PreToolUse` Bash hook that detected `git status` and flipped
 `dangerouslyDisableSandbox` in place — is retired, removed from the `ddaanet`
 marketplace and its repo archived. It paired `updatedInput` with
-`permissionDecision: "allow"`, which pre-approves the *whole* call with the
-classifier never consulted, for anything chained alongside the `git status`
-(confirmed live: `true && git status --porcelain` ran). A hook that must rewrite
-returns `updatedInput` alone, which re-runs the full pipeline over the rewritten
-input. The exclusion covers every git shape rather than a best-effort
-`git status` subset, is honoured in strict mode, and does not settle the gate.
+`permissionDecision: "allow"`, pre-approving anything chained alongside the
+`git status` (confirmed live: `true && git status --porcelain` ran); the
+mechanism, and the rule that a hook which must rewrite returns `updatedInput`
+alone, are [[hook-output-channels]]. The exclusion covers every git shape
+rather than a best-effort `git status` subset, is honoured in strict mode, and
+does not settle the gate.
 The one shape the hook caught and the exclusion misses is a git command nested
 in `( … )`, `$( … )` or `sh -c`; `cwd-safety` used to manufacture that shape by
 wrapping `cd <dir> && …` in a subshell and instead appends `cd <root>` as a
