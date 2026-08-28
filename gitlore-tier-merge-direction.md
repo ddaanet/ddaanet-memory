@@ -41,4 +41,4 @@ makes it look decided.
 
 Related: [[examine-evidence-drift]] (get the drift direction from git
 history — the longer text is not automatically the newer one),
-[[index-compaction-triggers]] (what a corrective pass must restore).
+`/gitlore:index-audit` (what a corrective pass must restore).

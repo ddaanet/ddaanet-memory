@@ -24,12 +24,12 @@ Two things make the overflow worse than a size warning:
   shared tier's lines, which changes what *every* repo mounting that tier
   loads. That is a decision for the tier's owner, not for whichever repo
   happens to notice, and index compaction is exactly where triggers get lost
-  ([[index-compaction-triggers]]).
+  (`/gitlore:index-audit` is the pass that audits for it).
 
 **How to apply:** measure before mounting —
 `grep '^- \[' MEMORY.md | wc -c` in the tier's own store against the budget
 already spent in the target repo. If the sum clears 24.4KB, the mount is
 still correct but it lands with a known-truncating index; say so at the time
 rather than letting a later session discover its project facts silently
-missing. Related: [[gitlore-tier-merge-direction]],
-[[memory-writing]].
+missing. Related: [[gitlore-tier-merge-direction]]; the tier test itself is in
+gitlore's `memory-writing` skill.
