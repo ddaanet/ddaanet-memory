@@ -85,4 +85,5 @@ fixture per [[green-is-not-evidence]]. When a rule is an ordering between the
 *caller's own steps*, it belongs where the steps are described: a prohibition
 must be front-loaded, a procedure defers to its trigger. The split of judgement
 from mechanism is the harness/agent boundary; stating a rule positively in the
-step where it acts rather than as a prohibition is [[no-speculative-rules]].
+step where it acts rather than as a prohibition is stated in gitlore's
+`memory-writing` skill.
