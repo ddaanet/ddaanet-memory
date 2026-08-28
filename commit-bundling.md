@@ -1,6 +1,6 @@
 ---
 name: commit-bundling
-description: "what rides which commit, and what never gets carved out of one silently: related working-tree changes stay in; a documenting memory note goes with the change it documents, never with unrelated pending work; bare bookkeeping (a pointer bump, settings.json) folds into whatever is convenient, incl. an amend"
+description: "which commit a change rides, and what never gets carved out of one silently: related working-tree changes stay in; a documenting note goes with the change it documents, never with unrelated pending work; bare bookkeeping (a pointer bump, settings.json) folds into whatever is convenient, incl. an amend"
 metadata: 
   node_type: memory
   type: feedback

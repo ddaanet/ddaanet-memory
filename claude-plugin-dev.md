@@ -1,6 +1,6 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; `just --list` after a subtree pull; unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally, not vendored, for the PyPI step"
+description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; `just --list` after a subtree pull; unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally instead of vendoring, for the PyPI step"
 metadata: 
   node_type: memory
   type: project
