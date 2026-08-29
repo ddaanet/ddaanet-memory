@@ -1,11 +1,11 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; `just --list` after a subtree pull; unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally instead of vendoring, for the PyPI step"
+description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; `just --list` after a subtree pull; `error: uncommitted changes` = a staged handoff frame, not real work; unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally instead of vendoring, for the PyPI step"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-  modified: 2026-08-28T13:27:48.163Z
+  modified: 2026-08-28T20:36:14.232Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev) is the
 canonical release infrastructure for my human partner's Claude Code plugins
@@ -76,6 +76,16 @@ bump into the same atomic release.
   and the vendored copy stays a version behind until the pull lands.
 - Default branch is auto-detected from `origin/HEAD` — recipes don't
   hardcode `main`.
+- **`error: uncommitted changes` names a staged frame more often than real
+  work.** `release.sh` gates on
+  `git diff --quiet HEAD -- . ':(exclude)memory'`, so the resting `M memory`
+  gitlink passes but anything else staged does not — and the `handoff` and
+  `precompact` skills stage `.claude/handoff-task.md` and
+  `.claude/handoff-todo.md` for "whatever commit lands next", which a release
+  is not: it runs this check before making its own commit. Land the frame in a
+  commit of its own before starting a release, or hold the handoff until after
+  it. The same check runs against `MARKETPLACE_DIR`, where an unrelated dirty
+  file fails the release at its last step.
 - **Run `just release` with the command sandbox disabled.** The
   marketplace bump is the recipe's last step and its only write outside
   the repo, so under the sandbox it dies there on `mv: inter-device move
