@@ -160,9 +160,10 @@ rules that change what the agent does by default.
   behaviour the implementation will change. "They share a commit" is a packaging
   detail; the review boundary is a correctness check.
 - **This box will not take parallel heavy work.** ~2GB RAM and OOM is what kills it —
-  never load average — and `/tmp` is a 987M tmpfs where `uv` copies rather than
-  hardlinks. Judge parallelism by resident memory against ~500MB of headroom. Run SDD
-  sequentially in the main tree.
+  never load average — and `/tmp` is a 2G tmpfs where `uv` copies rather than
+  hardlinks, much of it pinned by other live sessions' sandboxes. Judge parallelism
+  by resident memory against ~500MB of headroom. Run SDD sequentially in the main
+  tree.
 - **Route a plugin action by what a denial would cost, not by whether one is
   possible.** Intent file plus hook when a denial would strand something unrepeatable
   — a user approval, an ordering guarantee. Direct agent call when it costs one turn.
