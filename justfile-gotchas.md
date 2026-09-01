@@ -1,11 +1,11 @@
 ---
 name: justfile-gotchas
-description: "writing a just recipe - body lines share one indent (column-0 breaks it), `{{ }}` is parsed inside `#` comments too, and shell quotes round `{{arg}}` protect nothing since the recipe's own shell evaluates the caller's `$(…)`; use `quote()`"
+description: "writing a just recipe: body lines share one indent (column-0 breaks it), `{{ }}` is parsed inside a recipe body's `#` comments too (`Unknown start of token`, or SILENT substitution when the name is in scope; file-level comments are inert), and shell quotes round `{{arg}}` protect nothing since the recipe's own shell evaluates the caller's `$(…)`; use `quote()`"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: a14e1c39-21ac-4c1a-b7d6-544b48807ded
-  modified: 2026-08-27T17:54:13.938Z
+  modified: 2026-09-01T15:20:41.313Z
 ---
 
 Three things about just that bite while writing a recipe, none of which a
@@ -34,8 +34,16 @@ block uniformly or move it to a standalone script the recipe calls.
 
 **`{{ ... }}` is parsed inside a recipe's `#` comment lines too**, so a
 comment written to *describe* interpolation syntax is itself a parse error
-(`Unknown start of token`, pointing at the comment). Describe it in prose,
-without the braces.
+(`Unknown start of token`, pointing at the comment). What the braces hold
+decides how loudly it fails (just 1.46): literal `{{ ... }}` gives that token
+error, an undefined name gives ``error: Variable `x` not defined``, and a name
+already in scope — a parameter of the very recipe the comment sits in — is
+substituted **silently**. So a comment explaining why an argument needs
+`quote()` acquires the caller's argument and says something the author never
+wrote, while the recipe parses and runs. Only a recipe *body*'s comments are
+scanned: a file-level comment above the recipe is inert, literal braces
+included. Describe interpolation in prose, without the braces, wherever the
+comment sits.
 
 **Why:** the last two both surface as a token error on a line that looks
 inert, which invites blaming the embedded language. Concluding that
