@@ -1,6 +1,6 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` silently drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed outright; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
+description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` silently drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed outright, /tmp \"No space left\"/\"Out of diskspace\" with du≪df = other sandboxes pin the tmpfs (clear /tmp/claude-1000 caches); escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
 metadata: 
   node_type: memory
   type: reference
@@ -34,6 +34,7 @@ without the entries.
 | `There is no active session!` from zellij | zellij |
 | a `SessionStart` side effect never happened after `claude -p` | `claude -p` |
 | `apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument` | Sandbox setup fails |
+| `No space left on device` / `Out of diskspace` under `/tmp`, `du` far below `df` | `/tmp` reads full |
 
 ## `.git/index.lock`: one error string, three causes
 
@@ -464,3 +465,22 @@ single-purpose calls.
 **How to apply:** retry the identical command once, unchanged. If it fails the
 same way immediately, split it. Escape the sandbox only after both, rather than
 giving it up on first sight.
+
+## `/tmp` reads full while `du` finds little
+
+A write under `/tmp` (where `$TMPDIR` lives) fails with `No space left on
+device` — git spells it `Out of diskspace` — while `df` shows the tmpfs at
+100% and `du` over every visible file, root included, accounts for a fraction
+of it, with `lsof +L1` finding no deleted-but-open files. Observed on the
+ddaanet box 2026-09-01: 2.0G tmpfs, 100% used, ~374M visible. The unreachable
+remainder sits with other live Claude sessions: each sandbox holds bind-mounts
+of subtrees of the same tmpfs superblock in its own mount namespace, so pages
+referenced only there are invisible to any `du` run in this one, and they free
+only when those sessions exit.
+
+**How to apply:** reclaim the visible part and skip the forensics —
+`/tmp/claude-1000` accumulates `uv-cache`, `npm-cache`, `dprint-cache` and
+hundreds of leaked `gitlore-test.*`/`bats-run-*` scratch dirs from killed
+suites (a killed bats run skips teardown); clearing those is safe, and is the
+recoverable share whatever holds the rest. Chasing the gap with
+`lsof`/`findmnt` costs calls and changes nothing.
