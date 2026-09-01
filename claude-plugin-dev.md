@@ -1,11 +1,11 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; `just --list` after a subtree pull; `error: uncommitted changes` = a staged handoff frame, not real work; unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally instead of vendoring, for the PyPI step"
+description: "shared release infra; vendor the `dist-vX.Y.Z` tag, never source; `just --list` after a subtree pull; `error: uncommitted changes` = real work (gate exempts only `.claude` + the memory mount); unsandboxed `just release`, `resume-release` finishes a half-done one; `edify` ports it locally instead of vendoring, for the PyPI step"
 metadata: 
   node_type: memory
   type: project
   originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-  modified: 2026-08-28T20:36:14.232Z
+  modified: 2026-09-01T18:16:52.594Z
 ---
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev) is the
 canonical release infrastructure for my human partner's Claude Code plugins
@@ -76,16 +76,19 @@ bump into the same atomic release.
   and the vendored copy stays a version behind until the pull lands.
 - Default branch is auto-detected from `origin/HEAD` — recipes don't
   hardcode `main`.
-- **`error: uncommitted changes` names a staged frame more often than real
-  work.** `release.sh` gates on
-  `git diff --quiet HEAD -- . ':(exclude)memory'`, so the resting `M memory`
-  gitlink passes but anything else staged does not — and the `handoff` and
-  `precompact` skills stage `.claude/handoff-task.md` and
-  `.claude/handoff-todo.md` for "whatever commit lands next", which a release
-  is not: it runs this check before making its own commit. Land the frame in a
-  commit of its own before starting a release, or hold the handoff until after
-  it. The same check runs against `MARKETPLACE_DIR`, where an unrelated dirty
-  file fails the release at its last step.
+- **`error: uncommitted changes` names real work, with two exemptions.**
+  `release.sh`'s `tree_is_clean` gates on `git diff --quiet HEAD` with two
+  pathspec exclusions: `.claude` (agent working state — the `handoff` and
+  `precompact` frames staged for "whatever commit lands next", `settings.json`,
+  `gitlore-memory-message`) and the gitlore memory mount path, read from
+  `.gitmodules` by the submodule name `gitlore-memory`. `.claude-plugin` is NOT
+  excluded — git pathspecs match at the path separator — so a dirty manifest
+  still refuses. Anything staged under `.claude` rides the release commit.
+  The same check runs against `MARKETPLACE_DIR`, where an unrelated dirty file
+  fails the release at its last step. A consumer whose vendored `plugin-dev/`
+  predates the `.claude` exclusion still refuses on a staged frame; read its
+  `tree_is_clean` before blaming the tree. This repo's own self-release recipe
+  in `justfile` carries the same two exclusions as literals.
 - **Run `just release` with the command sandbox disabled.** The
   marketplace bump is the recipe's last step and its only write outside
   the repo, so under the sandbox it dies there on `mv: inter-device move
