@@ -1,6 +1,6 @@
 ---
 name: directive-states-acts
-description: "writing an agent-facing or script-emitted directive, or a code comment: what to cut from it, and what \"remove narration\" cuts"
+description: "writing an agent-facing or script-emitted directive, or a code comment: what to cut from it, and what \"remove narration\" cuts; distributed skill/agent text never names a memory file — inline the criteria (recall artifacts and dispatch prompts are the memory-by-path channel)"
 metadata: 
   node_type: memory
   type: feedback
@@ -43,6 +43,14 @@ not in a foreign project's context. Ask who else could supply the identifier.
 Nobody → say nothing. Only when the reader demonstrably already has it (it
 appeared earlier in the same context) is a prohibition worth its cost, and then
 forbid by role rather than by name.
+
+**Distributed text never cites memory files.** A skill body or agent
+definition ships to consumers who do not have this store; a memory file
+named there dangles for every one of them. Inline the needed criteria
+into the agent's own text or reference material at write time.
+Plan-scoped artifacts (`plans/<job>/recall-artifact.md`, dispatch
+prompts naming memory paths) are the channel for memory-by-path — they
+live with the plan, not the plugin.
 
 **Code comments take the same cut, against a different bar: what a maintainer
 needs in order to change the code safely.** Where a repo keeps its design
