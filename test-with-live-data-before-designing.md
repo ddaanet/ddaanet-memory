@@ -39,4 +39,4 @@ Hold back anything that writes a non-regenerable ledger until the read
 half is proven. Measure distributions, not just "it ran" — the p50/p90/
 max of every quantity a downstream constant is supposed to bound.
 
-Related: [[green-is-not-evidence]], [[ground-formulas-in-data]].
+Related: [[green-is-not-evidence]].

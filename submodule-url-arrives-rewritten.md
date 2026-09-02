@@ -38,5 +38,4 @@ planted in a config another tool owns, run the tool and read back what it
 stored. A check against the spelling you wrote passes review, never
 matches, and silently inverts the branch it guards — gitlore's
 `create-remote.sh` read a synced placeholder as a real remote already
-wired and refused to create one. See [[no-code-for-impossible-cases]] and
-[[submodule-escape-to-parent]].
+wired and refused to create one. See [[submodule-escape-to-parent]].
