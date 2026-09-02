@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-08-26T19:29:42.418Z
+  modified: 2026-09-02T13:02:50.181Z
 ---
 
 # ddaanet tier index
@@ -21,6 +21,8 @@ the project's own memory store.
 - [git refuses ext:: by default](git-ext-transport.md) — `fatal: transport 'ext' not allowed`; `protocol.ext.allow` defaults `never`, so an `ext::sh -c` injection finding isn't exploitable on default git — probe the policy first
 - [protocol.file.allow blocks submodule clones](git-protocol-file-allow.md) — `fatal: transport 'file' not allowed`; the child *clone* reads it, so repo config can't fix it — `git -c`
 - [design-doc writing](design-doc-writing.md) — the six sections (FR, NFR, architecture, decisions, rejected alternatives, changelog) + the state layer (status stamp, Now, legend, `Where · pinned by`, limitations vs non-goals); dated rationale vs present-tense truth; prose over tables; changelog = design-significant only, git is the full record; splitting an oversized doc — measure first, dominant-entry vs flat/need-time cut, hub+pointer stubs, and the node-loading instructions the hub and CLAUDE.md must carry
+- [rewiring a design doc past a dead component](design-doc-rewire-dead-components.md) — a doc, spec or decision cites a script, command or subsystem that no longer exists: substitute the successor, generalize where only the principle survived, keep the dead name where the decision is *about* it, or state inline that nothing replaced it — never a stale pointer, never a dropped decision
+- [design docs carry no situational state](design-doc-no-situational-state.md) — a byte count, "currently over the limit", a queue depth: delete the figure, keep the mechanism and the pass that acts on it; retire an entry that only reports one, and leave the FR/D/L id gap rather than renumbering
 - [spec enumerations need re-deriving](spec-enumerations-need-rederiving.md) — a spec that hand-lists the call sites a change must touch: grep the pattern before reading the list, since conformance passes clean while the enumeration is short
 - [examine evidence for drift and lineage](examine-evidence-drift.md) — two co-maintained artifacts diverge, or one is cited as evidence about the other (a sibling, a prior version): establish the relationship from git history, never assumption
 - [loose generation + post-hoc fix](loose-generation.md) — where to constrain a generator: the scaffold or the artifact boundary
