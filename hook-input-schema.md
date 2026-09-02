@@ -75,7 +75,7 @@ calls still run and their results land in the transcript, then the turn ends wit
 no further API call and no final assistant text (`--debug hooks` names it
 `requested preventContinuation`). `decision: "block"` halts too, by a different
 internal path. Together these are the only levers a mid-turn hook has: inject,
-message, or halt — see [[hook-cannot-inject-tool-calls]].
+message, or halt — see [[hook-output-channels]].
 
 **`CwdChanged` is observational only** — its `hookSpecificOutput` schema declares
 nothing but `watchPaths`, and its dispatcher reads back only `watchPaths[]` +
