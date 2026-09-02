@@ -33,5 +33,5 @@ recipe's actual shape from someone reading the recipe.
 and inline the singletons. When a recipe grows a helper, ask whether a
 second recipe will call it before promoting it out of the body.
 
-Refines the justfile shape in [[edify-python-standards]]; the verdict
+Refines the shared justfile shape; the verdict
 that recipe prints is the list of checks that passed.

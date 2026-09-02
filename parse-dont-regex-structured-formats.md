@@ -28,5 +28,5 @@ issue references out of markdown body text): there is no grammar to
 parse, so a regex — validated against real data — is the right tool.
 Structural splitting of an unambiguous delimiter (the `---`
 frontmatter fence) by explicit line handling is fine too; it is the
-*format's content* that must go through the parser. See
-[[ground-formulas-in-data]] for the validate-against-real-data half.
+*format's content* that must go through the parser. Validate the regex
+against real data before shipping it.
