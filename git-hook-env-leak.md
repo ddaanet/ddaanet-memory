@@ -1,6 +1,6 @@
 ---
 name: git-hook-env-leak
-description: "`index file open failed: Not a directory` in a hook = leaked repo-local `GIT_*`; `unset $(git rev-parse --local-env-vars)`, but save/restore `GIT_INDEX_FILE` for a staging `git add` or it dies on `Unable to create '.git/index.lock': File exists`"
+description: "a hook that stages: save/restore `GIT_INDEX_FILE` across `unset $(git rev-parse --local-env-vars)` or the `git add` dies on `Unable to create '.git/index.lock': File exists`; `index file open failed: Not a directory` is the leak itself; a standalone hook run exercises neither"
 metadata: 
   node_type: memory
   type: reference
@@ -8,20 +8,42 @@ metadata:
   modified: 2026-07-21T07:48:50.678Z
 ---
 
-When `git commit` (or any porcelain command) invokes a hook, it exports `GIT_DIR=.git`, `GIT_INDEX_FILE=.git/index`, `GIT_WORK_TREE=.` (relative to the parent repo). Any `git -C <submodule> <cmd>` inside the hook inherits those env vars; the relative paths resolve under the *submodule's* CWD where `.git` is a gitfile, not a directory. Symptom: `fatal: .git/index: index file open failed: Not a directory`.
+`fatal: .git/index: index file open failed: Not a directory` raised inside a git
+hook is leaked repo-local `GIT_*` reaching a `git -C <submodule>` call: the
+inherited relative `GIT_INDEX_FILE` resolves under the submodule's cwd, where
+`.git` is a gitfile. A sandbox can raise the same string for an unrelated
+reason, so confirm the environment is actually leaking before treating it as
+this bug.
 
-Confirmed Plan 04 Step 3 (2026-05-22) in `scripts/git-hooks/pre-commit` / `pre-push`. Reproduces deterministically by exporting the three vars before running the hook standalone.
+A hook that clears that environment and **stages something itself** has to keep
+one variable across the unset. `GIT_INDEX_FILE` names the index the in-flight
+commit will actually read, so a `git add` run without it either targets the
+wrong index or — under the two lock-file modes — dies on
+`fatal: Unable to create '.git/index.lock': File exists`, which under errexit
+blocks the commit.
 
-**Fix (corrected 2026-06-12):** at the top of any submodule-aware git hook, clear the *complete* set, not a hand-picked subset: `unset $(git rev-parse --local-env-vars)` (needs `# shellcheck disable=SC2046` for the intended word-split). The old 4-var `unset GIT_DIR GIT_INDEX_FILE GIT_WORK_TREE GIT_PREFIX` left `GIT_COMMON_DIR`/`GIT_OBJECT_DIRECTORY`/`GIT_CONFIG_PARAMETERS` behind. Those aren't exported in a plain main-worktree commit (so 4-var tests passed), but in a **linked parent worktree** git exports absolute `GIT_DIR` *and* `GIT_COMMON_DIR`; clearing only `GIT_DIR` lets `GIT_COMMON_DIR` silently redirect the submodule's refs/objects to the parent's common dir. gitlore supports linked parent worktrees, so this was a real corruption path. Applied to `scripts/git-hooks/pre-commit`, `pre-push`, and `scripts/commit-memory.sh`. Standalone runs (no git parent) won't have these set; production runs will. Note: `--local-env-vars` does NOT include `GIT_AUTHOR_*`, so an in-hook submodule commit inherits the parent commit's author/date — intended lockstep here, but a footgun for hooks committing into unrelated repos. Regression test pattern: export the leaked vars (both the index-breaking trio AND a bogus `GIT_COMMON_DIR`/`GIT_OBJECT_DIRECTORY`) and assert the hook exits 0, the index-error string is absent, and no refs landed in the bogus common dir.
+Capture it before the blanket unset and restore it for that one call:
 
-**`GIT_INDEX_FILE` is the one leaked var a pre-commit hook may need to KEEP** (verified git 2.47.3, 2026-07-21). Git hands the hook a different index depending on how the commit was invoked:
+```sh
+saved=$GIT_INDEX_FILE
+unset $(git rev-parse --local-env-vars)   # intended word-split, needs disable=SC2046
+…
+GIT_INDEX_FILE="$saved" git add -- <path>
+```
 
-| invocation | `GIT_INDEX_FILE` |
-|---|---|
-| `git commit` | `.git/index` |
-| `git commit -a` | `.git/index.lock` |
-| `git commit -- <paths>` / `-p` | `.git/next-index-<pid>.lock` |
+Verified git 2.47.3: with it restored, all three commit modes record the staged
+change. Caveat for the pathspec mode — the add lands in the temporary index, so
+it *is* in the commit but not in the real index, and the path still shows as
+modified afterwards. That is the documented partial-commit artifact rather than
+a fault in the hook.
 
-A hook that stages something (`git add`) must target *that* index or the commit will not see it. After a blanket `unset $(git rev-parse --local-env-vars)`, a bare `git add` does not merely miss under the two lock flavors — it **fails hard** with `fatal: Unable to create '.git/index.lock': File exists` (git already holds the lock), and under `set -e` that **blocks the commit**. So capture `GIT_INDEX_FILE` *before* the unset and restore it for that one call: `GIT_INDEX_FILE="$saved" git add -- <path>`. With it restored, all three modes record the staged change correctly. Caveat for the pathspec mode: the add lands in the temp index (so it *is* in the commit) but not in the real index, so the path still shows modified afterwards — the documented partial-commit artifact.
+**Testing this needs a real commit.** Running `bash hooks/pre-commit` from a
+shell sets none of the leaked variables and never exercises the index handoff at
+all, so a staging bug is invisible to it and the suite stays green while
+production fails. Two tests are needed: one that exports the leaked environment
+— the index-breaking trio *and* a bogus `GIT_COMMON_DIR` and
+`GIT_OBJECT_DIRECTORY` — asserting the hook exits 0, the `index file open
+failed` string is absent, and no refs landed in the bogus common dir; and one
+that drives a real `git commit` in each of the three modes.
 
-**Why standalone tests miss this:** running `bash hooks/pre-commit` directly from the shell doesn't set the leaked vars — and never exercises the index handoff at all, so a staging bug is invisible to it. Tests that only exercise the hook this way will pass while production fails silently. Always include one test that simulates the leaked env, and one that drives a **real `git commit`** in each of the three modes ([[test-the-invocation-path]]).
+Related: [[test-the-invocation-path]].
