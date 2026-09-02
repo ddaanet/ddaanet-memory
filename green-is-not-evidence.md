@@ -221,8 +221,3 @@ red phase dispatched separately from the green one, or nobody ever saw the test
 fail. It pairs with [[spec-enumerations-need-rederiving]]: the brief that
 dispatched the work misdescribes the code in the same way — a hand-listed
 enumeration that conformance passes clean against.
-
-Related: [[bats-shellcheck-gotchas]] — the specific bats mechanisms
-(`run missing_function` exits 127 before the code exists; `run` is a subshell
-so out-params never reach the test) that make these failure modes concrete in
-that framework.
