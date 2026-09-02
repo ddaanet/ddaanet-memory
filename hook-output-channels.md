@@ -1,6 +1,6 @@
 ---
 name: hook-output-channels
-description: "`systemMessage` vs `additionalContext` vs stderr (`additionalContext` is honoured at PreToolUse too), that `systemMessage` renders ANSI, what a hook ERROR does, that exit 2 or JSON `deny` blocks the call not the turn (PreToolUse only), that `ask` prompts the human in every mode — never the classifier, which passes out-of-repo `Edit`s; `allow`+`updatedInput` bypasses the classifier over the rewritten command"
+description: "no `injectToolCall`/`forceRead`/`requestTool`/`forceToolUse` field exists — only block, `updatedInput`, `updatedToolOutput`, `additionalContext`; `systemMessage` vs `additionalContext` vs stderr (`additionalContext` is honoured at PreToolUse too, spilled to a file past ~2KB, and injected text still leaves `Edit` needing a `Read`), `systemMessage` renders ANSI, what a hook ERROR does, exit 2 or JSON `deny` blocks the call not the turn (PreToolUse only), `ask` prompts the human in every mode — never the classifier, which passes out-of-repo `Edit`s; `updatedInput` alone reruns the full pipeline, `allow`+`updatedInput` bypasses the classifier over the rewritten command; `updatedToolOutput` must match the tool's output shape"
 metadata: 
   node_type: memory
   type: reference
@@ -8,7 +8,48 @@ metadata:
   modified: 2026-08-27T11:47:42.000Z
 ---
 
-## Channel mechanics (verified 2026-06-10; PreToolUse additions 2026-07-17)
+What a Claude Code hook's stdout JSON can do, which channel reaches which
+audience, and how a `PreToolUse` decision interacts with the permission
+pipeline. Sections, by what a reader arrives holding:
+
+- **Wanting a hook to force a `Read` or enqueue a tool call** → §1.
+- **`systemMessage` / `additionalContext` / stderr / exit code** → §2.
+- **`permissionDecision`, `updatedInput`, the auto-mode classifier** → §3.
+- **`updatedToolOutput`, or correcting what an `Edit` reported** → §4.
+- **Emitting file bodies the agent must then edit** → §5.
+- **Choosing a channel, and why a blind agent re-verifies** → §6.
+- **Wording a user-facing line, or an agent-facing deny** → §7.
+
+## 1 · The control surface: no hook injects a tool call
+
+No hook can inject a `tool_use`, force a `Read`, or enqueue a tool call. Only
+the agentic loop generates tool calls. Hooks can block
+(`PreToolUse.permissionDecision`, `Stop`/`PostToolBatch` `decision: "block"`),
+rewrite input (`updatedInput`), rewrite a result (`updatedToolOutput`), and
+inject text (`additionalContext`) — nothing more.
+
+Verified 2026-07-22 against the shipped binary
+(`~/.local/share/claude/versions/2.1.217`), not only the docs: zero occurrences
+of `injectToolCall`, `requestTool`, `forceRead`, `injectTool`, `forceToolUse`,
+`requestedTools`, `injectedToolCalls`. The four `triggerRead` hits are Node
+stream internals (`stream._read = triggerRead`). Controls present in the same
+grep: `additionalContext` 180, `updatedInput` 249, `permissionDecision` 34,
+`PostToolBatch` 46, `InstructionsLoaded` 27, `systemMessage` 54.
+
+**How to apply:** when you want file contents in the model's context
+deterministically, don't try to make the agent Read them — have the hook read
+them and emit the bytes as `additionalContext`. That is strictly better than a
+forced Read: one round trip instead of two, no tool-permission surface, and the
+selection stays in a script rather than in agent judgement. `additionalContext`
+is honoured at `PreToolUse` as well as `PostToolUse` and arrives even when the
+tool call fails (§2), so a deny-reason and the injected bodies can land in the
+same turn. Two limits apply when the agent must *edit* what it is shown (§5).
+
+`InstructionsLoaded` fires when `CLAUDE.md` and `.claude/rules/*.md` load
+(matchers `session_start`, `nested_traversal`, `path_glob_match`, `include`,
+`compact`) but is side-effects-only: no decision control, exit code ignored.
+
+## 2 · Channel mechanics (verified 2026-06-10; PreToolUse additions 2026-07-17)
 
 - **`systemMessage`** (top-level field) — the user-visible channel. Works for the
   events gitlore uses (`SessionStart`, `PostToolUse`); gitlore's SessionStart
@@ -47,44 +88,6 @@ So "exit 0 on every path so we never block a Write" is over-broad reasoning that
 lands on the right answer: `exit 0` is right for *visibility*, not for
 non-blocking.
 
-**`PreToolUse` JSON `permissionDecision` (verified CC 2.1.246).** `deny` on
-stdout + `exit 0` blocks the call like `exit 2` does, and additionally carries
-`systemMessage`; either way it blocks *the one call, not the turn* — the agent
-gets the reason and continues. `ask` forces a human prompt in every permission
-mode, auto included: a hook cannot hand a decision to the auto-mode classifier,
-so an `ask` that prompts too often is fixed by narrowing the hook's trigger,
-never by expecting the classifier to absorb it. `allow` skips the prompt but
-not `permissions.deny`/`ask` rules.
-
-**`allow` + `updatedInput` is a permission bypass, not a rewrite (bundle read
-of CC 2.1.233, checked against 2.1.246–247).** The two are separable and the
-difference is the whole gate. `updatedInput` *alone* → the caller replaces the
-working input and runs the **full** pipeline over the rewritten command: deny
-and ask rules, the read-only auto-allow, then the auto-mode classifier.
-`updatedInput` **with** `permissionDecision: "allow"` → the caller treats the
-call as settled by the hook; the only re-check is a narrow one for a matching
-deny rule, a matching ask rule, or two fixed ask reasons, a `passthrough` from
-rule matching yields `null`, and the classifier is never consulted. So a hook
-that inspects a *prefix* and rewrites — the shape of every `cd`-restore or
-unsandbox helper — pre-approves an **arbitrary tail** it never looked at.
-Emit `updatedInput` on its own and let the pipeline decide; there is no turn
-cost, since the rewrite still saves the block-and-reissue turn and a read-only
-tail is auto-allowed locally anyway. Not probe-observable from inside a
-session: deny and ask rules are re-checked under `allow` too, so neither
-discriminates, classifier verdicts are not persisted, and a Bash
-`toolUseResult` carries no permission decision — the bypass leaves no trace in
-the transcript. The durable check is a unit assertion that the key is
-**absent**; an assertion written against the working output will instead
-*require* the bypass. Two plugins shipped this: `unsandbox-git-status`
-(retired 2026-08-26, confirmed live with `true && git status --porcelain`
-running unchecked) and `cwd-safety` (FR5a/FR5c restore rewrite, fixed
-2026-08-28). See [[sandbox-effects]]. The classifier itself scores safety, not
-convention — it passes an unprompted `Edit` of a pre-existing file in a sibling
-repo even against a CLAUDE.md rule or a custom `autoMode.soft_deny` — so a
-convention-level gate on `Write`/`Edit` needs a hook; only Bash-path writes are
-covered by the sandbox's write allowlist. Evidence: prohibitions
-`docs/design.md`, "Off-project note drops pass without asking".
-
 **Unresolved tension — re-verify before relying on it.** The 2026-06-10 finding
 says stderr reaches the user only on exit 2 / `--verbose`. The docs (fetched
 2026-07-15, `code.claude.com/docs/en/hooks-guide.md`) instead describe *any*
@@ -94,7 +97,96 @@ or "transcript" meaning the transcript view rather than the inline UI. The
 conclusion holds under both readings — `systemMessage` + `exit 0` — but the
 stderr claim itself is stale-suspect.
 
-## Which channel to reach for
+## 3 · `PreToolUse` decisions and the permission pipeline
+
+**`permissionDecision` (verified CC 2.1.246).** `deny` on stdout + `exit 0`
+blocks the call like `exit 2` does, and additionally carries `systemMessage`;
+either way it blocks *the one call, not the turn* — the agent gets the reason
+and continues. `ask` forces a human prompt in every permission mode, auto
+included: a hook cannot hand a decision to the auto-mode classifier, so an
+`ask` that prompts too often is fixed by narrowing the hook's trigger, never by
+expecting the classifier to absorb it. `allow` skips the prompt but not
+`permissions.deny`/`ask` rules. `defer` exists but is print-mode-only and
+solo-tool-only.
+
+**`updatedInput` alone defers; `permissionDecision` settles (bundle read of CC
+2.1.233, checked against 2.1.246–247).** `PreToolUse` hooks run before any
+permission evaluation. `updatedInput` *with no decision* → the caller replaces
+the working input and runs the **full** pipeline over the rewritten command:
+deny and ask rules, the read-only auto-allow, then the auto-mode classifier.
+`updatedInput` is schema-validated against the tool's `inputSchema`, and a
+validation failure converts to a deny. `updatedInput` **with**
+`permissionDecision: "allow"` → the caller treats the call as settled by the
+hook; the only re-check is a narrow one for a matching deny rule, a matching ask
+rule, or two fixed ask reasons, a `passthrough` from rule matching yields
+`null`, and the classifier is never consulted. The two are separable and the
+difference is the whole gate: **`allow` + `updatedInput` is a permission bypass,
+not a rewrite.** A hook that inspects a *prefix* and rewrites — the shape of
+every `cd`-restore or unsandbox helper — pre-approves an **arbitrary tail** it
+never looked at. Emit `updatedInput` on its own and let the pipeline decide;
+there is no turn cost, since the rewrite still saves the block-and-reissue turn
+and a read-only tail is auto-allowed locally anyway.
+
+Not probe-observable from inside a session: deny and ask rules are re-checked
+under `allow` too, so neither discriminates, classifier verdicts are not
+persisted, and a Bash `toolUseResult` carries no permission decision — the
+bypass leaves no trace in the transcript. The durable check is a unit assertion
+that the key is **absent**; an assertion written against the working output
+will instead *require* the bypass. Two plugins shipped this:
+`unsandbox-git-status` (retired 2026-08-26, confirmed live with
+`true && git status --porcelain` running unchecked) and `cwd-safety` (FR5a/FR5c
+restore rewrite, fixed 2026-08-28). See [[sandbox-effects]].
+
+**The classifier scores safety, not convention** — it passes an unprompted
+`Edit` of a pre-existing file in a sibling repo even against a CLAUDE.md rule
+or a custom `autoMode.soft_deny` — so a convention-level gate on `Write`/`Edit`
+needs a hook; only Bash-path writes are covered by the sandbox's write
+allowlist. Evidence: prohibitions `docs/design.md`, "Off-project note drops
+pass without asking".
+
+**Obliging the agent to reach a checkpoint at all** is a separate mechanism
+from injecting text: a `PreToolUse` deny on the first durable write of an
+episode is self-scoping (no edit, no gate), where a `Stop` block would fire on
+every turn including conversational ones.
+
+## 4 · Rewriting a result: `updatedToolOutput`
+
+**`updatedToolOutput` is validated against the tool's own output shape**, and a
+mismatch is rejected with `PostToolUse hook returned updatedToolOutput that does
+not match <tool>'s output shape` (string present in 2.1.232). So rewriting what
+a tool reported is not a free-text channel: a hook that corrects, say, an `Edit`
+result has to reproduce that tool's result object, not substitute prose for it.
+Budget for establishing the shape before designing around this channel;
+`additionalContext` carries a correction with no shape contract at all, at the
+cost of leaving the original result in context beside it.
+
+**For `Edit` that channel corrects nothing the model reads.** The result object
+is `{filePath, oldString, newString, originalFile, structuredPatch,
+userModified, replaceAll}`, but what reaches the model is a fixed string — `The
+file <path> has been updated successfully. (file state is current in your
+context — no need to Read it back)` — carrying no diff (uniform across 12,407
+`Edit` results in the local transcript corpus; CC 2.1.232). So the agent's model
+of an edited file comes from the edit it asked for, never from the tool's
+report, and rewriting that report cannot move it. A hook that repairs the file
+on disk restores agreement on its own; `additionalContext` is the only channel
+that can say the bytes changed after the tool answered.
+
+## 5 · Emitting file bodies the agent must edit
+
+**Two limits make emitted bytes the wrong choice when the agent must *edit*
+what it is shown.** A large `additionalContext` is not delivered whole: at
+15.6KB the harness wrote it to a `tool-results/…-additionalContext.txt` file
+and inlined only a ~2KB preview, so a hook emitting several file bodies
+silently delivers a fraction of them unless the agent notices the pointer and
+reads that file. And injected text does not register in the file-read ledger —
+the ledger is keyed off actual `Read` calls — so `Edit` on a file whose bytes
+arrived by `additionalContext` still fails until the agent Reads it, paying for
+the content twice. There is no supported way to prime the ledger. Where the
+recalled file is going to be edited, emit a directive naming the exact `Read`
+calls instead of the bytes: two round trips, but no truncation and the file
+lands editable.
+
+## 6 · Which channel to reach for
 
 Decide explicitly who the audience is. User-only → `systemMessage`. Agent-only →
 `additionalContext`. Both → emit both fields in the same hook JSON. Don't assume
@@ -134,7 +226,9 @@ Consequence for gitlore (D14): route user-facing notices through `systemMessage`
 not stderr-on-exit-0 and **not** via the agent — `additionalContext` saying "tell
 the user…" is model-dependent on the hot path, against NFR1/D7.
 
-## Wording the user-facing channel: curt and informative
+## 7 · Wording
+
+### The user-facing channel: curt and informative
 
 `systemMessage` and similar user-facing output: **lowercase, em-dash separator,
 factual, no instructions or actionable phrases.** One short line — enough for the
@@ -157,7 +251,7 @@ chatter, which is what handoff's drift report and context-size nudge do. Curt
 and informative still governs the words; this is only about not being rendered
 as noise.
 
-## Wording an agent-facing DENY: no actionable phrases
+### An agent-facing DENY: no actionable phrases
 
 When `permissionDecisionReason` (or any agent-facing message) denies a tool call,
 never include phrases like "stop and report it to the user" (agent tries to
