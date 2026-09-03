@@ -45,7 +45,7 @@ empirically 2026-06-10 (CC 2.1.170); re-verified against the 2.1.219 bundle 2026
   `discardedFiles`/`discardedCommits` depending on branch). `action` (`keep`/`remove`)
   is an ExitWorktree **tool_input** parameter, not a response field. The
   Enter-warns/Exit-silent asymmetry falls out of the predicate for free.
-  See [[stale-plugin-code]].
+  See the `plugin-craft:verifying-plugin-changes` skill.
 - **Conversation namespace is per sanitized cwd**, so CC worktrees get their own
   `~/.claude/projects/<encoded>/` (worktrees live under `.claude/worktrees/<name>`).
   `--continue`/`-c` is cwd-project-scoped (won't find a parent-dir session from a
@@ -55,8 +55,8 @@ empirically 2026-06-10 (CC 2.1.170); re-verified against the 2.1.219 bundle 2026
   supply the path for VCS-agnostic isolation, `EnterWorktree` takes a `path` to enter
   an existing worktree, and subagents accept `isolation:"worktree"` — all of which
   reach the same in-process `chdir`, so the env-freeze above applies to every route.
-  See [[hook-input-schema]].
+  See the `plugin-craft:hook-authoring` skill.
 
-See [[cc-project-dir-encoding]], [[hook-output-channels]];
+See [[cc-project-dir-encoding]] and the `plugin-craft:hook-authoring` skill;
 the launch-time `--settings autoMemoryDirectory` redirect itself is D10 in
 `docs/design.md`.

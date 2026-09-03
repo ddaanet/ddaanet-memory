@@ -32,7 +32,7 @@ rather than a race.
 
 **What to do instead:** resolve per call, in the hook that needs it, from that
 hook's own payload `cwd`. If a value must reach a context that cannot resolve it
-(the agent's Bash — see [[skill-bundled-scripts]]), inject it at call time with
+(the agent's Bash — see the `plugin-craft:skill-authoring` skill), inject it at call time with
 `PreToolUse` + `updatedInput` rather than parking a session-start snapshot.
 
 Distinct from cwd **drift**, where the session genuinely leaves its launch repo:
