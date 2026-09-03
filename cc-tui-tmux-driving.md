@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 8070a865-ea66-486b-9d50-a946add0a54c
-  modified: 2026-08-13T16:37:53.258Z
+  modified: 2026-08-14T23:07:56.778Z
 ---
 
 Verified 2026-07-19 against Claude Code v2.1.215 (Opus 4.8, tmux 3.5a) by
@@ -56,6 +56,13 @@ coarse — it holds only for slash commands, not prose.
   own `SessionStart` consumes, or a new entry in the session transcript.
 - **Readiness ≠ the `❯` glyph** (still true): the glyph shows while the backend
   is `/rc connecting…`.
+- **A freshly exec'd `claude` process shows no busy indicator while it
+  boots.** An idle-poll gate that reads only busy-absence treats the boot
+  window as already-idle; the composer (`❯`) itself does not exist yet
+  either, so a keystroke sent then lands nowhere. Gate on the glyph's own
+  presence, not idleness, before typing into a just-launched process.
+  Measured 2026-08-15: 3.9s for a bare `claude` launch (no `--resume`, no
+  memory-store settings) before `❯` first appears; slower under either.
 - **tmux socket is unreachable from the agent's sandboxed Bash**
   (`Operation not permitted`) — hook-spawned watchers are the only
   sandbox-clean path; spike driving needs `dangerouslyDisableSandbox`.
