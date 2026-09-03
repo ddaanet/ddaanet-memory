@@ -196,5 +196,5 @@ run --separate-stderr helper
 Shadowing a sourced function this way to drive a failure path *does* work — the
 override is visible where the test's variables are not.
 
-Related: [[hook-output-channels]] for the exit-2/systemMessage
+Related: the `plugin-craft:hook-authoring` skill for the exit-2/systemMessage
 channels the shell-scripting plugin's shellcheck-on-edit hook uses.
