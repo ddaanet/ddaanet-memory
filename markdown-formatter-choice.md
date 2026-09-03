@@ -1,6 +1,6 @@
 ---
 name: markdown-formatter-choice
-description: choosing a markdown prose wrapper — judge by an HTML render diff, not a token diff; rumdl (MD013 reflow) is the one with zero render changes; prettier can't keep `*em*`, dprint dedents fenced code, mdslw/remark split code spans and put list markers at line start
+description: "picking a prose hard-wrapper: judge by HTML render diff, not text diff; rumdl MD013 reflow has zero render changes, prettier can't keep `*em*`, dprint dedents fenced code, mdslw/remark split code spans; wrapping breaks line-grepping doc checkers"
 metadata:
   type: reference
 ---

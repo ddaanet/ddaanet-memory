@@ -1,11 +1,11 @@
 ---
 name: submodule-url-arrives-rewritten
-description: "matching a submodule's `remote.origin.url` against a marker url you wrote into `.gitmodules`: git absolutizes a relative url on the way in, so the literal never appears there — and a url-less entry cannot be initialized at all"
+description: "matching a submodule's `remote.origin.url` against a marker you wrote into `.gitmodules`: git absolutizes a relative url on the way in, so the literal is only ever visible to a `.gitmodules` read; and an entry with no `url` at all cannot be initialized"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 6e0477fe-1f1f-42e9-bd70-94fc717a7601
-  modified: 2026-08-03T15:14:44.653Z
+  modified: 2026-09-02T22:12:25.033Z
 ---
 
 A submodule entry's `url` travels through git before it reaches the

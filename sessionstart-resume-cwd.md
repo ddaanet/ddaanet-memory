@@ -1,11 +1,11 @@
 ---
 name: sessionstart-resume-cwd
-description: "`SessionStart(resume)` fires with the RESUMING process's cwd, not the resumed session's — so anything a hook samples once at session start can name a repo that session was never in, while every per-call hook disagrees"
+description: "two hooks in one session naming different repos, or a session-keyed file naming a repo the session was never in: `SessionStart(resume)` fires with the RESUMING process's cwd before the harness moves the session into the resumed project dir, so never park a session-start snapshot of an environment fact"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 8ce39f20-8c13-4bc3-a36c-76d6c3145b0a
-  modified: 2026-08-05T16:02:04.407Z
+  modified: 2026-09-02T22:12:34.962Z
 ---
 
 Resuming a conversation belonging to repo A from a pane running in repo B fires

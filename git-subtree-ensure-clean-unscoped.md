@@ -1,11 +1,11 @@
 ---
 name: git-subtree-ensure-clean-unscoped
-description: "git subtree add/pull/push refuse on ANY working-tree modification via an internal, unscoped, unbypassable check — a pathspec fix at the call site can't work around it"
+description: "subtree add/pull/push refuse on ANY dirty path via an internal, unbypassable `git diff-index HEAD`; a pathspec fix at the call site can't work around it"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 088576b6-2351-4a78-b826-5679e810c7ce
-  modified: 2026-08-11T16:05:14.705Z
+  modified: 2026-09-02T22:12:57.727Z
 ---
 
 `git subtree`'s `ensure_clean()` (in `/usr/lib/git-core/git-subtree`) runs
