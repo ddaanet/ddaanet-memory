@@ -1,11 +1,11 @@
 ---
 name: gitlore-memory-administration-no-parent-commit
-description: "administering memory alone (a merge, a trim, a curation pass) with no accompanying parent-repo content: no parent commit needed to make it land"
+description: "administering memory alone (merge/trim/curation, no parent-repo content change): write the approved `.claude/gitlore-memory-message` and stop, don't manufacture a parent commit to force it through"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: ae08eab3-deb3-493d-8835-4c8c741651c2
-  modified: 2026-08-14T20:44:58.760Z
+  modified: 2026-09-02T22:12:48.963Z
 ---
 
 Approving a memory-commit summary (writing it to `.claude/gitlore-memory-message`) is enough on its own to get memory committed. A parent-repo commit is a separate concern and is not required just to administer memory that has no accompanying parent-repo content change.

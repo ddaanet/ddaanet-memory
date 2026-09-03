@@ -1,11 +1,11 @@
 ---
 name: bash-tool-set-e-inert
-description: "set -e / errexit does nothing inside a Claude Code Bash tool command (and its subshells) — the tool evals the command as a non-final `&&` element; cwd persists via a trailing `pwd -P` capture"
+description: "errexit ignored inside a Bash tool command and its subshells (`eval` in a non-final `&&` list); use `&&` or `bash -e -c`; cwd persists via trailing `pwd -P`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 1193d83a-1344-4c1f-a784-fbf1aa7254a5
-  modified: 2026-08-27T09:04:07.581Z
+  modified: 2026-09-02T22:12:10.638Z
 ---
 
 `set -e` (and `set -euo pipefail`) is inert in a command run through the Bash
