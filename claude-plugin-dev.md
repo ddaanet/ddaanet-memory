@@ -1,21 +1,23 @@
 ---
 name: claude-plugin-dev
 description: "shared release infra vendored by `git subtree` into `plugin-dev/`; vendor the `dist-vX.Y.Z` tag, never the source `vX.Y.Z`; `install.sh` does the whole first install; `just update-plugin-dev` then `just --list`, because `unknown dependency prerelease` makes just refuse EVERY recipe; migration notes at `plugin-dev/migrations/`"
-metadata:
+metadata: 
   node_type: memory
   type: project
+  originSessionId: 65f754d8-cdbe-42af-8461-7c22a89d764a
+  modified: 2026-09-03T08:48:14.279Z
 ---
+
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev) is the
 canonical release infra for my human partner's Claude Code plugins
 (`handoff`, `gitmoji`, and others), vendored per-consumer via `git subtree`
 from a `toolkit/` prefix in the source repo into `plugin-dev/` in the plugin.
-`toolkit/README.md` ships with it and says what each file is for. Cutting a
-release is [[claude-plugin-dev-release]].
+`toolkit/README.md` ships with it and says what each file is for. `edify`
+vendors nothing and releases its own way: [[edify-release-flow]].
 
-**Why:** Several plugins had diverged near-identical release recipes, and an
+**Why:** several plugins had diverged near-identical release recipes, and an
 agent-driven manual edit to `plugin.json` desynced the manifest from the latest
-tag — caught only at release time. The toolkit unifies the recipe, adds a
-version-guard hook, and folds the marketplace bump into the release.
+tag — caught only at release time.
 
 **How to apply:**
 
