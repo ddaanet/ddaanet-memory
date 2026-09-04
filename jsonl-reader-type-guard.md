@@ -1,11 +1,11 @@
 ---
 name: jsonl-reader-type-guard
-description: "reading a JSONL transcript line by line: parse success is not object-ness, and the next field access on a scalar is fatal in both jq and Python"
+description: "a line that parses to a scalar/array survives jq `fromjson?` and Python `json.loads`, and the next field access is fatal (jq exit 5, `AttributeError`), taking a `set -e` hook down on every invocation until it leaves the window"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: d076e027-4399-4b8e-bc50-6356bb9f4786
-  modified: 2026-08-10T07:01:59.654Z
+  modified: 2026-09-02T22:12:40.323Z
 ---
 
 A line-by-line JSONL reader needs two guards, not one. Filtering lines that

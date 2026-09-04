@@ -1,6 +1,6 @@
 ---
 name: cc-async-task-notification-quirks
-description: "TaskOutput(block=false) on a running local_agent dumps the raw JSONL transcript tail, not a summary; and a task-id can refire \"completed\" notifications long after it first reported, with content unrelated to the original task"
+description: "`TaskOutput(block=false)` on a running `local_agent`/fork can dump the raw JSONL transcript; a stale task-id can refire \"completed\" with unrelated content — trust the agent's own report, not a late notification"
 metadata: 
   node_type: memory
   type: reference

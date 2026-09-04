@@ -1,6 +1,6 @@
 ---
 name: markdown-formatter-choice
-description: choosing a markdown prose wrapper — judge by an HTML render diff, not a token diff; rumdl (MD013 reflow) is the one with zero render changes; prettier can't keep `*em*`, dprint dedents fenced code, mdslw/remark split code spans and put list markers at line start
+description: "picking a prose hard-wrapper: judge by HTML render diff, not text diff; rumdl MD013 reflow has zero render changes, prettier can't keep `*em*`, dprint dedents fenced code, mdslw/remark split code spans and wrap before a literal `+`; wrapping breaks line-grepping doc checkers"
 metadata:
   type: reference
 ---
@@ -8,12 +8,13 @@ metadata:
 Judge a markdown re-formatter by rendering every file to HTML with cmark-gfm
 before and after and diffing the result, whitespace-collapsed. A token-level
 or whitespace-insensitive text diff passes changes that alter rendering: a
-line broken inside a code span so `>&2` or `+ …` opens a blockquote or list
-item, a sentence split inside a heading or table cell, a code-span edge
-space dropped. The render diff also finds pre-existing malformed markdown —
-a three-backtick fence nested in a three-backtick fence — which every
-re-serializer re-interprets differently, and which is a source fix, not a
-tool criterion.
+line broken before a `>&2` or a `+ …` — inside a code span or in plain
+prose — so it opens a blockquote or list item, a sentence split inside a
+heading or table cell, a code-span edge space dropped. The render diff
+also finds pre-existing malformed markdown — a three-backtick fence
+nested in a three-backtick fence — which every re-serializer
+re-interprets differently, and which is a source fix, not a tool
+criterion.
 
 Measured on ~100 files of design docs and plans, hard-wrapping at 80:
 
@@ -31,7 +32,10 @@ Measured on ~100 files of design docs and plans, hard-wrapping at 80:
 - **mdformat** (+gfm): `---` rules become underscores (hardcoded), ordered
   lists renumber to `1. 1. 1.`.
 - **mdslw**, **remark** + `@webpro/remark-wrap-prose`: break inside code
-  spans / headings / table cells; remark is not idempotent.
+  spans / headings / table cells, and wrap a prose line so it starts
+  `+ …`, which re-parses as a list item and truncates the paragraph —
+  prettier, dprint and rumdl all avoid leaving a list marker at line
+  start. remark is not idempotent.
 - **pandoc** `-t gfm --columns`: reflows and drops code fences, escapes
   `#` and `**`.
 

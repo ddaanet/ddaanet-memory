@@ -1,6 +1,6 @@
 ---
 name: subagent-skips-at-import-expansion
-description: "Agent-tool subagents don't expand @-imports in CLAUDE.md into their claudeMd context block; a real fresh session (or `claude -p`) does — use that to verify an import, not a subagent"
+description: "an Agent-tool subagent's claudeMd omits CLAUDE.md's `@path` imports a real session resolves; verify with `claude -p`, not a subagent"
 metadata: 
   node_type: memory
   type: reference

@@ -1,11 +1,11 @@
 ---
 name: gitlore-placeholder-remote-is-by-design
-description: "a memory store with no `origin`, on a `./.git/gitlore-placeholder` url, is a finished install and not a stalled migration — it means the parent repo has no remote, so check there before filing it as pending work"
+description: "a store with no `origin` on a `./.git/gitlore-placeholder` url is a finished install, not a stalled migration: the parent has no remote, so read the PARENT's `git remote -v` before filing it as pending work"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: f0bc67da-0b68-4397-87e5-7362cdbe13f2
-  modified: 2026-08-13T08:02:16.759Z
+  modified: 2026-09-02T22:12:44.492Z
 ---
 
 gitlore's install skips memory-remote creation when the parent repo has no
