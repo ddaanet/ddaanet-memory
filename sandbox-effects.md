@@ -138,7 +138,7 @@ shows it executed through the ordinary Bash tool `call` with a bare
 `{command}` — so the sandbox decision and the `excludedCommands` match apply
 exactly as to a typed call (confirmed live 2026-08-16: an excluded `git status`
 expansion saw the real tree, an unmatched one saw the masks), while
-**`PreToolUse` hooks do not run on that path**, and several `` !` `` blocks in
+**no hook runs on that path** — measured 2026-09-02 on CC 2.1.258, a `!` block that demonstrably executed (its side-effect flag file was written) drew no `PreToolUse` and no `PostToolUse` entry under `matcher: "*"`, while an ordinary `Bash` call in the same run logged both; the wildcard rules out the block running under some other tool name. The bundle shows why: the expansion executor calls the shell tool's own `.call()` directly, bypassing the wrapper that dispatches `PreToolUse` for model-issued tool calls, while the sandbox and `excludedCommands` decision sits one layer lower in the shared runner and so still applies, and several `` !` `` blocks in
 one body run concurrently. Under `git:*` the listing is real. Without it, never
 act on the injected listing: re-run `git status` unsandboxed first (a
 2026-05-24 `/commit` context showed ~14 untracked dotfiles where the
