@@ -1,11 +1,11 @@
 ---
 name: design-doc-no-situational-state
-description: "a living design doc carries no measurement of mutable state — a file's byte count, \"currently over the limit\", a queue depth; delete the figure and keep the mechanism plus the pass that acts on it, retire an entry that exists only to report one, and leave the id gap rather than renumbering"
+description: "a byte count, \"currently over the limit\", a queue depth: delete the figure, keep the mechanism and the pass that acts on it; retire an entry that only reports one, and leave the FR/D/L id gap rather than renumbering"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: a0cb79ca-c935-4c91-8ed2-3e3a5526d159
-  modified: 2026-09-02T12:39:41.517Z
+  modified: 2026-09-02T22:12:15.776Z
 ---
 
 A living design doc records what the system is and why. A **measurement of

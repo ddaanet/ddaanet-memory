@@ -1,11 +1,11 @@
 ---
 name: verify-restart-before-structural-diagnosis
-description: "A same-session negative result (PATH entry missing, new agent/tool not visible) often just needs a harness restart, not a structural diagnosis"
+description: "a same-session negative result (PATH/new agent not visible) often just needs a harness restart, not a structural cause"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 109169bb-771b-4bf9-9161-31c5e4dbb4ed
-  modified: 2026-08-11T19:04:18.336Z
+  modified: 2026-09-02T22:13:39.503Z
 ---
 
 When something that should work doesn't resolve mid-session — a PATH

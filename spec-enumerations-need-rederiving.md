@@ -1,11 +1,11 @@
 ---
 name: spec-enumerations-need-rederiving
-description: "Reviewing work against a spec that enumerates its own call sites: re-derive the list by grep, because conformance cannot detect a wrong enumeration"
+description: "a spec that hand-lists the call sites a change must touch: grep the pattern before reading the list, since conformance passes clean while the enumeration is short"
 metadata: 
   node_type: memory
   type: feedback
   originSessionId: 019f04cd-0e8c-4f1e-a69a-cd0d94bf75ff
-  modified: 2026-08-13T17:35:58.457Z
+  modified: 2026-09-02T22:12:20.198Z
 ---
 
 When a design hand-enumerates the sites a change must touch ("eight files carry
