@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: d015e0f1-8fa3-4170-9152-2c9265c45dfc
+  modified: 2026-08-12T11:36:59.881Z
 ---
 
 Two failure modes threaten subagent-driven-development (SDD) state, both

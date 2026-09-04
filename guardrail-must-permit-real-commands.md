@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 8798f83d-450b-4871-a398-d6b23a79504a
-  modified: 2026-08-04T09:33:40.346Z
+  modified: 2026-08-12T11:36:42.041Z
 ---
 
 A containment allowlist must permit the contained system's **primary
@@ -54,6 +54,8 @@ it with a command that must be ALLOWED in the same dispatch — a guard
 broken *closed* blocks the provocation too and looks exactly like
 success from the deny alone.
 
-See [[agent-hooks-need-exact-trust-key]] for the other way this same
-hook silently fails to run. Verify the claim against its own source
-either way: a worker's own account of what it did is not evidence.
+See [[frontmatter-hooks-two-silent-gates]] for another way a hook
+silently fails to run (a different mechanism — a dropped `hooks:`
+frontmatter, not a permissive allowlist). Verify the claim against its
+own source either way: a worker's own account of what it did is not
+evidence.
