@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-09-02T13:02:50.181Z
+  modified: 2026-09-04T15:55:49.796Z
 ---
 
 # ddaanet tier index
@@ -82,6 +82,7 @@ the project's own memory store.
 - [Transcripts are ground truth](transcripts-are-ground-truth.md) — a corrupted subagent artifact: transcripts hold the verbatim tool inputs to diff against
 - [SDD durable state across compaction](sdd-durable-state-across-compaction.md) — flush the SDD ledger, not just memory, before compacting — `precompact` won't; recovering dead subagents
 - [Live data before designing](test-with-live-data-before-designing.md) — before planning the next subproject: real data, not fixtures
+- [Migration backfill needs a runnable window](migration-backfill-needs-window.md) — pairing a NOT NULL schema change with a backfill-by-event script: verify the backfill can run against real legacy data before the reducer enforces the field, not after merging
 - [Gate cache must cover every check](gate-cache-must-cover-every-check.md) — adding a check to a cache-gated recipe, or splitting a cheap check out of a slow gate; reconcile each check's paths against the hash (narrow/widen/split, then prove it) or it goes red silently on an unrelated commit; a submodule-gitlink input can't be hashed — run that check uncached, ahead of the sentinel
 - [Bash prolog = common foundations](bash-prolog-common-foundations.md) — what belongs in a shared `bash_prolog` vs in a recipe body
 - [No doc-history references](no-doc-history-references.md) — specs never reference their own previous versions; keep standalone rejections
@@ -89,12 +90,13 @@ the project's own memory store.
 - [Honest line-count caps](honest-line-count-caps.md) — plan/PR line caps: wrapping vs cramming, and never shaving docstrings to fit
 - [Spec contract size predicts PR size](spec-contract-size-predicts-pr-size.md) — the 400-line PR cap is soft; a task's contract size predicts its impl overshoot
 - [Genuine red, not missing SUT](genuine-red-not-missing-sut.md) — TDD red = failed assertion (stub-then-assert), never a missing module, and green-at-first is not evidence; one inert-stub run reds a whole batch but proves absence not wrongness; plan interfaces one contract per line; mutate the SUT in place — a test relocated to a temp dir rebinds `repo_root` from `$0` and reds for the wrong reason
-- [Agent hooks need exact trust key](agent-hooks-need-exact-trust-key.md) — `.claude/agents` frontmatter `hooks:` silently skipped ("Skipping frontmatter hooks", `tengu_agent_hooks_origin_untrusted`): `~/.claude.json` `hasTrustDialogAccepted` for the exact project path, inherited parent trust hides it, no dialog ever appears, and a second silent gate: the dispatch's `name`
-- [Named dispatch drops frontmatter hooks](named-dispatch-drops-frontmatter-hooks.md) — spawning a custom agent with a `name` overwrites the dispatch's `agentType` and demotes the definition to `customAgentType`; frontmatter `hooks:` resolve by `agentType`, so a named dispatch registers zero hooks and runs uncontained
+- [frontmatter hooks silently skipped](frontmatter-hooks-two-silent-gates.md) — two independent gates drop a subagent's `.claude/agents` frontmatter `hooks:` with no error and no UI signal ("Skipping frontmatter hooks", `tengu_agent_hooks_origin_untrusted`): `~/.claude.json` `hasTrustDialogAccepted` must name the exact project path (inherited parent trust hides it, no dialog ever appears), and a dispatch `name` overwrites `agentType` with `customAgentType` so zero hooks register and the agent runs uncontained — check `agentType` in the subagent `.meta.json`, never ask the agent
 - [Guard safety visible in the pattern](guard-safety-visible-in-the-pattern.md) — narrowing a guard's accepted class: what writers need vs what you can prove inert
 - [Guardrails must permit real commands](guardrail-must-permit-real-commands.md) — ghmem's allowlist hook forbade the notes `route` requires, so it was never enforcing; verify a guard with a command the system actually issues, expecting ALLOW
+- [Instruction names absent data](instruction-names-absent-data.md) — an agent body naming an input the harness never emits ("check the packet's topic list") reads as the agent ignoring it, so rubric/wording/model-tier fixes all look right and all miss; grep the producing code for the field, and render the missing input inside the consumer's budgeted body with an explicit empty marker
 - [Verify restart before structural diagnosis](verify-restart-before-structural-diagnosis.md) — a same-session negative result (PATH/new agent not visible) often just needs a harness restart, not a structural cause
 - [Parse, don't regex, structured formats](parse-dont-regex-structured-formats.md) — use a real parser for YAML/JSON/TOML/HTML, never a hand-rolled regex even for "just one field"; regex is for prose token extraction
 - [jq index is bytes, slices are codepoints](jq-index-bytes-vs-slice-codepoints.md) — a jq slice cutting mid-character on non-ASCII, or a computed offset matching nothing: `index()` counts BYTES, slicing and `length` codepoints; use `split($sub)[0]|length`; `--rawfile` for whole files
 - [subagent skips @-import expansion](subagent-skips-at-import-expansion.md) — an Agent-tool subagent's claudeMd omits CLAUDE.md's `@path` imports a real session resolves; verify with `claude -p`, not a subagent
 - [git subtree ensure_clean unscoped](git-subtree-ensure-clean-unscoped.md) — subtree add/pull/push refuse on ANY dirty path via an internal, unbypassable `git diff-index HEAD`; a pathspec fix at the call site can't work around it
+- [Auditing references after a move](reference-audit-after-a-move.md) — a stale-comment sweep scoped to the move under review inherits its blind spot and under-reports; classify every hit of a whole-tree grep against where the symbol lives now
