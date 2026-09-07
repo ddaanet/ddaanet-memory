@@ -1,6 +1,6 @@
 ---
 name: classifier-denied-self-config
-description: "auto-mode denials on agent self-configuration: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push (*external repo outside the trusted source control org*; `/add-dir` or an allow rule); INCIDENTAL writes only, not user-named ones; a bare `rm` is denied where `git rm` passes"
+description: "auto-mode denials on agent self-configuration: `enabledPlugins`, a gitdir file a hook consumes (heredoc → *Logging/Audit Tampering*, via Write → *Auto Mode Bypass*), subtree add, cross-repo/submodule push (*external repo outside the trusted source control org*; `/add-dir` or an allow rule) — but only one the agent issues DIRECTLY: nested inside a top-level recipe the classifier weighs the recipe and it passes; INCIDENTAL writes only, not user-named ones; a bare `rm` is denied where `git rm` passes"
 metadata: 
   node_type: memory
   type: feedback
@@ -49,6 +49,19 @@ project-scope status and satisfies both the sandbox's write allowlist and the
 classifier's "another repository" objection: after it the identical `git -C
 ~/code/claude-plugins push origin main` succeeded with no flag at all
 (confirmed 2026-05-23 and again on the release-script case).
+
+**The verdict is passed the command as invoked.** That denial is for a push the
+agent issues directly. The same marketplace push *nested* inside `just release`
+— the recipe running `release.sh`, which pushes the sibling repo — completed
+with no flag, on a machine carrying neither escape — check `~/.claude.json` for
+a durable `/add-dir` and user `permissions.allow` for a rule before concluding
+a given machine matches.
+A `just release:*` entry in `sandbox.excludedCommands` was present, but that
+only sets the unsandboxing flag and does not auto-approve; what differs is that
+the classifier weighed `just release` and not the `git push` inside it.
+Verified against Claude Code 2.1.263 on a first release. Do not read this as a
+way to launder a denied write through a script: the incidental-vs-user-named
+test above still governs, and here the recipe *was* the user-named action.
 
 **Why:** the location is the problem, not the tool. So the escape is never a
 different tool — it is a different *writer*, and there are two:
