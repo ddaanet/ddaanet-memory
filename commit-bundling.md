@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 5c5b043b-8460-4841-a796-694a07a15915
-  modified: 2026-08-14T08:01:07.170Z
+  modified: 2026-09-07T14:44:19.000Z
 ---
 
 Bundle what corresponds to the change, and never carve anything out of a
@@ -45,9 +45,11 @@ call. Separately, session bookkeeping files got the opposite
 correction: "just amend the settings and memory changes to whatever was
 committed last" — these are session bookkeeping, not project history, and
 keeping them dirty to preserve a tidy commit boundary costs more attention
-than the tidiness is worth. A dirty tree also blocks tools that gate on it —
-`just release` aborts on `git diff --quiet HEAD`, and its dry-run
-`git reset --hard` makes uncommitted work a hazard. The carve-out correction
+than the tidiness is worth. A dirty tree also blocks tools that gate on it,
+though not for this exact bookkeeping: the shared release toolkit's clean-tree
+check runs `git diff --quiet HEAD` with `.claude` and the gitlore memory
+submodule excluded by pathspec, so neither blocks a release. Every other
+uncommitted path still aborts it. The carve-out correction
 is the same instinct caught from the other side: the placement rules say
 which commit a diff rides, never that a diff may vanish from the set.
 
