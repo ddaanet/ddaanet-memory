@@ -1,35 +1,41 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra vendored at a `dist-vX.Y.Z` tag into `plugin-dev/`; the procedure is its own `toolkit/README.md` and the failure modes are `plugin-craft:toolkit-release`; `edify` ports `release.sh` locally instead of vendoring, for the PyPI step"
-metadata: 
+description: "shared release infra vendored by `git subtree` at a `dist-vX.Y.Z` tag into `plugin-dev/`; the shipped manual `plugin-dev/README.md` owns install, update, dist-tag and gate rules — `unknown dependency prerelease`, the post-pull `just --list`, `plugin-dev/migrations/` — and `plugin-craft:toolkit-release` owns the failure modes; the changelog does not ship"
+metadata:
   node_type: memory
   type: project
-  originSessionId: 194d9f85-63c2-4d23-8e81-c87672ce360c
-  modified: 2026-09-01T18:16:52.594Z
+  originSessionId: 65f754d8-cdbe-42af-8461-7c22a89d764a
+  modified: 2026-09-07T13:41:34.361Z
 ---
+
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev) is the
-canonical release infrastructure for my human partner's Claude Code plugins
+canonical release infra for my human partner's Claude Code plugins
 (`handoff`, `gitmoji`, and others), vendored per-consumer via `git subtree`
 from a `toolkit/` prefix in the source repo into `plugin-dev/` in the plugin.
+`edify` vendors nothing and releases its own way: [[edify-release-flow]].
 
-Two documents cover using it, and neither is repeated here. `toolkit/README.md`
-ships with the vendored files and states what each is for, the two-tag
-`vX.Y.Z` / `dist-vX.Y.Z` scheme, installing, updating, the required `precommit`
-and `prerelease` recipes, and the release conventions. What goes wrong while
-running it — the sandbox and classifier failures that leave a release
-half-landed, what `error: uncommitted changes` actually excludes, the
-`just --list` check owed after a subtree pull — is the
-`plugin-craft:toolkit-release` skill.
+**Why:** several plugins had diverged near-identical release recipes, and an
+agent-driven manual edit to `plugin.json` desynced the manifest from the latest
+tag — caught only at release time.
 
-One consumer is an exception:
+**How to apply:** two documents cover using it, and neither is repeated here.
 
-- `edify` doesn't vendor the toolkit: hybrid Python+plugin shape with a PyPI
-  publish the toolkit's github+marketplace flow doesn't cover. It carries a
-  local `scripts/release.sh`, ported from this toolkit's `release.sh` —
-  `plugin.json` as version SOT, the same per-step probe-before-act shape for
-  `--resume` — with `pyproject.toml` synced from `plugin.json` (never the
-  reverse) and a PyPI-publish step (checks `pypi.org/pypi/<name>/<version>/json`
-  before building) spliced between the tag push and the GitHub release.
-  Release tooling belongs at the repo root: `plugin/` ships verbatim to every
-  plugin install, so MARKETPLACE_DIR paths and PyPI credentials have no
-  business living inside it.
+- **The manual ships with the toolkit.** In a consumer it is
+  `plugin-dev/README.md`, in the source repo `toolkit/README.md`, and it
+  already answers installing, updating, the two-tag `vX.Y.Z` / `dist-vX.Y.Z`
+  scheme and why only a `dist-` ref is vendorable, the `precommit`/`prerelease`
+  contract (`unknown dependency prerelease`), migration notes under
+  `plugin-dev/migrations/`, and the post-pull `just --list` check. Read it
+  rather than reconstructing any of it from memory. Before a first install
+  there is no vendored copy — the source repo's root `README.md` carries the
+  same install block, and so does the raw file the install command fetches.
+- **What goes wrong while running it is the `plugin-craft:toolkit-release`
+  skill** — the sandbox and classifier failures that leave a release
+  half-landed rather than failed, and what `error: uncommitted changes`
+  actually excludes.
+- **The changelog does not ship.** A pull crossing more than a patch is worth
+  reading `docs/changelog.md` for: its pointer lines say outright when a release
+  is breaking, which the optional per-release migration note may not. It exists
+  only in the source repo —
+  `git -C ~/code/claude-plugin-dev show <tag>:docs/changelog.md` — never under
+  `plugin-dev/`, whose tree is the dist split and carries no `docs/`.
