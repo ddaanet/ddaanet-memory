@@ -327,7 +327,7 @@ marketplace and its repo archived. It paired `updatedInput` with
 `permissionDecision: "allow"`, pre-approving anything chained alongside the
 `git status` (confirmed live: `true && git status --porcelain` ran); the
 mechanism, and the rule that a hook which must rewrite returns `updatedInput`
-alone, are [[hook-output-channels]]. The exclusion covers every git shape
+alone, are the `plugin-craft:hook-authoring` skill. The exclusion covers every git shape
 rather than a best-effort `git status` subset, is honoured in strict mode, and
 does not settle the gate.
 The one shape the hook caught and the exclusion misses is a git command nested
@@ -429,7 +429,7 @@ exclusions.
 Symptom: a fix that depends on a `SessionStart` hook's side effect appears to
 do nothing even after the documented remedy. Confirmed 2026-08-11: gitlore's
 `git config gitlore.hooksDir` (repointed to the current plugin version every
-`SessionStart`, [[stale-plugin-code]]) stayed pinned at the old version through
+`SessionStart`, `plugin-craft:verifying-plugin-changes`) stayed pinned at the old version through
 two sandboxed `claude -p ping` calls in the target repo — the standard "start a
 session there" remedy — and only updated once retried with
 `dangerouslyDisableSandbox: true`.
@@ -438,7 +438,7 @@ session there" remedy — and only updated once retried with
 inside a recipe (`just evals`, `just release`) or a script is not, and needs the
 whole call unsandboxed whenever its *point* is a hook's side effect. A
 sandboxed one is fine only when you need just the model's textual reply.
-[[posttooluse-print-mode]] establishes that `SessionStart` fires under
+The `plugin-craft:hook-authoring` skill establishes that `SessionStart` fires under
 `--print` at all — that finding was made unsandboxed; this is the
 sandbox-specific caveat on top of it.
 
