@@ -29,13 +29,12 @@ tag — caught only at release time.
   `update-plugin-dev` both refuse a `vX.Y.Z` ref and name the `dist-` one to
   use instead. Resolve the newest via
   `git ls-remote --tags --refs --sort=-v:refname <url> 'dist-v*' | head -1`.
-- `install.sh` is the whole first install and vendors the toolkit itself.
-  Clone the toolkit at its newest *source* tag to get the script, run it from
-  the plugin's root, and it resolves the newest `dist-` tag, does the
-  `git subtree add --prefix=plugin-dev … --squash`, wires
+- `install.sh` is the whole first install and vendors the toolkit itself. Both
+  READMEs carry the block: resolve the newest `dist-` tag, `curl` that tag's
+  root `install.sh`, pipe it to `bash -s -- "$tag"` from the plugin root. It
+  does the `git subtree add --prefix=plugin-dev … --squash`, wires
   `import 'plugin-dev/release.just'` into the `justfile` and the version-guard
-  hook into `.claude/settings.json`. Pass a dist tag to pin an older one; don't
-  hand-run the `subtree add` first.
+  hook into `.claude/settings.json`. Don't hand-run the `subtree add` first.
 - Consumer must define a `precommit` recipe (the commit gate) and a
   `prerelease` recipe (the gate `release` depends on — often just
   `prerelease: precommit`). `just` fails every recipe immediately with
