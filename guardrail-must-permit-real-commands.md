@@ -23,7 +23,8 @@ enforcement, no topic could ever be routed.
 provoke-and-check dispatch" — a true observation, obtained from a
 command shape real usage never takes. The probe proved the hook was
 attached; it never asked whether the hook permitted the work. That is
-[[green-is-not-evidence]] applied to a guardrail, and the
+green-for-the-wrong-reason applied to a guardrail
+(`craft:test-discipline`), and the
 failure is silent in the worst direction: the corpus filling with
 note-bearing routes was itself proof that enforcement was off, and it
 read as success for a whole run.

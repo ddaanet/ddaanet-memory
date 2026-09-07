@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 92f172d3-be6d-4ab9-a83b-558f8348458a
-  modified: 2026-09-04T15:34:37.866Z
+  modified: 2026-09-07T12:51:40.626Z
 ---
 
 When a symbol moves between modules and you audit the comments and
@@ -38,5 +38,5 @@ the symbol's real home, where reviewing only asks whether the existing
 name is defensible. Where a check can be phrased as "produce the right
 answer" rather than "judge this answer", prefer it.
 
-See [[design-doc-writing]] on getting drift direction from git rather
+See [[examine-evidence-drift]] on getting drift direction from git rather
 than from which artifact looks more authoritative.
