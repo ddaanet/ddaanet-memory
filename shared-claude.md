@@ -209,6 +209,18 @@ rules that change what the agent does by default.
   symbol means patching every in-repo caller directly, even if that is more files.
   Anything kept only to spare the callers is dead weight that hides the real
   dependency. Reserve compatibility work for genuine published API boundaries.
+- **400 lines caps any artifact a reader takes in at one go** — source files,
+  `references/` nodes, plans, design docs and PRs — and **~200 a `SKILL.md` hub**,
+  which is paid on every invocation while a node is opt-in. It is a *soft* guideline
+  in local self-review: a bounded overage on one cohesive doc beats a reflexive split
+  whose cross-referencing costs the reader more than the overage saved. Never satisfy
+  it quietly, by cramming 150–300-character lines or by shaving docstrings and prose —
+  that is borrowing against the split, and a file parked at exactly its cap has
+  stopped emitting the signal. A count is only honest once a hard-wrapping formatter
+  has run, so wire one into the same gate ahead of the checker: `rumdl` with MD013
+  reflow at 80 columns, then a checker reporting `oversized-file: <n> lines > <cap>`
+  with the cap picked from the path. The full argument ships in
+  `craft:plan-contracts`.
 - **A quiet gate signs off with the list of checks that passed**, accumulated as they
   run — never a bare "OK" or "Green". Silence is ambiguous: a check that printed
   nothing looks exactly like one that never ran. A recap resolves it because a

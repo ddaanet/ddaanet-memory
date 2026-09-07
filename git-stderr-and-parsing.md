@@ -51,7 +51,7 @@ names a worktree that is **clean** — the reason nobody reads the message. Cost
 gitlore a live dead-end in `micro`; a merge preparation that detaches onto the
 authority *before* discovering there is nothing to merge also leaves the ref
 moved, so a failed diagnosis silently changes the state it was diagnosing.
-See [[green-is-not-evidence]] for the shape of the test that catches it: assert
+See `craft:test-discipline` for the shape of the test that catches it: assert
 the commit, not a clean `git status`, since the worktree is clean either way.
 
 **`-q` is asymmetric between push and fetch.** `git push -q` still reports its
@@ -61,7 +61,8 @@ without `-q` — capture stdout+stderr instead. This shipped as a live bug in
 gitlore's tier fetch: the divergence arm was unreachable and a diverged tier was
 reported as merely "stale". It survived a suite that already covered ff-only
 rejection, because that test ran its own `git fetch` **without** `-q` — the
-invocation was the bug, not the logic ([[test-the-invocation-path]]).
+invocation was the bug, not the logic: assert the invocation contract itself,
+not just the behaviour (`craft:test-discipline`).
 
 **Whitespace-safe enumeration:** `git config -z --get-regexp <re>` emits one
 NUL-terminated `key\nvalue` record per match, so `${rec#*$'\n'}` recovers a value

@@ -59,7 +59,8 @@ the function were later deleted or renamed.
 (`[ "$status" -eq 0 ]`) — that is the one that pins existence and behavior.
 Treat negative cases as refinements around it, not as coverage on their own.
 Same trap applies to any `run`-based check keyed on non-zero exit, including
-`run !` forms. General principle: [[green-is-not-evidence]].
+`run !` forms. General principle: a test is evidence only when some state of the world
+makes it fail (`craft:test-discipline`).
 
 ## `run` is a subshell, so a function's out-params never reach the test
 
@@ -101,7 +102,8 @@ same thing. The same asymmetry bites `${VAR:-}` fallbacks in a script under
 test whenever the empty value is the case being covered.
 
 Review did not catch it: deleting the guard left the test green.
-[[green-is-not-evidence]] is the general rule, and this is the variant where the
+`craft:test-discipline` carries the general rule — a test is evidence only
+when some state of the world makes it fail — and this is the variant where the
 vacuity lives in the *fixture* rather than the assertion.
 
 ## `grep -qF "$multiline"` matches any ONE line of the pattern
