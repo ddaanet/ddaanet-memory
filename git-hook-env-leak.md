@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 39084536-e084-480e-981f-18bb2e894d63
-  modified: 2026-07-21T07:48:50.678Z
+  modified: 2026-09-07T12:50:26.094Z
 ---
 
 `fatal: .git/index: index file open failed: Not a directory` raised inside a git
@@ -46,4 +46,6 @@ production fails. Two tests are needed: one that exports the leaked environment
 failed` string is absent, and no refs landed in the bogus common dir; and one
 that drives a real `git commit` in each of the three modes.
 
-Related: [[test-the-invocation-path]].
+That is the general rule in miniature: test the invocation path, not just the
+code — assert that the suite reaches the hook and invokes it the way production
+does (`craft:test-discipline`).

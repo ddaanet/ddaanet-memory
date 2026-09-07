@@ -1,9 +1,11 @@
 ---
 name: extracting-memory-into-skills
 description: "cutting a memory fact into a skill consumers install: a green wikilink/`memory/`-path check still leaves internal ids (`FR5a`, `(D14)`, `NFR1`, `Plan 04 Step 6`) and cross-repo file paths; `my human partner` phrasing is fine and stays; diff date tokens source-vs-output, where a frontmatter `modified:` stamp is the only one that should vanish"
-metadata:
+metadata: 
   node_type: memory
   type: feedback
+  originSessionId: c2b17eb2-0e56-457d-9dad-3cad8729bf96
+  modified: 2026-09-07T12:51:44.907Z
 ---
 
 Moving a memory fact into a skill that ships to consumers is mostly
@@ -40,5 +42,7 @@ between source and output, where a frontmatter `modified:` stamp is the only
 one that should disappear — and reachability of *identifiers* is what needs a
 reader.
 
-Related: [[directive-states-acts]] for the underlying rule that distributed
-text never cites a memory file, which this extends past what a grep sees.
+The underlying rule is that distributed text never cites a private file — a
+skill body ships to consumers who do not have the author's notes, so inline the
+criteria at write time (`craft:directive-writing`). This extends it past what a
+grep sees.

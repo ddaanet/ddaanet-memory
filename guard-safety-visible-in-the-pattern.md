@@ -29,6 +29,6 @@ prove inert. When the answer is "a word", accept a word. Run the
 differential test anyway — it is what tells you whether you are
 narrowing out of caution or out of necessity, and the answer belongs in
 the comment. See [[guardrail-must-permit-real-commands]] and
-[[green-is-not-evidence]] — two of the tests for that class
+`craft:test-discipline` — two of the tests for that class
 were passing because a *different* rule caught them, and only began to
 discriminate once each body closed with exactly what its opener named.

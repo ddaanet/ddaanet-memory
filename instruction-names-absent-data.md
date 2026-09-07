@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 7b7bd319-48a2-48ff-8c72-f10ca829d2dc
-  modified: 2026-09-02T09:14:26.200Z
+  modified: 2026-09-07T12:51:48.928Z
 ---
 
 Every noun phrase in an agent body that names an input — "the packet's topic
@@ -31,7 +31,9 @@ rendered thread and nothing else. Two concurrent workers then minted 20 new
 topic names for 22 items, including two synonyms for the same ground in one
 run, beside a third topic that already covered it.
 
-This is [[green-is-not-evidence]] pointed at a prompt rather than a test, and
+This is "green is not evidence" pointed at a prompt rather than a test — a
+check is evidence only when some state of the world makes it fail
+(`craft:test-discipline`) — and
 the sibling of [[guardrail-must-permit-real-commands]]: there a guard was
 checked against a synthetic command instead of a real one, here an instruction
 against a design instead of a renderer. Same root — the rule was never run

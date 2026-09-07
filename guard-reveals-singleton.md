@@ -30,5 +30,5 @@ Count what else is duplicated per instance — constants, validators, entry
 points, failure channels, stale-state sweeps. More than one or two and the
 merge is the finding; the guard is not. Sibling-over-parameterisation is
 often right at two instances and stops paying at three, and the merge means
-deleting the siblings outright ([[remove-cleanly-no-vestigial]]),
-not leaving shims.
+deleting the siblings outright, in one pass and with no
+absence-guards left behind (`craft:removing-cleanly`), not leaving shims.
