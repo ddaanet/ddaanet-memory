@@ -1,6 +1,6 @@
 ---
 name: hook-output-channels
-description: "`systemMessage` renders ANSI, so a hook that speaks only on trouble leads with `\\033[0m` to escape the dimming; `_wipe-emit.sh` is the in-repo curt-style reference; channel mechanics and the permission pipeline are `plugin-craft:hook-authoring`, the wording rules are `craft:directive-writing`"
+description: "`systemMessage` renders ANSI, so a hook that speaks only on trouble leads with `\\033[0m` to escape the dimming applied to ordinary hook chatter, and `_wipe-emit.sh` is the in-repo reference implementation of the curt style; channel mechanics, the `PreToolUse` permission pipeline and `updatedInput`/`updatedToolOutput` are the `plugin-craft:hook-authoring` skill, and the wording rules — curt and factual for the user, no actionable phrases in an agent-facing deny, imperative for a directive — are the `craft:directive-writing` skill"
 metadata: 
   node_type: memory
   type: reference
