@@ -30,6 +30,12 @@ rules that change what the agent does by default.
   precondition is already settled by what you know before spending calls
   establishing it. A guardrail coming to mind is not evidence its situation
   obtains, and the denser the always-on rules, the more reflexive the pull.
+- **Recall reads two routing tables.** At any recall checkpoint — a skill's or
+  an ad-hoc one — match the task against the installed skill descriptions as
+  well as the memory index, and load the matching skill. Several ddaanet facts
+  now ship as `craft` skills, and where both exist the skill is the maintained
+  copy. Be selective: a skill body costs more than a memory file, so load what
+  names the moment you are in, not everything adjacent.
 - **My human partner owns branching.** Never create or switch branches — or
   worktrees — unprompted, even when a workflow skill says to start feature
   work on a fresh one. Work on whatever is checked out. Merging onto a base they named is
