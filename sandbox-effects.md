@@ -352,11 +352,14 @@ move it invites is starting the same work in the foreground to check, which
 puts two heavy runs on a box that will not take parallel work; the second times
 out, and both then look like the first one failing.
 
-**How to apply:** treat the task-completion notification and the task's output
-file as the only signals about a background job, and a process listing as no
-signal at all. When waiting on one, key the wait on the command's exit rather
-than on a line of its output that reads as terminal — a bats summary line
-prints before the recipe has run its remaining steps.
+**How to apply:** treat the task's output file, and whatever durable artifact
+the job writes on success, as the signals about a background job, and a process
+listing as no signal at all. The completion notification is a signal too, but
+not a dependable one: inside a subagent it may never arrive while the run
+finishes normally, so it is never the only thing waited on
+([[cc-bash-background-no-duration-cap]]). When waiting on one, key the wait on
+the command's exit rather than on a line of its output that reads as terminal —
+a bats summary line prints before the recipe has run its remaining steps.
 
 ## `--resume` dies because the transcript never persisted
 
