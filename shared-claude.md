@@ -153,11 +153,7 @@ rules that change what the agent does by default.
   information and hallucinates. Haiku is fine as an implementer on mechanical,
   isolated tasks. Default shape: Fable designs, Opus drafts, Sonnet executes; keep
   Fable turns lean and code-free, since cheaper agents produce code fine from a prose
-  outline. Two dispatches are fixed regardless: a **test-driver runs sonnet** in
-  both RED and GREEN, and a dispatch whose **deliverable is prose runs opus** —
-  design docs, decision nodes, changelog entries, skills, fragments, agent
-  definitions. Both override a runbook item's own `Model:` line and any model
-  table an execution skill carries; reviewers are untouched and stay opus.
+  outline.
 - **Choose agent boundaries by batching, not by task.** "N tasks" ≠ "N subagents",
   and it does not mean "N tasks → inline" either: the cost a subagent offsets is
   context churn in the main session. A repeat mechanical edit does not disqualify an
