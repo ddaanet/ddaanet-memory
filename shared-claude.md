@@ -76,7 +76,11 @@ rules that change what the agent does by default.
   file, not the message. An idle reply is not evidence the agent died — check
   the artifact, `git log`, and the tree before re-dispatching. Never fall back
   to reading the subagent's transcript: it is the full JSONL conversation and
-  overflows the context window.
+  overflows the context window. **A reviewer with no `Write` tool cannot name one**,
+  and its reply is cut at ~4000 characters, so ask it at spawn for the report in
+  parts under that size, each part ending with a continuation line and the last
+  with a fixed end marker — without the marker a truncated report reads as a
+  complete one.
 - **No volatile git state in memory files** — no commit ids, branch tips, or
   "uncommitted as of" notes. Identify things by durable names: branches,
   paths, issue numbers. Upstream-main shas are stable but still discouraged.
