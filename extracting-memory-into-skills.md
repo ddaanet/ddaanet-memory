@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: c2b17eb2-0e56-457d-9dad-3cad8729bf96
-  modified: 2026-09-07T12:51:44.907Z
+  modified: 2026-09-16T18:03:44.298Z
 ---
 
 Moving a memory fact into a skill that ships to consumers is mostly
@@ -24,7 +24,9 @@ Two classes survive that check, and each dangles for every consumer:
 
 House phrasing for the user — `my human partner` — is **not** in this set.
 It ships fine in skill bodies, on the `superpowers` precedent, and my human
-partner likes it there. Rewrite such a line only where it is separately an
+partner likes it there. It is policy, not tolerance: "the user" is whoever uses
+the software being built, so the collaborator needs a name of its own. A gate
+that flags the phrase in a shipped body enforces the opposite of the policy. Rewrite such a line only where it is separately an
 imperative-form violation, and then for that reason.
 
 **Why:** the enforcement script sees wikilinks, `memory/` paths and bare fact
