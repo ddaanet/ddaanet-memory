@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-09-07T12:52:52.689Z
+  modified: 2026-09-17T11:11:45.178Z
 ---
 
 # ddaanet tier index
@@ -14,6 +14,7 @@ Claude Code mechanics, shell and git gotchas. Project-specific facts stay in
 the project's own memory store.
 
 - [Bash tool: set -e is inert](bash-tool-set-e-inert.md) — errexit ignored inside a Bash tool command and its subshells (`eval` in a non-final `&&` list); use `&&` or `bash -e -c`; cwd persists via trailing `pwd -P`
+- [git config --get hides multi-valued keys](git-config-multivalued-read.md) — `--get` prints the LAST value and exits 0 on a multi-valued key (`remote.origin.pushurl`), and `--unset` refuses one with status 5, so a guard names one of several values and advises a remedy that errors; use `--get-all`/`--unset-all`. Unset key exits 1; `fatal: bad config line` breaks EVERY git call with 128, not just `git config`
 - [check parallelism assumption before perf fix](perf-fix-check-parallelism-assumption.md) — proposing `--jobs`/`-P`/`-j` as the headline speed fix: the assumption about spare cores to check first
 - [sandbox effects](sandbox-effects.md) — index.lock/"Another git process" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume "No conversation found…", $TMPDIR unset, zellij "no active session", empty `ps` for background tasks, sandboxed `claude -p` silently drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed outright, /tmp "No space left"/"Out of diskspace" with du≪df = other sandboxes pin the tmpfs (clear /tmp/claude-1000 caches); escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)
 - [CC async task quirks](cc-async-task-notification-quirks.md) — `TaskOutput(block=false)` on a running `local_agent`/fork can dump the raw JSONL transcript; a stale task-id can refire "completed" with unrelated content — trust the agent's own report, not a late notification
