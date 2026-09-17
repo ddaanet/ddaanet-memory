@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-09-07T12:52:52.689Z
+  modified: 2026-09-17T11:11:45.178Z
 ---
 
 # ddaanet tier index
@@ -14,6 +14,7 @@ Claude Code mechanics, shell and git gotchas. Project-specific facts stay in
 the project's own memory store.
 
 - [Bash tool: set -e is inert](bash-tool-set-e-inert.md) — errexit ignored inside a Bash tool command and its subshells (`eval` in a non-final `&&` list); use `&&` or `bash -e -c`; cwd persists via trailing `pwd -P`
+- [git config --get hides multi-valued keys](git-config-multivalued-read.md) — `--get` prints the LAST value and exits 0 on a multi-valued key (`remote.origin.pushurl`), and `--unset` refuses one with status 5, so a guard names one of several values and advises a remedy that errors; use `--get-all`/`--unset-all`. Unset key exits 1; `fatal: bad config line` breaks EVERY git call with 128, not just `git config`
 - [check parallelism assumption before perf fix](perf-fix-check-parallelism-assumption.md) — proposing `--jobs`/`-P`/`-j` as the headline speed fix: the assumption about spare cores to check first
 - [sandbox effects](sandbox-effects.md) — index.lock/"Another git process" (only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; a porcelain cleanliness gate reads their `??` as DIRTY; one clean reading proves nothing), sibling worktree "Read-only file system", "Device or resource busy" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume "No conversation found…", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij "no active session", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed, /tmp "No space left"/du≪df = other sandboxes pin the tmpfs; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)
 - [CC async task quirks](cc-async-task-notification-quirks.md) — `TaskOutput(block=false)` on a running `local_agent`/fork can dump the raw JSONL transcript; a stale task-id can refire "completed" with unrelated content — trust the agent's own report, not a late notification
@@ -75,6 +76,7 @@ the project's own memory store.
 - [Parse, don't regex, structured formats](parse-dont-regex-structured-formats.md) — use a real parser for YAML/JSON/TOML/HTML, never a hand-rolled regex even for "just one field"; regex is for prose token extraction
 - [jq index is bytes, slices are codepoints](jq-index-bytes-vs-slice-codepoints.md) — a jq slice cutting mid-character on non-ASCII, or a computed offset matching nothing: `index()` counts BYTES, slicing and `length` codepoints; use `split($sub)[0]|length`; `--rawfile` for whole files
 - [subagent skips @-import expansion](subagent-skips-at-import-expansion.md) — an Agent-tool subagent's claudeMd omits CLAUDE.md's `@path` imports a real session resolves; verify with `claude -p`, not a subagent
+- [Codex review of design docs](codex-review-of-design-docs.md) — `/codex:review <path>` refused / "no actionable defects" on docs: use adversarial-review --base with a focus file; companion needs sandbox off (`mkdir …/jobs` ENOENT); "codex-code-mode-host is missing" despite setup ready
 - [git subtree ensure_clean unscoped](git-subtree-ensure-clean-unscoped.md) — subtree add/pull/push refuse on ANY dirty path via an internal, unbypassable `git diff-index HEAD`; a pathspec fix at the call site can't work around it
 - [Auditing references after a move](reference-audit-after-a-move.md) — a stale-comment sweep scoped to the move under review inherits its blind spot and under-reports; classify every hit of a whole-tree grep against where the symbol lives now
 - [memory frontmatter stamping](cc-memory-frontmatter-stamping.md) — who writes `node_type`/`originSessionId`/`modified`: one function, `stampNewMemoryContent`, on the Edit/Write/memory-write handlers only — never a Bash write; `originSessionId` is written only when absent, so it names the first tool write, not the creator; skips log `not stamping provenance`/`not dating` at warn
