@@ -1,6 +1,6 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` silently drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed outright, /tmp \"No space left\"/\"Out of diskspace\" with du≪df = other sandboxes pin the tmpfs (clear /tmp/claude-1000 caches); escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
+description: "index.lock/\"Another git process\" (only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; a porcelain cleanliness gate reads their `??` as DIRTY; one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed, /tmp \"No space left\"/du≪df = other sandboxes pin the tmpfs; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
 metadata: 
   node_type: memory
   type: reference
@@ -118,6 +118,18 @@ aborts. Stage explicit pathspecs. (`git add -A` is prohibited on its own merits
 regardless; and an explicit pathspec still strands the lock sandboxed, per the
 section above — the exclusion is what fixes both.)
 
+**They make a porcelain-based cleanliness gate report DIRTY against a clean
+tree.** Any check whose rule is "non-empty `git status --porcelain` ⟹ dirty"
+inverts under the sandbox, because the masks are reported as `??` lines
+unconditionally. edify's `verify-step.sh` does exactly this and fails a step
+whose tree is genuinely clean; the failure is indistinguishable from a real one
+in its output. The fix is not to filter the phantom names — the set is
+version-dependent and a filter would hide real untracked files sharing those
+names — but to run the status unsandboxed (`git:*` in `excludedCommands`, per
+the escapes section below), or to scope the gate to tracked paths with
+`git status --porcelain --untracked-files=no` where untracked files are not the
+subject.
+
 **They can be visible with the sandbox off.** Unsandboxed readers — via
 `dangerouslyDisableSandbox` and via `excludedCommands` — have seen the masks
 while some other agent was mid-`Bash` call: a controller's own unsandboxed `git
@@ -233,6 +245,19 @@ ran unsandboxed); the release went through once the log redirect used the
 absolute path — including the cross-repo marketplace push, because the
 classifier evaluates the top-level `just release minor`, not the inner
 `git -C "$MARKETPLACE_DIR" push`.
+
+**`$TMPDIR` is not stable across calls even while sandboxed**, so it is unusable
+as a path that must survive a call boundary. It is the sandbox that exports it,
+per call, and re-confirmed 2026-09-14: a `cp … "$TMPDIR/checkpoint.py.bak"`
+died with `cp: cannot create regular file '/checkpoint.py.bak'` in a session
+whose earlier calls had a working `$TMPDIR`. Treat every use as scoped to the
+single command that expands it. For a backup restored by a *later* call — a
+mutation check, a staged fixture — and for any path written into a subagent
+directive, hardcode the literal scratchpad (`/tmp/claude/<job>/…`, created with
+`mkdir -p`) instead: a subagent shell inherits neither the environment nor the
+cwd, so `$TMPDIR` in a handed-over command is an unset variable at the other
+end. See [[mutation-check-discipline]] for why a restore path that silently
+resolves elsewhere is the expensive case.
 
 **Cost 2 — an unsandboxed command reaches the classifier, and it denies benign
 compounds unpredictably.** Sandboxed commands are auto-allowed
