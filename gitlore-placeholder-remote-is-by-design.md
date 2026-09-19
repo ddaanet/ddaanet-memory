@@ -23,4 +23,4 @@ manufacturing the same false task.
 has a remote whose store does not. It does not hold symmetrically: a store can
 be given a remote by hand while its parent still has none, so a parent's
 missing remote is not a prediction about the store's url. Read both before
-concluding either way. Related: [[gitlore-tier-merge-direction]].
+concluding either way.
