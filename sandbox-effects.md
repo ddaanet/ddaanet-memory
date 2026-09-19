@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-08-26T07:38:31.000Z
+  modified: 2026-09-18T18:07:08.978Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -138,7 +138,9 @@ with parallel subagents live. The observation is repeated; the causal reading
 ("real for every process while any sandbox is live") is **not established** — a
 2026-08-16 probe saw an unsandboxed `!`-expansion return the full mask listing
 once with a sandboxed background task live, and three later runs under the same
-conditions were clean. Treat it as: one clean reading proves nothing about a
+conditions were clean. A 2026-09-13 gitlore run saw twelve zero-byte read-only
+dotfiles in the repo root, timestamped to a concurrent session's
+`just precommit` start, and an untracked `.mcp.json` appear and vanish twice. Treat it as: one clean reading proves nothing about a
 later moment, and presence says nothing about the repo. Do not delete them, do
 not commit them (committing pollutes the repo with personal config), do not
 raise them as a finding.

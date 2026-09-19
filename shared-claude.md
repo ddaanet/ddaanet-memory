@@ -9,6 +9,11 @@ Deliberately not named `CLAUDE.md`: a file by that name here would be injected
 whenever an agent touches this directory, which is the memory store and not a
 place conventions apply.
 
+**The memory size limit does not apply to this file.** A write here draws
+Claude Code's `over the 4KB recall limit … Rewrite it to under 2.8KB now` error
+because the file sits under the memory store. It is `@`-imported whole and
+never recall-fetched: do not shorten, split or summarize it in response.
+
 **This file is the always-in-context tier.** It is the home for a rule that
 must act without being looked up — the scope between a repo's own `CLAUDE.md`
 and `~/.claude/CLAUDE.md`. It is not the memory index: a fact an agent should
@@ -46,6 +51,11 @@ rules that change what the agent does by default.
   not found` is a stale hook path, not a reason to bypass: run
   `(cd /path/to/repo && claude -p ping)` to let the SessionStart hook rewrite
   the shim and repoint `git config gitlore.hooksDir`.
+- **Phantom dotfiles are sandbox masks.** Zero-byte or char-device `.bashrc`,
+  `.zshrc`, `.gitconfig`, `.mcp.json`, `.claude/*` and the like, showing
+  untracked in a repo root, come from the command sandbox and say nothing about
+  the repo. Never delete, commit or report them; `sandbox-effects` has the
+  mechanism.
 - **Run the repo's precommit gate before committing**, unprompted — it is a
   required step, not a suggestion to float. In micro that is `just precommit`.
 - **After a compaction, verify the session root before acting.** Check `PWD`,
@@ -80,7 +90,10 @@ rules that change what the agent does by default.
 - **A dispatch whose output matters names an output file.** The subagent
   writes its report there and replies with one line pointing at it; read the
   file, not the message. An idle reply is not evidence the agent died — check
-  the artifact, `git log`, and the tree before re-dispatching. Never fall back
+  the artifact, `git log`, and the tree before re-dispatching. Tell an executor
+  to run its suite in the foreground: a subagent does not reliably receive a
+  background task's completion notification, and one `SendMessage` to rerun in
+  the foreground recovers one that stalled waiting. Never fall back
   to reading the subagent's transcript: it is the full JSONL conversation and
   overflows the context window.
 - **No volatile git state in memory files** — no commit ids, branch tips, or
