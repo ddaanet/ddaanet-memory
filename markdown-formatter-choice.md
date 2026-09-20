@@ -1,6 +1,6 @@
 ---
 name: markdown-formatter-choice
-description: "picking a prose hard-wrapper: judge by HTML render diff, not text diff; rumdl MD013 reflow has zero render changes, prettier can't keep `*em*`, dprint dedents fenced code, mdslw/remark split code spans and wrap before a literal `+`; `reflow = true` alone only breaks over-limit lines and leaves narrower wrapping as it is (a ~70-col doc comes out *longer*) — `reflow-mode = \"normalize\"` is what re-fills paragraphs, and a line-count cap is only honest against it; wrapping breaks line-grepping doc checkers"
+description: "picking a prose hard-wrapper: judge by HTML render diff, not text diff; rumdl MD013 reflow has zero render changes, prettier can't keep `*em*`, dprint dedents fenced code, mdslw/remark split code spans and wrap before a literal `+`; `reflow = true` alone only breaks over-limit lines and leaves narrower wrapping as it is (a ~70-col doc comes out *longer*) — `reflow-mode = \"normalize\"` is what re-fills paragraphs, and a line-count cap is only honest against it; wrapping breaks line-grepping doc checkers; gating on it: `rumdl fmt --check`, never `rumdl check` (permanently red on an unwrappable line), and `include = [\"*.md\"]` crosses `/` — root-level files are `/*.md`"
 metadata:
   node_type: memory
   type: reference
@@ -49,6 +49,20 @@ Measured on ~100 files of design docs and plans, hard-wrapping at 80:
   start. remark is not idempotent.
 - **pandoc** `-t gfm --columns`: reflows and drops code fences, escapes
   `#` and `**`.
+
+**Wiring rumdl into a gate** (measured on rumdl 0.2.74):
+
+- The non-fixing gate is `rumdl fmt --check -q --no-cache`: silent exit 0 on a
+  clean tree, exit 1 with a unified diff when `fmt` would change a file.
+  `rumdl check` is not usable as the gate — a line it cannot wrap (one long
+  code span, a URL) is reported on every run, so it is permanently red.
+- `include = ["*.md"]` is **not root-anchored**: the `*` crosses `/` and pulls
+  in every tree (`plans/`, `memory/`, `.claude/`). Root-level files are
+  `"/*.md"`.
+- A line guard measured against the reflow needs the formatter check *ahead* of
+  it in the same gate, and any ceiling taken from post-reflow counts — a file
+  carrying 300-character lines gains most of its line count from the reflow,
+  not from new words.
 
 Every wrapper adds a `>` prefix to each newly wrapped continuation line of
 a blockquote paragraph and realigns table separators; that is wrapping, not
