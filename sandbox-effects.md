@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-09-20T12:46:48.275Z
+  modified: 2026-09-20T13:48:00.153Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -275,7 +275,7 @@ mutation check, a staged fixture — and for any path written into a subagent
 directive, hardcode the literal scratchpad (`/tmp/claude/<job>/…`, created with
 `mkdir -p`) instead: a subagent shell inherits neither the environment nor the
 cwd, so `$TMPDIR` in a handed-over command is an unset variable at the other
-end. See [[mutation-check-discipline]] for why a restore path that silently
+end. See the `craft:test-discipline` skill for why a restore path that silently
 resolves elsewhere is the expensive case.
 
 **Cost 2 — an unsandboxed command reaches the classifier, and it denies benign
