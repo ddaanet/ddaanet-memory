@@ -1,6 +1,6 @@
 ---
 name: cc-subagent-approval
-description: "`No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to `SendMessage`; a bare `idle_notification` is not a report"
+description: "`No agent named 'X' is currently addressable`: a one-shot sub-agent has no parent to `SendMessage`; a bare `idle_notification` is not a report; `[result truncated — ask the agent for the rest via SendMessage]` cuts a reply at ~4000 chars, so a dispatch whose deliverable is a report asks for parts plus an end marker up front"
 metadata: 
   node_type: memory
   type: reference
@@ -47,6 +47,16 @@ silent — checking the file directly resolved the stall in one round trip
 instead of repeated re-asks. Cheap enough to make standard practice for
 any SDD reviewer/re-reviewer dispatch, not just a fallback after the first
 stall.
+
+**A reply that comes back as a report is truncated at ~4000 characters**, with a
+literal `[result truncated — ask the agent for the rest via SendMessage]` marker
+where it stopped — observed on four of four long `plugin-dev:skill-reviewer`
+replies. A `Write`-less agent cannot route around it by writing a
+file, so the fix is in the dispatch prompt: tell it up front to send the report in
+parts, each well under 4000 characters, every part ending with a `CONTINUES` line
+and the last with a fixed end marker. Every reviewer told this at spawn delivered
+whole; every one told afterwards had to resend. The end marker is what makes a cut
+detectable at all — without it a truncated report reads as a complete one.
 
 Confirmed Plan 04 Step 3 (2026-05-22) — the old `agents/memory-merger.md` contract had the failed pattern and the sub-agent's own post-mortem identified the gap. Rewritten to two-turn flow; `commands/gitlore/resolve.md` dispatcher updated to match.
 
