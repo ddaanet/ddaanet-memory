@@ -95,7 +95,11 @@ rules that change what the agent does by default.
   background task's completion notification, and one `SendMessage` to rerun in
   the foreground recovers one that stalled waiting. Never fall back
   to reading the subagent's transcript: it is the full JSONL conversation and
-  overflows the context window.
+  overflows the context window. **A reviewer with no `Write` tool cannot name one**,
+  and its reply is cut at ~4000 characters, so ask it at spawn for the report in
+  parts under that size, each part ending with a continuation line and the last
+  with a fixed end marker — without the marker a truncated report reads as a
+  complete one.
 - **No volatile git state in memory files** — no commit ids, branch tips, or
   "uncommitted as of" notes. Identify things by durable names: branches,
   paths, issue numbers. Upstream-main shas are stable but still discouraged.
@@ -168,11 +172,7 @@ rules that change what the agent does by default.
   information and hallucinates. Haiku is fine as an implementer on mechanical,
   isolated tasks. Default shape: Fable designs, Opus drafts, Sonnet executes; keep
   Fable turns lean and code-free, since cheaper agents produce code fine from a prose
-  outline. Two dispatches are fixed regardless: a **test-driver runs sonnet** in
-  both RED and GREEN, and a dispatch whose **deliverable is prose runs opus** —
-  design docs, decision nodes, changelog entries, skills, fragments, agent
-  definitions. Both override a runbook item's own `Model:` line and any model
-  table an execution skill carries; reviewers are untouched and stay opus.
+  outline.
 - **Choose agent boundaries by batching, not by task.** "N tasks" ≠ "N subagents",
   and it does not mean "N tasks → inline" either: the cost a subagent offsets is
   context churn in the main session. A repeat mechanical edit does not disqualify an
