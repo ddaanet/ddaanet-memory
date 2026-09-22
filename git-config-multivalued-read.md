@@ -1,6 +1,6 @@
 ---
 name: git-config-multivalued-read
-description: "`--get` prints the LAST value and exits 0 on a multi-valued key (`remote.origin.pushurl`), and `--unset` refuses one with status 5, so a guard names one of several values and advises a remedy that errors; use `--get-all`/`--unset-all`. Unset key exits 1; `fatal: bad config line` breaks EVERY git call with 128, not just `git config`"
+description: "`--get` prints the LAST value and exits 0 on a multi-valued key (`remote.origin.pushurl`), and `--unset` refuses one with status 5, so a guard names one of several values and advises a remedy that errors; use `--get-all`/`--unset-all`. Unset key exits 1; `fatal: bad config line` breaks EVERY git call with 128, not just `git config`. `git config -z --get-regexp \"$key\"` (the shared whitespace default) is a regex over the key name, so an interpolated branch name with `.`/`+`/`$` matches the wrong keys; `--get-all` and read one value per line"
 metadata: 
   node_type: memory
   type: reference
