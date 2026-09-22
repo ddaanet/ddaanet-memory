@@ -1,11 +1,11 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; a porcelain cleanliness gate reads their `??` as DIRTY; one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed, /tmp \"No space left\"/du≪df = other sandboxes pin the tmpfs; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
+description: "index.lock/\"Another git process\" (only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; a porcelain cleanliness gate reads their `??` as DIRTY; one clean reading proves nothing; `rm`/`git clean -f` on one = \"Device or resource busy\"/`warning: failed to remove`, and nothing is there to remove; masks outliving the command that made them = leak, restart clears), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed, /tmp \"No space left\"/du≪df = other sandboxes pin the tmpfs; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-09-18T18:07:08.978Z
+  modified: 2026-09-20T13:48:00.153Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -26,6 +26,7 @@ without the entries.
 | `Unable to create '.git/index.lock': File exists` | `.git/index.lock` |
 | `.bashrc`/`.zshrc`/`.claude/skills` as untracked; `can only add regular files` | Phantom dotfiles |
 | a slash command's `## Context` lists phantom dotfiles | Phantom dotfiles |
+| `rm`/`git clean -f` on a phantom: `Device or resource busy` | Phantom dotfiles |
 | `Device or resource busy` / `Read-only file system` on `.claude/settings.json`, `.git/config`, `hooks/hooks.json` | Harness-mounted config paths |
 | `Read-only file system` from `git -C <other-worktree>`, `cp`/`mv` into another repo | Sibling worktree writes |
 | `$TMPDIR` expands empty, `/foo.log: Permission denied`; a benign compound denied | Leaving the sandbox |
@@ -129,6 +130,24 @@ names — but to run the status unsandboxed (`git:*` in `excludedCommands`, per
 the escapes section below), or to scope the gate to tracked paths with
 `git status --porcelain --untracked-files=no` where untracked files are not the
 subject.
+
+**A mask outliving its command is a leak, and restarting Claude Code clears
+it.** The masks exist for the duration of a sandboxed command — any one,
+including a subagent's or a concurrent session's — and are torn down when it
+completes, so an unsandboxed reader that sees them is normally catching one
+mid-run. Masks still present with *nothing running* are the anomaly; a restart
+removes them, and deleting them is neither possible nor the remedy. Observed
+CC 2.1.278 in handoff: the full set stood in an idle tree across several turns,
+and was gone after a restart.
+
+**Trying to delete one looks like a real failure.** Inside a sandboxed command
+the mask is a mount point in that command's own namespace, so `rm` reports
+`Device or resource busy` and `git clean -f` prints one `warning: failed to
+remove <path>` per mask while removing nothing — meaningless either way, since
+no such file exists on disk. Asked to "remove the stray untracked files", read
+the tree with a `git` command first (unsandboxed via `excludedCommands`, so
+`git status -s` reports the truth) and report there is nothing to remove; if
+phantoms show there with nothing running, restart instead of deleting.
 
 **They can be visible with the sandbox off.** Unsandboxed readers — via
 `dangerouslyDisableSandbox` and via `excludedCommands` — have seen the masks
@@ -258,7 +277,7 @@ mutation check, a staged fixture — and for any path written into a subagent
 directive, hardcode the literal scratchpad (`/tmp/claude/<job>/…`, created with
 `mkdir -p`) instead: a subagent shell inherits neither the environment nor the
 cwd, so `$TMPDIR` in a handed-over command is an unset variable at the other
-end. See [[mutation-check-discipline]] for why a restore path that silently
+end. See the `craft:test-discipline` skill for why a restore path that silently
 resolves elsewhere is the expensive case.
 
 **Cost 2 — an unsandboxed command reaches the classifier, and it denies benign

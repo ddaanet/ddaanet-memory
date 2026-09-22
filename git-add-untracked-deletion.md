@@ -5,6 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 7d5af2b9-5693-46c1-9d6b-c3bc01e2a2ec
+  modified: 2026-09-20T13:47:48.299Z
 ---
 
 A path that is gitignored, absent from disk, and never entered the index cannot
@@ -37,5 +38,5 @@ every real failure (a stranded `index.lock`, [[sandbox-effects]]).
 
 So read its exit status explicitly and test the output separately. Do not fold
 the two into `[ -z "$(git ls-files -- "$p")" ]`: that spelling discards the
-command's status and reads a git failure as "not tracked"
-([[errexit-blind-inside-test]]).
+command's status and reads a git failure as "not tracked" (the
+`shell-scripting:shell-gotchas` skill).
