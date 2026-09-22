@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 653ffbf7-f68c-4579-bda5-017506d33c78
-  modified: 2026-09-02T15:22:51.886Z
+  modified: 2026-09-22T08:31:51.054Z
 ---
 
 Judge a markdown re-formatter by rendering every file to HTML with cmark-gfm
@@ -54,4 +54,5 @@ Every wrapper adds a `>` prefix to each newly wrapped continuation line of
 a blockquote paragraph and realigns table separators; that is wrapping, not
 a change. A wrapper also breaks any line-oriented doc checker that greps a
 bullet for content — join a `- ` bullet with its indented continuation lines
-before matching (see [[uv-direnv-venv]] for how rumdl gets installed).
+before matching (see [[uv-direnv-venv]] for how rumdl gets installed), and
+re-fills a field-per-line layout into prose — [[reflow-joins-field-lines]].
