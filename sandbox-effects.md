@@ -1,6 +1,6 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; a porcelain cleanliness gate reads their `??` as DIRTY; one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed, /tmp \"No space left\"/du≪df = other sandboxes pin the tmpfs; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
+description: "index.lock/\"Another git process\" (only a real lock survives unsandboxed), phantom dotfiles as zero-byte files, or a porcelain cleanliness gate reading their `??` as DIRTY, sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
 metadata: 
   node_type: memory
   type: reference
@@ -24,7 +24,7 @@ without the entries.
 | symptom | section |
 |---|---|
 | `Unable to create '.git/index.lock': File exists` | `.git/index.lock` |
-| `.bashrc`/`.zshrc`/`.claude/skills` as untracked; `can only add regular files` | Phantom dotfiles |
+| `.bashrc`/`.zshrc`/`.claude/skills` untracked or zero-byte; a porcelain gate reports DIRTY | Phantom dotfiles |
 | a slash command's `## Context` lists phantom dotfiles | Phantom dotfiles |
 | `Device or resource busy` / `Read-only file system` on `.claude/settings.json`, `.git/config`, `hooks/hooks.json` | Harness-mounted config paths |
 | `Read-only file system` from `git -C <other-worktree>`, `cp`/`mv` into another repo | Sibling worktree writes |
@@ -34,7 +34,6 @@ without the entries.
 | `There is no active session!` from zellij | zellij |
 | a `SessionStart` side effect never happened after `claude -p` | `claude -p` |
 | `apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument` | Sandbox setup fails |
-| `No space left on device` / `Out of diskspace` under `/tmp`, `du` far below `df` | `/tmp` reads full |
 
 ## `.git/index.lock`: one error string, three causes
 
@@ -81,42 +80,10 @@ fails sandboxed or not — an unsandboxed retry succeeding is what rules it out.
 
 ## Phantom dotfiles: the `/dev/null` masks
 
-The sandbox bind-mounts `/dev/null` over a closed set of paths in the
-**session's project root** — every file a repository could use to hijack
-execution. Measured 2026-08-15 in gitlore by diffing sandboxed listings against
-unsandboxed ones, 22 paths stat as `crw-rw-rw- nobody nogroup 1, 3`:
-
-```
-.bash_profile .bashrc .gitconfig .idea .mcp.json .profile .ripgreprc
-.vscode .zprofile .zshrc
-.claude/{agents,commands,hooks,launch.json,loop.md,output-styles,routines,
-         scheduled_tasks.json,skills,workflows}
-.git/config.lock .git/config.worktree
-```
-
-Scope is the project root, not the cwd: a listing of a subdirectory is clean
-with the cwd set there, and `find -maxdepth 1 -type c` returns zero in other
-repo roots, so cross-repo commands are unaffected and a deny predicate can be
-anchored to `CLAUDE_PROJECT_DIR`. The two `.git/` entries are why `git
-checkout`/`reset --hard` hit `Device or resource busy` on `.git/config` (next
-section). A second masking shape exists: since 2026-07-20 deny-listed paths have
-also appeared as **zero-byte read-only regular files** (`-r--r--r-- … 0`), a
-path that ought to be a directory getting a zero-byte file too.
-
-**Every masked name begins with a dot, which decides who sees them.** Plain
-`ls` shows none; `ls -a` shows them; `find` lists them unconditionally; `rg`
-shows none (hidden skipped by default); `grep -r` finds nothing in them, since
-a `/dev/null` mask reads as immediate EOF; `cat`/`head` of one returns empty.
-So the corrupted commands are `ls -a`, `find`, `du`, `tree` and the `git status`
-family — `git status` reports them as `??`, and sandboxed `git ls-files
---others --exclude-standard` reported 19 untracked paths in gitlore where the
-truth was 3. Nothing in the output marks them as artefacts.
-
-**They break `git add -A` under the sandbox**: `error: .bash_profile: can only
-add regular files, symbolic links or git-directories`, and the whole `add`
-aborts. Stage explicit pathspecs. (`git add -A` is prohibited on its own merits
-regardless; and an explicit pathspec still strands the lock sandboxed, per the
-section above — the exclusion is what fixes both.)
+Besides the `/dev/null` character-device masks, since 2026-07-20 deny-listed
+paths have also appeared as **zero-byte read-only regular files**
+(`-r--r--r-- … 0`), a path that ought to be a directory getting a zero-byte
+file too.
 
 **They make a porcelain-based cleanliness gate report DIRTY against a clean
 tree.** Any check whose rule is "non-empty `git status --porcelain` ⟹ dirty"
@@ -129,21 +96,6 @@ names — but to run the status unsandboxed (`git:*` in `excludedCommands`, per
 the escapes section below), or to scope the gate to tracked paths with
 `git status --porcelain --untracked-files=no` where untracked files are not the
 subject.
-
-**They can be visible with the sandbox off.** Unsandboxed readers — via
-`dangerouslyDisableSandbox` and via `excludedCommands` — have seen the masks
-while some other agent was mid-`Bash` call: a controller's own unsandboxed `git
-status` showed a clean tree one moment and fourteen phantom dotfiles the next
-with parallel subagents live. The observation is repeated; the causal reading
-("real for every process while any sandbox is live") is **not established** — a
-2026-08-16 probe saw an unsandboxed `!`-expansion return the full mask listing
-once with a sandboxed background task live, and three later runs under the same
-conditions were clean. A 2026-09-13 gitlore run saw twelve zero-byte read-only
-dotfiles in the repo root, timestamped to a concurrent session's
-`just precommit` start, and an untracked `.mcp.json` appear and vanish twice. Treat it as: one clean reading proves nothing about a
-later moment, and presence says nothing about the repo. Do not delete them, do
-not commit them (committing pollutes the repo with personal config), do not
-raise them as a finding.
 
 **A slash command's `## Context` block is a Bash call.** The injection is
 `` !`cmd` `` expansion in the command body (`commit-commands/commands/commit.md`
@@ -495,22 +447,3 @@ single-purpose calls.
 **How to apply:** retry the identical command once, unchanged. If it fails the
 same way immediately, split it. Escape the sandbox only after both, rather than
 giving it up on first sight.
-
-## `/tmp` reads full while `du` finds little
-
-A write under `/tmp` (where `$TMPDIR` lives) fails with `No space left on
-device` — git spells it `Out of diskspace` — while `df` shows the tmpfs at
-100% and `du` over every visible file, root included, accounts for a fraction
-of it, with `lsof +L1` finding no deleted-but-open files. Observed on the
-ddaanet box 2026-09-01: 2.0G tmpfs, 100% used, ~374M visible. The unreachable
-remainder sits with other live Claude sessions: each sandbox holds bind-mounts
-of subtrees of the same tmpfs superblock in its own mount namespace, so pages
-referenced only there are invisible to any `du` run in this one, and they free
-only when those sessions exit.
-
-**How to apply:** reclaim the visible part and skip the forensics —
-`/tmp/claude-1000` accumulates `uv-cache`, `npm-cache`, `dprint-cache` and
-hundreds of leaked `gitlore-test.*`/`bats-run-*` scratch dirs from killed
-suites (a killed bats run skips teardown); clearing those is safe, and is the
-recoverable share whatever holds the rest. Chasing the gap with
-`lsof`/`findmnt` costs calls and changes nothing.
