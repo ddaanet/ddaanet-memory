@@ -1,6 +1,6 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (only a real lock survives unsandboxed), phantom dotfiles as zero-byte files, or a porcelain cleanliness gate reading their `??` as DIRTY, sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
+description: "index.lock/\"Another git process\" (only a real lock survives unsandboxed), phantom dotfiles (the zero-byte mask shape; a porcelain cleanliness gate reads their `??` as DIRTY), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
 metadata: 
   node_type: memory
   type: reference
@@ -24,7 +24,7 @@ without the entries.
 | symptom | section |
 |---|---|
 | `Unable to create '.git/index.lock': File exists` | `.git/index.lock` |
-| `.bashrc`/`.zshrc`/`.claude/skills` untracked or zero-byte; a porcelain gate reports DIRTY | Phantom dotfiles |
+| `.bashrc`/`.zshrc`/`.claude/skills` as zero-byte read-only files; a porcelain gate reports DIRTY | Phantom dotfiles |
 | a slash command's `## Context` lists phantom dotfiles | Phantom dotfiles |
 | `Device or resource busy` / `Read-only file system` on `.claude/settings.json`, `.git/config`, `hooks/hooks.json` | Harness-mounted config paths |
 | `Read-only file system` from `git -C <other-worktree>`, `cp`/`mv` into another repo | Sibling worktree writes |
