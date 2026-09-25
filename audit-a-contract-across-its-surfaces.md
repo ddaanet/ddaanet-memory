@@ -34,8 +34,10 @@ the enforcer from the one repair that was not the thing being banned, and the
 consumer never checked the rule at all — so the silent failure the contract
 existed to close was open on every side but the author's own discipline.
 
-The same shape one level up from [[reference-audit-after-a-move]]: there the
-under-covering scope is the diff, here it is the finding list. Both fail the
+The same shape one level up from a stale-reference sweep scoped to the diff
+under review, which misses drift an earlier change left in the same files
+(`craft:removing-cleanly` carries that rule): there the under-covering scope is
+the diff, here it is the finding list. Both fail the
 same way, by reporting clean over exactly the ground they did not look at.
 See [[examine-evidence-drift]] on establishing which of two co-maintained
 surfaces is authoritative before deciding one is stale.
