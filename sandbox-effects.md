@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-09-20T13:48:00.153Z
+  modified: 2026-09-25T16:07:40.174Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -400,9 +400,9 @@ out, and both then look like the first one failing.
 
 **How to apply:** treat the task's output file, and whatever durable artifact
 the job writes on success, as the signals about a background job, and a process
-listing as no signal at all. The completion notification is a signal too, but
-not a dependable one: inside a subagent it may never arrive while the run
-finishes normally, so it is never the only thing waited on
+listing as no signal at all. The completion notification is a signal too, and
+it does reach a subagent — an agent left waiting is stalled on a watcher of its
+own rather than on a notification that never came
 ([[cc-bash-background-no-duration-cap]]). When waiting on one, key the wait on
 the command's exit rather than on a line of its output that reads as terminal —
 a bats summary line prints before the recipe has run its remaining steps.

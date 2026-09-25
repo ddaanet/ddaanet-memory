@@ -90,10 +90,13 @@ rules that change what the agent does by default.
 - **A dispatch whose output matters names an output file.** The subagent
   writes its report there and replies with one line pointing at it; read the
   file, not the message. An idle reply is not evidence the agent died — check
-  the artifact, `git log`, and the tree before re-dispatching. Tell an executor
-  to run its suite in the foreground: a subagent does not reliably receive a
-  background task's completion notification, and one `SendMessage` to rerun in
-  the foreground recovers one that stalled waiting. Never fall back
+  the artifact, `git log`, and the tree before re-dispatching. A gate near the
+  Bash tool's 10-minute cap is backgrounded by the harness however it is
+  launched, and the executor does receive the task-notification: tell it to
+  wait for that and build no watcher. An executor idle "waiting for the
+  watcher" already has the verdict: one `SendMessage` telling it to
+  `TaskStop` the watcher, then read the gates and commit, recovers it; finish
+  the slice yourself only if that resume returns without progress. Never fall back
   to reading the subagent's transcript: it is the full JSONL conversation and
   overflows the context window. **A reviewer with no `Write` tool cannot name one**,
   and its reply is cut at ~4000 characters, so ask it at spawn for the report in
