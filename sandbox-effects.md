@@ -1,11 +1,11 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (only a real lock survives unsandboxed), phantom dotfiles (the zero-byte mask shape; a porcelain cleanliness gate reads their `??` as DIRTY), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset unsandboxed and unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
+description: "phantom dotfiles (the zero-byte mask shape; a porcelain cleanliness gate reads their `??` as DIRTY), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, a multi-turn `--resume` eval harness must run unsandboxed, $TMPDIR unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve; NOT honoured on CC 2.1.283 — a git call runs sandboxed despite `git:*`; a visible mask never proves a call sandboxed, a refused `touch /tmp/x` does)"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-09-18T18:07:08.978Z
+  modified: 2026-09-26T11:30:00.575Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -14,69 +14,42 @@ section stands alone and is keyed by the symptom an agent arrives holding.
 
 **Baseline the rest of the file assumes:** `/sandbox` set to *unsandboxed
 fallback* (not strict), auto mode on, and user-scope
-`sandbox.excludedCommands: ["git:*", "find:*", "ls:*", "claude:*"]`. Under that
-configuration every top-level `git`, `find`, `ls` and `claude` segment already
+`sandbox.excludedCommands: ["git:*", "find:*", "ls:*", "claude:*"]`. Where the
+exclusion is honoured, every top-level `git`, `find`, `ls` and `claude` segment
 runs outside the sandbox with no flag, so most sections below are met only
-where the exclusion does not reach: a command nested in `( … )`, `$( … )` or
-`sh -c`, a `just` recipe or script that runs git internally, or a machine
-without the entries.
+where it does not reach: a command nested in `( … )`, `$( … )` or `sh -c`, a
+`just` recipe or script that runs git internally, or a machine without the
+entries.
+
+An exclusion match silently sets `dangerouslyDisableSandbox` for a command
+visible in the call's own text; it changes nothing about what that command
+sees of *other* calls' sandboxes. Mask paths are visible from every process
+while any sandboxed command runs, this session's or a parallel agent's, so
+the evidence runs one way: no mask where one would show proves the call ran
+unsandboxed, but a mask proves nothing about it. Test with a write the sandbox
+refuses and no mask can cause: `touch /tmp/<name>` fails `Read-only file
+system` only inside the sandbox.
+
+**On CC 2.1.283 the entries are not honoured.** With `git:*` in user settings,
+`git --version && touch /tmp/sbx-probe-git` failed `Read-only file system`,
+and the same `touch` with `dangerouslyDisableSandbox` succeeded (2026-09-26);
+the call's `${TMPDIR-UNSET}` also read the sandboxed `/tmp/claude-1000`, not
+the unsandboxed `/tmp`. The sandbox config injected into the session lists no
+`excludedCommands`. Treat every git call as sandboxed and pass
+`dangerouslyDisableSandbox` where it has to escape; re-probe with the `/tmp`
+write before relying on the exclusion again.
 
 | symptom | section |
 |---|---|
-| `Unable to create '.git/index.lock': File exists` | `.git/index.lock` |
 | `.bashrc`/`.zshrc`/`.claude/skills` as zero-byte read-only files; a porcelain gate reports DIRTY | Phantom dotfiles |
 | a slash command's `## Context` lists phantom dotfiles | Phantom dotfiles |
 | `Device or resource busy` / `Read-only file system` on `.claude/settings.json`, `.git/config`, `hooks/hooks.json` | Harness-mounted config paths |
 | `Read-only file system` from `git -C <other-worktree>`, `cp`/`mv` into another repo | Sibling worktree writes |
-| `$TMPDIR` expands empty, `/foo.log: Permission denied`; a benign compound denied | Leaving the sandbox |
+| `$TMPDIR` expands empty in a sandboxed call; a benign compound denied | Leaving the sandbox |
 | `ps` shows nothing but your own shell | `ps` |
-| `No conversation found with session ID` | `--resume` |
+| every two-turn eval scenario fails 0/5 under `just prerelease` | Multi-turn `claude` flows |
 | `There is no active session!` from zellij | zellij |
 | a `SessionStart` side effect never happened after `claude -p` | `claude -p` |
-| `apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument` | Sandbox setup fails |
-
-## `.git/index.lock`: one error string, three causes
-
-`fatal: Unable to create '.git/index.lock': File exists. Another git process
-seems to be running` names a concurrent process that usually does not exist.
-Three causes share the string, and the correct action is opposite between them,
-so run the discriminator before touching anything:
-
-1. **Run the existence test unsandboxed** — `ls -la .git/index.lock` with
-   `dangerouslyDisableSandbox: true`.
-2. **Path absent unsandboxed → a mask.** The sandbox can present
-   `.git/index.lock` itself as a masked path, so `git commit`/`git add` fail
-   over a lock that does not exist. Tells: the message is self-contradictory
-   (creation *failed*, yet a file is *there*), a zero-byte lock, no git process
-   in `ps`, a sandboxed `ls` that showed nothing a moment earlier. Leave it
-   alone and re-run the command unsandboxed. This can start mid-session;
-   earlier commits in the same session went through sandboxed.
-3. **Path absent, but the failure came right after a sandboxed `git add` → a
-   stranded lock.** A `git add` inside the sandbox can stage successfully while
-   failing to remove the lock; the *next* command's `pre-commit` hook runs its
-   own `git add`, cannot take the lock, and the commit aborts — after which git
-   cleans the lock, so the evidence is destroyed by the time you look. Observed
-   2026-07-21 in gitlore on `git add <file> && git commit` in one sandboxed
-   call. Re-running the identical command unsandboxed succeeds.
-4. **Path persists unsandboxed, no process holds it (`fuser` empty), an
-   unsandboxed write fails the same way → genuinely stale.** `rm` it; the write
-   recovers and it does not reappear. On 2026-07-23 a `.git/config.lock` looked
-   exactly like a mask (`-r--r--r-- … 0`, synthetic-identical
-   birth/mtime/ctime) and was real: an orphan from a `git config` write killed
-   mid-rename two days earlier, plausibly OOM, surfacing as `could not lock
-   config file .git/config: File exists` from gitlore's `SessionStart` hook.
-
-The 0-byte/read-only shape alone proves nothing. Deleting a lock you have not
-proven stale is the dangerous move, and the sandbox makes an entirely healthy
-repo look like a crashed one.
-
-**Do not "fix" the hook in response.** `GIT_TRACE=1 git commit` unsandboxed
-prints `run_command: GIT_EDITOR=: GIT_INDEX_FILE=.git/index …/hooks/pre-commit`,
-proving git has NOT taken `index.lock` when `pre-commit` runs, so a hook's bare
-`git add` is legitimate. A staging hook's `GIT_INDEX_FILE` capture/restore
-([[git-hook-env-leak]]) is a different bug with the same error string: that one
-fires under `-a`/pathspec commits where git really does hold the lock, and it
-fails sandboxed or not — an unsandboxed retry succeeding is what rules it out.
 
 ## Phantom dotfiles: the `/dev/null` masks
 
@@ -92,8 +65,9 @@ unconditionally. edify's `verify-step.sh` does exactly this and fails a step
 whose tree is genuinely clean; the failure is indistinguishable from a real one
 in its output. The fix is not to filter the phantom names — the set is
 version-dependent and a filter would hide real untracked files sharing those
-names — but to run the status unsandboxed (`git:*` in `excludedCommands`, per
-the escapes section below), or to scope the gate to tracked paths with
+names — but to run the status unsandboxed (`dangerouslyDisableSandbox`, or
+`git:*` in `excludedCommands` where honoured, per the escapes section below),
+or to scope the gate to tracked paths with
 `git status --porcelain --untracked-files=no` where untracked files are not the
 subject.
 
@@ -191,15 +165,6 @@ quoted argument, a double space, `/bin/ls`). Mutating operations (`git commit`,
 `push`, `reset`, `checkout -- …`, anything that writes) are NOT covered and
 follow normal confirmation rules.
 
-**Cost 1 — `$TMPDIR` is unset when unsandboxed.** The sandbox is what exports
-it, so `cmd > "$TMPDIR/foo.log"` expands to `/foo.log` and dies with
-`Permission denied`. Use the absolute scratchpad path in any unsandboxed call.
-Hit on `just release minor` (network for `git push`/`gh`, so the whole recipe
-ran unsandboxed); the release went through once the log redirect used the
-absolute path — including the cross-repo marketplace push, because the
-classifier evaluates the top-level `just release minor`, not the inner
-`git -C "$MARKETPLACE_DIR" push`.
-
 **`$TMPDIR` is not stable across calls even while sandboxed**, so it is unusable
 as a path that must survive a call boundary. It is the sandbox that exports it,
 per call, and re-confirmed 2026-09-14: a `cp … "$TMPDIR/checkpoint.py.bak"`
@@ -239,12 +204,16 @@ published against a stale marketplace entry (confirmed 2026-07-30, gitlore
 0.4.4). `just resume-release` (plugin-dev >= 0.5.0) recovers a half-landed one,
 but only unsandboxed: its `bump_marketplace` runs that `mv` unconditionally,
 before comparing local and remote heads. `git:*` does not reach a git call
-inside a recipe — `just` is the top-level segment.
+inside a recipe — `just` is the top-level segment. The classifier likewise
+judges an unsandboxed recipe by its top-level command: an unsandboxed
+`just release minor` went through whole, its cross-repo
+`git -C "$MARKETPLACE_DIR" push` included.
 
 ## `excludedCommands` unsandboxes the WHOLE call
 
 Decompiled from CC 2.1.233 and confirmed by probe (`${TMPDIR-UNSET}` is the
-discriminator: `/tmp/claude-1000` sandboxed, `UNSET` not):
+discriminator: `/tmp/claude-1000` sandboxed; `UNSET` unsandboxed then, `/tmp`
+on CC 2.1.283). Not honoured at all on CC 2.1.283 — see the baseline above:
 
 - **Entries are permission-rule patterns, not plain strings.** `foo bar` is
   exact; `foo bar:*` is a prefix matching `foo bar` or `foo bar` + a space +
@@ -340,16 +309,10 @@ finishes normally, so it is never the only thing waited on
 the command's exit rather than on a line of its output that reads as terminal —
 a bats summary line prints before the recipe has run its remaining steps.
 
-## `--resume` dies because the transcript never persisted
+## Multi-turn `claude` flows must run unsandboxed
 
-Inside the sandbox the API is reachable, but `~/.claude/projects/` (where
-session transcripts are written) is read-only. So a `claude --print` turn
-completes and returns a `session_id`, yet its transcript is never persisted —
-and a following `claude --print --resume <id>` fails with "No conversation found
-with session ID". The Agent SDK's `query()` has the same failure (it also spawns
-a subprocess and resumes by id). Verified 2026-07-17: `touch
-~/.claude/projects/.probe` returns "Read-only file system"; the identical
-two-turn resume that failed sandboxed returned `subtype: success` unsandboxed.
+A sandboxed `claude --print` turn never persists its transcript, so resuming it
+by id fails; the Agent SDK's `query()` resumes the same way.
 
 **Consequence for eval/harness design:** any two-turn (or N-turn) flow relying
 on `--resume` must run **unsandboxed** (`dangerouslyDisableSandbox`, the
@@ -423,27 +386,3 @@ sandboxed one is fine only when you need just the model's textual reply.
 The `plugin-craft:hook-authoring` skill establishes that `SessionStart` fires under
 `--print` at all — that finding was made unsandboxed; this is the
 sandbox-specific caveat on top of it.
-
-## Sandbox setup itself fails: `apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument`
-
-Distinct from every symptom above (a specific path/socket denied): the
-sandboxing mechanism can fail to initialize at all, so an arbitrary command —
-including a trivial read-only `grep` on a local file — errors immediately with
-`apply-seccomp: unshare(CLONE_NEWUSER): Invalid argument` and no other output,
-before the command itself runs. None of the file/lock/socket diagnostics above
-apply, since the error names no path or operation.
-
-**It is transient, so the remedy is a plain retry, not an unsandboxed one.**
-The standing-policy cause that would make retrying pointless does not obtain on
-the ddaanet box (`kernel.unprivileged_userns_clone = 1`,
-`user.max_user_namespaces = 2147483647`); `unshare(2)` returns `EINVAL` for
-`CLONE_NEWUSER` in a multithreaded caller, a per-invocation condition, and the
-box OOMs near 2 GB, so a transient failure at namespace setup is the live
-reading. Confirmed 2026-08-15 three times: the byte-identical command retried
-unchanged succeeded. The retry is not perfectly reliable — one multi-statement
-command failed twice consecutively and went through once split into smaller
-single-purpose calls.
-
-**How to apply:** retry the identical command once, unchanged. If it fails the
-same way immediately, split it. Escape the sandbox only after both, rather than
-giving it up on first sight.
