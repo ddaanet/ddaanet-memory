@@ -1,11 +1,11 @@
 ---
 name: sandbox-effects
-description: "phantom dotfiles (the zero-byte mask shape; a porcelain cleanliness gate reads their `??` as DIRTY), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, a multi-turn `--resume` eval harness must run unsandboxed, $TMPDIR unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve; NOT honoured on CC 2.1.281 — a git call runs sandboxed despite `git:*`; a visible mask never proves a call sandboxed, a refused `touch /tmp/x` does)"
+description: "phantom dotfiles (the zero-byte mask shape; a porcelain cleanliness gate reads their `??` as DIRTY), a merge killed mid-way by a sandbox write refusal leaves files updated with HEAD unmoved (recover before retrying), a multi-turn `--resume` eval harness must run unsandboxed, $TMPDIR unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve; NOT honoured on CC 2.1.281 — a git call runs sandboxed despite `git:*`; a visible mask never proves a call sandboxed, a refused `touch /tmp/x` does)"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-09-26T11:30:00.575Z
+  modified: 2026-09-26T15:03:41.851Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -43,8 +43,7 @@ write before relying on the exclusion again.
 |---|---|
 | `.bashrc`/`.zshrc`/`.claude/skills` as zero-byte read-only files; a porcelain gate reports DIRTY | Phantom dotfiles |
 | a slash command's `## Context` lists phantom dotfiles | Phantom dotfiles |
-| `Device or resource busy` / `Read-only file system` on `.claude/settings.json`, `.git/config`, `hooks/hooks.json` | Harness-mounted config paths |
-| `Read-only file system` from `git -C <other-worktree>`, `cp`/`mv` into another repo | Sibling worktree writes |
+| after a merge died mid-way, `git status` lists files already at the target while HEAD has not moved | Interrupted merge |
 | `$TMPDIR` expands empty in a sandboxed call; a benign compound denied | Leaving the sandbox |
 | `ps` shows nothing but your own shell | `ps` |
 | every two-turn eval scenario fails 0/5 under `just prerelease` | Multi-turn `claude` flows |
@@ -84,61 +83,18 @@ act on the injected listing: re-run `git status` unsandboxed first (a
 2026-05-24 `/commit` context showed ~14 untracked dotfiles where the
 unsandboxed tree had one build artefact).
 
-## Harness-mounted config paths are busy/read-only
+## Interrupted merge: recover before retrying
 
-The harness mounts certain paths as busy/read-only/char-devices:
-`.claude/settings.json`, `.claude/settings.local.json`, `.git/config`,
-`.mcp.json`, `.gitconfig`, `.gitmodules` and similar, and the sandbox denies
-writes to `.claude/settings.json` outright. Any operation that unlinks or
-rewrites one *in place* fails under the sandbox with `Device or resource busy`
-or `Read-only file system`:
-
-- `git checkout <branch>` and `git reset --hard` — cannot unlink or overwrite
-  the protected files.
-- `git branch -d` — warns "could not write `.git/config`"; the branch is
-  deleted anyway.
-- Tools doing an atomic `mktemp` + `mv` into these paths (e.g.
-  `claude-plugin-dev`'s `install.sh` settings-merge), because the `mktemp`
-  lands on a different device.
-- **A plugin's own `hooks/hooks.json`, when it is the active hooks config for
-  the session.** In gitlore's own repo a sandboxed `git checkout`/`git merge
-  --ff-only` that changes `hooks/hooks.json` dies with `unable to unlink old
-  'hooks/hooks.json': Read-only file system` — the live hooks config is held
-  read-only regardless of the write allowlist; every other file in the same
-  merge updates normally. Confirmed 2026-07-24; the identical command succeeded
-  unsandboxed.
-
-**How to apply:** run those operations unsandboxed (`git:*` does this for the
-git forms). When `checkout` + `merge` choke on the protected files, a plain
+A sandboxed `git merge --ff-only` that dies on a harness-mounted path — the
+session's live `hooks/hooks.json`, held read-only whatever the write allowlist
+says — can leave the working tree PARTIALLY updated to the target's content for
+files processed before the failure, while HEAD stays at the pre-merge commit
+(git does not roll back files it already wrote). Before retrying, `git status`
+and diff any "modified" files against the merge target — if they already match
+it exactly, `git checkout HEAD -- <files>`, remove any untracked new files the
+target added, THEN retry the merge unsandboxed in one shot rather than resuming
+piecemeal. When `checkout` + `merge` choke on the protected files, a plain
 `git reset --hard <branchtip>` unsandboxed completes the fast-forward cleanly.
-Writes to `.claude/settings.json` go through the built-in **`update-config`**
-skill ("configure the Claude Code harness via settings.json"): verified on CC
-2.1.233 writing `sandbox.excludedCommands` to user scope via `Edit`, which the
-classifier did not refuse. Whether that route also clears the `enabledPlugins`
-denial ([[classifier-denied-self-config]]) is untested. The contrast stands
-either way: a harness tool is not under the command sandbox, a raw git unlink
-of the same path is.
-
-**Recovering a merge interrupted mid-way by this failure:** a `git merge
---ff-only` that dies on `hooks/hooks.json` can leave the working tree
-PARTIALLY updated to the target's content for files processed before the
-failure, while HEAD stays at the pre-merge commit (git does not roll back files
-it already wrote). Before retrying, `git status` and diff any "modified" files
-against the merge target — if they already match it exactly, `git checkout
-HEAD -- <files>`, remove any untracked new files the target added, THEN retry
-the merge unsandboxed in one shot rather than resuming piecemeal.
-
-## Sibling worktree writes
-
-The sandbox's write allowlist covers the session's working directories plus
-`.git` and nothing else. From a linked worktree, a git op writing a *sibling*
-path fails with `Read-only file system` — `git -C <main-root> merge/push
-<branch>` (finishing a worktree branch into main), `git worktree remove
-<other>` — and so does a plain `cp`/`mv` into another repo. The merge
-half-prints "Updating …" then aborts cleanly (no `MERGE_HEAD`). Retry
-unsandboxed; where the user's own prompt asked for the write, the auto
-classifier lets the retry through, so routing around the denial with a tool
-that is not under the command sandbox buys nothing and loses the shell.
 
 ## Leaving the sandbox: the two escapes and what they cost
 
@@ -190,16 +146,19 @@ stable rule separates them — the pipe is not it. Mitigation is shape, not
 settings: keep an excluded command in its own call rather than appending a
 compound to it. A classifier call is one model call over cached context with no
 generation, cheaper than an agent turn, so batching `cd <E> && git status` into
-one call still beats splitting it.
+one call still beats splitting it. It does let through the unsandboxed retry of
+a write the user's own prompt asked for, so routing around a sandbox write
+refusal with a tool not under the command sandbox buys nothing and loses the
+shell.
 
 **Cost 3 — a recipe that must run unsandboxed must run *entirely* so.**
 `.envrc` vars pass through the sandbox (`MARKETPLACE_DIR`, `DIRENV_*` — direnv
 runs in the launching shell), but the variable arriving does not make the path
 it names writable. A sandboxed `just release` gets through the bump, commit,
-tag, `git push` and `gh release create`, then dies on the marketplace step:
-`mv` of the `mktemp` file onto `$MARKETPLACE_DIR/.claude-plugin/marketplace.json`
-reports `inter-device move failed … unable to remove target: Read-only file
-system`. Every step before it is irreversible, so the plugin is left tagged and
+tag, `git push` and `gh release create`, then dies on the marketplace step,
+whose `mv` of a `mktemp` file onto
+`$MARKETPLACE_DIR/.claude-plugin/marketplace.json` the sandbox refuses. Every
+step before it is irreversible, so the plugin is left tagged and
 published against a stale marketplace entry (confirmed 2026-07-30, gitlore
 0.4.4). `just resume-release` (plugin-dev >= 0.5.0) recovers a half-landed one,
 but only unsandboxed: its `bump_marketplace` runs that `mv` unconditionally,
