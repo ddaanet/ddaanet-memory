@@ -1,11 +1,11 @@
 ---
 name: cc-nested-subagent-spawning
-description: "subagents can spawn subagents (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`), but the delegating layer must be `general-purpose` — `edify:*` agents lack `Agent`; one opus delegate holds one `/orchestrate` phase; skill gates return as its final message, answered by `SendMessage`"
+description: "a subagent can call `Agent` (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, three layers verified) but the delegating layer must be `general-purpose`: `edify:*` agents enumerate tools without `Agent`, `claude` narrates background jobs; one opus delegate holds about one `/orchestrate` phase, its brief caps context at ~200k with a committed Resume section, phase-boundary resume blocks are the handoff unit; a skill's approval gate returns as the delegate's final message, answered with `SendMessage`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 78c01ada-e3fc-450c-b044-3f914c0034dc
-  modified: 2026-09-22T13:06:02.721Z
+  modified: 2026-09-26T11:20:21.567Z
 ---
 
 Verified against the Claude Code docs and a live probe on CC 2.1.278: an
@@ -23,6 +23,12 @@ Constraints on the delegating layer:
   its context fills. Hand a skill's work to a delegate in phase-sized units,
   and make the skill's phase-boundary resume block the handoff artefact — the
   next delegate starts from it, not from the previous one's transcript.
+- **The brief sets a hard context stop at ~200k tokens** (my human partner's
+  figure). Past it the delegate finishes only the dispatch or commit in
+  flight, writes and commits a Resume section (last commit, exact slice step,
+  decisions given, carry list) and stops. A `/build` Phase 2 delegate briefed
+  without a cap ran to ~330k before anyone noticed; a delegate does not stop
+  on its own, and a teammate's idle notices carry no token count.
 - **A skill's approval gate comes back as the delegate's final message.** The
   delegate stops there; the answer goes back with `SendMessage` to the same
   agent, which then continues with its context intact. A new `Agent` call
