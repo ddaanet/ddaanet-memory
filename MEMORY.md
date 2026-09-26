@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-09-17T11:11:45.178Z
+  modified: 2026-09-26T11:47:45.840Z
 ---
 
 # ddaanet tier index
@@ -44,7 +44,7 @@ the project's own memory store.
 - [JSONL slash-command shape](jsonl-slash-command-shape.md) — slash commands log as a `<command-name>/foo:bar</command-name>` string in a `type:"user"` entry, not literal text and no `Skill` tool_use; agent-invoked skills ARE `Skill` tool_use; skill bodies inject as `isMeta:true`; `/compact` double-records
 - [CLAUDE_PROJECT_DIR over cwd](claude-project-dir.md) — project root in a hook script: `CLAUDE_PROJECT_DIR` vs payload cwd, which drifts with shell cd and /add-dir
 - [markdown formatter choice](markdown-formatter-choice.md) — picking a prose hard-wrapper: judge by HTML render diff, not text diff; rumdl MD013 reflow has zero render changes, prettier can't keep `*em*`, dprint dedents fenced code, mdslw/remark split code spans and wrap before a literal `+`; `reflow = true` alone only breaks over-limit lines and leaves narrower wrapping as it is (a ~70-col doc comes out *longer*) — `reflow-mode = "normalize"` is what re-fills paragraphs, and a line-count cap is only honest against it; wrapping breaks line-grepping doc checkers; gating on it: `rumdl fmt --check`, never `rumdl check` (permanently red on an unwrappable line), and `include = ["*.md"]` crosses `/` — root-level files are `/*.md`
-- [uv: sync only, direnv venv](uv-direnv-venv.md) — no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`; the venv python3 shadows the system one, so every module scripts on PATH probe for goes in the dev group (`need … PyYAML`)
+- [uv: sync only, direnv venv](uv-direnv-venv.md) — no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`; the venv python3 shadows the system one, so every module scripts on PATH probe for goes in the dev group (`need … PyYAML`); a symlink to the venv's python3 resolves to the base interpreter and loses site-packages — borrow it with an `exec` wrapper and probe through the shim
 - [SessionStart(resume) carries the resuming cwd](sessionstart-resume-cwd.md) — two hooks in one session naming different repos, or a session-keyed file naming a repo the session was never in: `SessionStart(resume)` fires with the RESUMING process's cwd before the harness moves the session into the resumed project dir, so never park a session-start snapshot of an environment fact
 - [Bash background runs have no duration cap](cc-bash-background-no-duration-cap.md) — a gate near the Bash tool's 10-minute cap: a foreground call that hits it is moved to background by the harness, not killed, so "foreground only" cannot be promised; `run_in_background: true` has no cap and survives turn boundaries; a subagent DOES get the task-notification (a `queued_command` in its sidechain) — a dispatch idle "waiting for the watcher/monitor" is stalled on its own `until` loop — one message naming `TaskStop` the watcher, then read the gates and commit, recovers it; never `ps` or buffered stdout; "terminated at your final response" is the subagent case
 - [Session JSONL schema reference](session-jsonl-schema.md) — no official schema, key on `isMeta`/`isSidechain`/`isCompactSummary`, never content; one assistant message = N entries sharing `message.id`
