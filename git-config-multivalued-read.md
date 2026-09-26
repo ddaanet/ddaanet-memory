@@ -1,11 +1,11 @@
 ---
 name: git-config-multivalued-read
-description: "`--get` prints the LAST value and exits 0 on a multi-valued key (`remote.origin.pushurl`), and `--unset` refuses one with status 5, so a guard names one of several values and advises a remedy that errors; use `--get-all`/`--unset-all`. Unset key exits 1; `fatal: bad config line` breaks EVERY git call with 128, not just `git config`. `git config -z --get-regexp \"$key\"` (the shared whitespace default) is a regex over the key name, so an interpolated branch name with `.`/`+`/`$` matches the wrong keys; `--get-all` and read one value per line"
+description: "`--get` prints the LAST value and exits 0 on a multi-valued key (`remote.origin.pushurl`), and `--unset` refuses one with status 5, so a guard names one of several values and advises a remedy that errors; use `--get-all`/`--unset-all`. Unset key exits 1; `fatal: bad config line` breaks EVERY git call with 128, not just `git config`. `git config -z --get-regexp \"$key\"` (the shared whitespace default) is a regex over the key name, so an interpolated branch or remote name silently returns another key's value at status 0 (`.`) or misses its own at status 1 (`+`); interpolate into `--get-all` and read one value per line, and keep `-z --get-regexp` for hand-written patterns, whose NUL records survive `read -r -d ''` but not `$( … )`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: a3e6885b-b453-42f1-a3f7-16549821ad2f
-  modified: 2026-09-17T10:24:39.266Z
+  modified: 2026-09-26T14:23:44.022Z
 ---
 
 Measured on git 2.47.3.
@@ -37,9 +37,19 @@ path holding a space must not read as two), and advise `--unset-all`.
 State the residual in a comment: a value containing a newline still prints
 across two lines, and `git config` has no quoting mode that avoids it.
 
-Do **not** reach for `-z --get-regexp` as the whitespace-robust form when the
-key is interpolated: its argument is a *regex over the key name*, and a branch
-name can legitimately contain `.`, `+`, `$`, `(`, `)`, `|`, `{`, `}`. NUL
-delimiting is unobtainable anyway — bash discards NULs in `$( … )`.
+`-z --get-regexp` is the whitespace-robust enumeration form, and it stays that
+for a *literal* pattern. It breaks the moment the key is **interpolated**: the
+argument is a regex over the key name, and a branch or remote name legitimately
+contains `.`, `+`, `$`, `(`, `)`, `|`, `{`, `}`. Both directions are silent
+(measured on git 2.47.3):
 
-See [[errexit-status-propagation]] for the capture rule these reads obey.
+- `.` over-matches. `--get-regexp "branch.a.b.merge"` returns
+  `branch.aXb.merge`'s value too, status 0 — a wrong value with no sign of it.
+- `+` under-matches. `--get-regexp "branch.feat+x.merge"` misses the key of
+  exactly that name, status 1, indistinguishable from unset.
+
+So interpolate into `--get-all` with the key as a literal, and reach for
+`-z --get-regexp` only with a pattern written by hand. Its NUL records do
+survive into a shell — `while IFS= read -r -d '' rec; do …; done < <(git config
+-z --get-regexp …)` recovers a value containing spaces — but not through
+`$( … )`, which discards NULs.

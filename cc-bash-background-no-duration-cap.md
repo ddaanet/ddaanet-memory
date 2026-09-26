@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: a9bf3102-9e37-4a28-86a7-939d19b02f31
-  modified: 2026-09-24T20:59:53.350Z
+  modified: 2026-09-26T14:21:31.434Z
 ---
 
 The Bash tool's `timeout` (default 120000 ms, max 600000 ms) bounds how long a
@@ -33,19 +33,21 @@ gate mtimes whose start postdated the first gates, or a Monitor, idled on with
 the notification already in hand. One message recovers it when it names the
 act that ends the wait — `TaskStop` the watcher, then read the gates and
 commit; a message that only says "read the gates" leaves the agent reasoning
-that it must not duplicate the run, still waiting. The orchestrator finishes
-the slice itself only after that resume returns without progress; a fresh
-Bash can neither see nor kill the agent's tasks.
+that it must not duplicate the run, still waiting. A fresh Bash call can
+neither see nor kill the agent's tasks, so the resume is the only lever.
 
 `ps` in a fresh Bash call cannot see another background task's processes, and
 a runner that buffers into a log file prints nothing until the end, so neither
 settles whether a run is alive.
 
 **Read the verdict from the durable artifact the gate writes on a pass** — a
-sentinel, a cache marker, a report — valid when it postdates the last edit to
-any input the gate covers; say the verdict came from there. A killed
-multi-recipe gate keeps whatever finished, so only the missing recipes rerun. A
-gate with no such artifact gives a waiting agent nothing — add one.
+sentinel, a cache marker, a report — and say the verdict came from there. Its
+validity is the gate's own freshness rule, not the filesystem's: a sentinel
+holding a content hash of the recipe's declared inputs is valid when re-hashing
+those inputs reproduces it, and an mtime comparison is a guess at a question the
+recorded hash answers exactly. A killed multi-recipe gate keeps whatever
+finished, so only the missing recipes rerun. A gate with no such artifact gives
+a waiting agent nothing — add one.
 
 **How to apply:** a gate longer than ten minutes is not a reason to split it
 into per-recipe calls or to skip recording its pass. Launch it in the
