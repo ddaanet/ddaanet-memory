@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 78c01ada-e3fc-450c-b044-3f914c0034dc
-  modified: 2026-09-22T13:05:24.723Z
+  modified: 2026-09-26T12:33:34.754Z
 ---
 
 Markdown has no field-list construct. A bullet whose indented continuation
@@ -29,5 +29,5 @@ never merges list items, so a nested list survives.
 **How to apply:** write a field list as a nested list in any document a
 formatter runs over, and run the formatter over a format template once before
 adopting it — a template written before the formatter existed is the usual
-carrier of the continuation-line shape. Formatter selection and its other
-artefacts are in [[markdown-formatter-choice]].
+carrier of the continuation-line shape. The reflow's other artefacts, and the
+gate that runs it, are in [[markdown-reflow-gate]].
