@@ -1,6 +1,6 @@
 ---
 name: sandbox-effects
-description: "phantom dotfiles (the zero-byte mask shape; a porcelain cleanliness gate reads their `??` as DIRTY), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, a multi-turn `--resume` eval harness must run unsandboxed, $TMPDIR unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve; NOT honoured on CC 2.1.283 — a git call runs sandboxed despite `git:*`; a visible mask never proves a call sandboxed, a refused `touch /tmp/x` does)"
+description: "phantom dotfiles (the zero-byte mask shape; a porcelain cleanliness gate reads their `??` as DIRTY), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config, own hooks.json unlink EROFS, a multi-turn `--resume` eval harness must run unsandboxed, $TMPDIR unstable across sandboxed calls (hardcode /tmp/claude across a call or into a subagent directive), zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` drops every SessionStart hook; escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve; NOT honoured on CC 2.1.281 — a git call runs sandboxed despite `git:*`; a visible mask never proves a call sandboxed, a refused `touch /tmp/x` does)"
 metadata: 
   node_type: memory
   type: reference
@@ -30,7 +30,7 @@ unsandboxed, but a mask proves nothing about it. Test with a write the sandbox
 refuses and no mask can cause: `touch /tmp/<name>` fails `Read-only file
 system` only inside the sandbox.
 
-**On CC 2.1.283 the entries are not honoured.** With `git:*` in user settings,
+**On CC 2.1.281 the entries are not honoured.** With `git:*` in user settings,
 `git --version && touch /tmp/sbx-probe-git` failed `Read-only file system`,
 and the same `touch` with `dangerouslyDisableSandbox` succeeded (2026-09-26);
 the call's `${TMPDIR-UNSET}` also read the sandboxed `/tmp/claude-1000`, not
@@ -213,7 +213,7 @@ judges an unsandboxed recipe by its top-level command: an unsandboxed
 
 Decompiled from CC 2.1.233 and confirmed by probe (`${TMPDIR-UNSET}` is the
 discriminator: `/tmp/claude-1000` sandboxed; `UNSET` unsandboxed then, `/tmp`
-on CC 2.1.283). Not honoured at all on CC 2.1.283 — see the baseline above:
+on CC 2.1.281). Not honoured at all on CC 2.1.281 — see the baseline above:
 
 - **Entries are permission-rule patterns, not plain strings.** `foo bar` is
   exact; `foo bar:*` is a prefix matching `foo bar` or `foo bar` + a space +
