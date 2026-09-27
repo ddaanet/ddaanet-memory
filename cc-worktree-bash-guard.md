@@ -32,5 +32,5 @@ drives, or split every step into one plain command. Where a test needs real cwd
 drift, `pushd <dir>` passes the gate and persists, which `eval 'cd …'` cannot.
 
 See [[cc-worktree-memory-freeze]] for what the same tool freezes in the
-environment, and [[sandbox-effects]] for the other refusal surface a Bash
+environment, and the `sandbox-lies:sandbox-lies` skill for the other refusal surface a Bash
 command meets.
