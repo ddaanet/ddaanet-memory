@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 78c01ada-e3fc-450c-b044-3f914c0034dc
-  modified: 2026-09-26T11:20:21.567Z
+  modified: 2026-09-28T12:22:59.429Z
 ---
 
 Verified against the Claude Code docs and a live probe on CC 2.1.278: an
@@ -33,6 +33,9 @@ Constraints on the delegating layer:
   delegate stops there; the answer goes back with `SendMessage` to the same
   agent, which then continues with its context intact. A new `Agent` call
   would restart the skill from nothing.
+- **Launch it without `name`.** A named delegate is a teammate, and its
+  dispatches' `SubagentHandback` never reaches it: see
+  [[cc-named-delegate-handback-lost]].
 - The delegate's Bash runs in the main session's sandbox, so a dispatch that
   has to fetch names its hosts in `allowed_domains` up front.
 - A delegate that runs `git stash` to compare two states takes the parent's
