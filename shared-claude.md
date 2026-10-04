@@ -181,6 +181,10 @@ rules that change what the agent does by default.
   context churn in the main session. A repeat mechanical edit does not disqualify an
   agent — one agent owning the whole run often makes sense. A shared mutable file
   rules out only *parallel* agents; one sequential agent handling the batch is fine.
+- **Leave the Agent tool's `name` unset**, even where a skill prescribes one (edify
+  `/build` names every dispatch `item-N-M-s<k>-red` …). A named agent becomes an
+  addressable teammate whose report, idle notices and late summaries each arrive as
+  a separate message; an unnamed one returns once. Resume by the returned agent id.
 - **Never bundle a red task into a green-task subagent.** The red-phase review is
   what proves the test fails against unchanged code, i.e. that it exercises the
   behaviour the implementation will change. "They share a commit" is a packaging
