@@ -1,6 +1,6 @@
 ---
 name: sandbox-effects
-description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` silently drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed outright, /tmp \"No space left\"/\"Out of diskspace\" with du≪df = other sandboxes pin the tmpfs (clear /tmp/claude-1000 caches); escapes incl. dangerouslyDisableSandbox and `excludedCommands` (ONE matching segment unsandboxes the whole call, statically; does NOT auto-approve)"
+description: "index.lock/\"Another git process\" (mask vs genuinely-stale: only a real lock survives unsandboxed), phantom dotfiles as char devices or zero-byte files (break `git add -A`; real while ANY agent's sandbox is live, so one clean reading proves nothing), sibling worktree \"Read-only file system\", \"Device or resource busy\" on .claude/settings.json & .git/config (blocks git checkout/reset --hard), own hooks.json unlink EROFS, --resume \"No conversation found…\", $TMPDIR unset, zellij \"no active session\", empty `ps` for background tasks, sandboxed `claude -p` silently drops every SessionStart hook, `apply-seccomp: unshare(CLONE_NEWUSER)` = sandbox init failed outright, /tmp \"No space left\"/\"Out of diskspace\" with du≪df = other sandboxes pin the tmpfs (clear /tmp/claude-1000 caches); escapes incl. dangerouslyDisableSandbox and `excludedCommands` (`git *` = legacy `git:*`; EVERY segment must match since 2.1.277, so `| head`, `cd`, `> file`, `git -C` stay sandboxed; does NOT auto-approve)"
 metadata: 
   node_type: memory
   type: reference
@@ -14,12 +14,13 @@ section stands alone and is keyed by the symptom an agent arrives holding.
 
 **Baseline the rest of the file assumes:** `/sandbox` set to *unsandboxed
 fallback* (not strict), auto mode on, and user-scope
-`sandbox.excludedCommands: ["git:*", "find:*", "ls:*", "claude:*"]`. Under that
-configuration every top-level `git`, `find`, `ls` and `claude` segment already
-runs outside the sandbox with no flag, so most sections below are met only
-where the exclusion does not reach: a command nested in `( … )`, `$( … )` or
-`sh -c`, a `just` recipe or script that runs git internally, or a machine
-without the entries.
+`sandbox.excludedCommands: ["git *", "find *", "ls *", "claude *", "just release *"]`
+(legacy `git:*` spelling equivalent). That runs a call outside the sandbox only
+when *every* segment in it matches an entry (CC ≥ 2.1.277), so the sections
+below are met wherever the exclusion does not reach: a pipeline to `head`,
+`cat` or `wc`, a `cd` anywhere in the call, a redirect to a file, `git -C`,
+a command nested in `( … )`, `$( … )` or `sh -c`, a `just` recipe or script
+that runs git internally, or a machine without the entries.
 
 | symptom | section |
 |---|---|
@@ -216,12 +217,11 @@ usually off in ddaanet repos: check rather than assume.
 **The read-only-inspection default.** Reaching for `dangerouslyDisableSandbox`
 to read local git state or a masked path is a standing default my human
 partner set explicitly, not a per-case approval to seek: call it directly,
-without pre-announcing or asking. Under the baseline exclusions it has little
-left to do — every top-level `git`/`ls`/`find` segment is already outside —
-and it fires on a symptom rather than while composing: a phantom dotfile in a
-listing, an empty `cat` of a `.claude/` path, a `git status` that ran inside
-`( … )`, `$( … )`, `sh -c` or a recipe, or a segment the matcher missed (a
-quoted argument, a double space, `/bin/ls`). Mutating operations (`git commit`,
+without pre-announcing or asking. It fires on a symptom rather than while
+composing: a phantom dotfile in a listing, an empty `cat` of a `.claude/` path,
+a `git status` in a call the exclusion did not cover (next section — a pipe,
+`cd`, `git -C`, a redirect, `( … )`, `$( … )`, `sh -c` or a recipe), or a
+segment the matcher missed (a double space, `/bin/ls`). Mutating operations (`git commit`,
 `push`, `reset`, `checkout -- …`, anything that writes) are NOT covered and
 follow normal confirmation rules.
 
@@ -262,19 +262,25 @@ but only unsandboxed: its `bump_marketplace` runs that `mv` unconditionally,
 before comparing local and remote heads. `git:*` does not reach a git call
 inside a recipe — `just` is the top-level segment.
 
-## `excludedCommands` unsandboxes the WHOLE call
+## `excludedCommands`: every segment must match
 
-Decompiled from CC 2.1.233 and confirmed by probe (`${TMPDIR-UNSET}` is the
-discriminator: `/tmp/claude-1000` sandboxed, `UNSET` not):
+Decompiled from CC 2.1.233, re-checked against the 2.1.289 bundle, the
+sandboxing and settings-reference docs, and probes (`${TMPDIR-UNSET}` is the
+discriminator: `/tmp/claude-1000` sandboxed, `UNSET` not; phantom dotfiles in
+an `ls -la` are another):
 
 - **Entries are permission-rule patterns, not plain strings.** `foo bar` is
-  exact; `foo bar:*` is a prefix matching `foo bar` or `foo bar` + a space +
-  anything; an unescaped `*` is a glob. A plain `"git status"` entry covers only
+  exact; `foo bar *` (documented) and `foo bar:*` (legacy, still parsed as the
+  same prefix) match `foo bar` with or without further arguments; any other
+  unescaped `*` is a glob. A plain `"git status"` entry covers only
   the bare literal — 2.8% of real `git status` traffic across a 45-day
   transcript corpus, since `--short`, `--porcelain` and `git -C <dir> status`
   all miss it. Prefix entries anchor at the segment start, so `git status:*`
-  cannot reach `git -C <dir> status` (31.6% of git-bearing calls); only `git:*`
-  covers every shape, which is why the baseline carries it.
+  cannot reach `git -C <dir> status` (31.6% of git-bearing calls); only `git *`
+  covers the other shapes, which is why the baseline carries it. Since 2.1.277
+  even `git *` no longer covers git's value-taking global options — `-C`, `-c`,
+  `--git-dir`, `--work-tree` keep the call sandboxed (issue #95455, open);
+  boolean ones like `--no-pager` still match.
 - **Splitting** is a tree-sitter-bash parse, cut at `&&`, `||`, `|`, `;`, `&`
   and newline. Nesting is never descended into: `( … )`, `$( … )`, `sh -c '…'`
   and `if …; fi` are compared whole, so they never match — nesting fails closed,
@@ -284,17 +290,30 @@ discriminator: `/tmp/claude-1000` sandboxed, `UNSET` not):
   A heredoc body can never trigger a match either (only the command word is
   compared), and cannot smuggle a write past the read-only validator (the
   capability comes from the command word, not the channel).
-- **Comparison is on source text**, per segment. Leading `VAR=value`
-  assignments and trailing redirections are outside the compared span, and
-  wrapper commands are unwrapped — `timeout 5 git status` matches a
+- **Comparison is on source text**, per segment. Only allowlisted harmless
+  leading assignments (`LANG`, `TZ`, `NODE_ENV`, `CI`, `NO_COLOR`, …) are
+  stripped; any other `VAR=value` prefix keeps the call sandboxed, as do a
+  redirection to a file (an fd duplication like `2>&1` is fine), a `cd`,
+  `pushd` or `popd` anywhere in the call, and a leading `sudo`, `eval` or
+  `xargs`. Wrapper commands are unwrapped — `timeout 5 git status` matches a
   `git status` entry, as do `time`, `nice`, `stdbuf`, `nohup`, `command`,
   `builtin`, `noglob`. `LD_*`, `DYLD_*` and `PATH=` assignments are
   deliberately NOT stripped. Double spaces, quoted arguments, `/bin/ls`, an
   extra argument, and pre-expansion `$VAR` all defeat the match.
-- **One matching segment unsandboxes the entire call**, neighbours included, and
-  the decision is static rather than reachability-aware: `false && git status;
-  <payload>` frees the whole call while the decoy never runs. Nothing in the
-  tool result or the transcript records that a call ran unsandboxed.
+- **Every segment must match** for the call to leave the sandbox (CC ≥ 2.1.277;
+  earlier, one matching segment freed the whole call, neighbours included —
+  fixed as a bug). So `ls -la <dir> | head` and `git log | wc -l` stay
+  sandboxed while `ls a; ls b` does not: a pipeline is excluded only when each
+  stage has an entry. Nothing in the tool result or the transcript records
+  whether a call ran unsandboxed, and a `PreToolUse` hook cannot see the
+  decision either: `tool_input.dangerouslyDisableSandbox` is only ever the
+  model's own flag, and the exclusion is computed inside the Bash tool's
+  `call()`, after the hook (2.1.289 bundle).
+- **Shapes observed on 2.1.289 with `ls *` excluded.** Unsandboxed: `ls a &&
+  ls b`, `ls a | ls b`, `LANG=C ls …`, a quoted argument, a `\.` escape, a
+  double space plus `# comment`, bare `git status --porcelain`. Sandboxed
+  despite every segment matching: a glob argument (`ls x/.bash*`), `2>&1`
+  (the docs call fd duplication fine), an unquoted `$HOME`.
 - **It does not grant approval — but that rarely costs a classifier call.** The
   sandbox auto-allow shortcut is skipped precisely when the command is not
   sandboxed, so deny/ask rules and then the rest of the permission pipeline
