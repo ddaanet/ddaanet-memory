@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-09-25T16:07:40.174Z
+  modified: 2026-10-05T14:41:19.893Z
 ---
 
 Independent mechanical facts that share one trigger surface: the Claude Code
@@ -392,10 +392,16 @@ marketplace and its repo archived. It paired `updatedInput` with
 `permissionDecision: "allow"`, pre-approving anything chained alongside the
 `git status` (confirmed live: `true && git status --porcelain` ran); the
 mechanism, and the rule that a hook which must rewrite returns `updatedInput`
-alone, are the `plugin-craft:hook-authoring` skill. The exclusion covers every git shape
-rather than a best-effort `git status` subset, is honoured in strict mode, and
-does not settle the gate.
-The one shape the hook caught and the exclusion misses is a git command nested
+alone, are the `plugin-craft:hook-authoring` skill. The exclusion covers every git
+subcommand rather than a best-effort `git status` subset, is honoured in strict
+mode, and does not settle the gate. It does not cover every call shape: since
+2.1.277 a pipe into a non-excluded command, a `cd`, a file redirect, or a
+value-taking option before the subcommand (`git -C`, `-c`, `--git-dir`,
+`--work-tree`, #95455) keeps the whole call sandboxed — see the
+`excludedCommands` section. The `prohibitions` plugin's
+`deny-sandboxed-excluded-command` hook refuses those calls unless they set
+`dangerouslyDisableSandbox`.
+The hook-era residue is a git command nested
 in `( … )`, `$( … )` or `sh -c`; `cwd-safety` used to manufacture that shape by
 wrapping `cd <dir> && …` in a subshell and instead appends `cd <root>` as a
 trailing line, so what remains is the genuine residue (`echo "[$(git -C
