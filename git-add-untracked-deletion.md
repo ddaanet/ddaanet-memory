@@ -24,7 +24,8 @@ lists, deletions included. Every genuinely tracked path stages fine; the only
 nothing to stage. A hook that reports staging failures loudly — as it should —
 will report this one, and the noise is what tempts the next reader to put a
 `2>/dev/null` back on the whole loop ([[no-stderr-suppression]]), re-blinding
-every real failure (a stranded `index.lock`, [[sandbox-effects]]).
+every real failure (a stranded `index.lock`, whose error the `sandbox-lies`
+plugin annotates).
 
 **How to apply:** separate the case *before* the `git add`, with plain
 `git ls-files -- "$path"`:
