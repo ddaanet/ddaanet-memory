@@ -53,9 +53,12 @@ rules that change what the agent does by default.
   the shim and repoint `git config gitlore.hooksDir`.
 - **Phantom dotfiles are sandbox masks.** Zero-byte or char-device `.bashrc`,
   `.zshrc`, `.gitconfig`, `.mcp.json`, `.claude/*` and the like, showing
-  untracked in a repo root, come from the command sandbox and say nothing about
-  the repo. Never delete, commit or report them; `sandbox-effects` has the
-  mechanism.
+  untracked in a repo root or in the directory a sandboxed call ran from, come
+  from the command sandbox and say nothing about the repo. Never delete, commit
+  or report them. A slash command's `` !`git status` `` context block runs
+  sandboxed with no hook to annotate it: never act on its listing — re-run
+  `git status` unsandboxed first. The `sandbox-lies:sandbox-lies` skill's
+  `references/masks-and-gates.md` has the mechanism.
 - **Run the repo's precommit gate before committing**, unprompted — it is a
   required step, not a suggestion to float. In micro that is `just precommit`.
 - **After a compaction, verify the session root before acting.** Check `PWD`,

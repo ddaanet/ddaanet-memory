@@ -54,5 +54,5 @@ classifier reads it back as intent. Pick the writer the path belongs to:
   commit has the agent write ordinary files into `.claude/` and a
   `PostToolBatch` hook run the git.
 
-Related: [[sandbox-effects]] — the sandbox, a different mechanism, escaped with
+Related: the `sandbox-lies:sandbox-lies` skill — the sandbox, a different mechanism, escaped with
 `dangerouslyDisableSandbox`; the classifier has no such toggle.

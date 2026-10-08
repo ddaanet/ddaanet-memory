@@ -33,4 +33,4 @@ plugin 1.0.6, codex-cli 0.154.0) against a plan or outline:
   `codex-code-mode-host` helper beside the `codex` binary. When it is missing,
   review "completes" with "Unable to verify … codex-code-mode-host is missing".
 
-Related: [[sandbox-effects]].
+Related: the `sandbox-lies:sandbox-lies` skill.

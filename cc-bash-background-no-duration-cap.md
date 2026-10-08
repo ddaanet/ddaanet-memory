@@ -56,5 +56,5 @@ must be acted on inside the same turn. Split calls remain the fallback when
 the run genuinely dies, and then say the pass was not recorded.
 
 Related: [[gate-cache-must-cover-every-check]] for why a recorded pass
-matters, and [[sandbox-effects]] for the measured `ps` gap this blind spot
+matters, and the `sandbox-lies:sandbox-lies` skill for the measured `ps` gap this blind spot
 rests on.
