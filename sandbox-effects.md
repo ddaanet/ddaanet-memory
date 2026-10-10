@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-10-08T15:17:56.855Z
+  modified: 2026-10-10T14:13:52.925Z
 ---
 
 The Claude Code command sandbox distorts git, filesystem, transcript and IPC
