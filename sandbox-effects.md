@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 618e80ab-c1a4-41c0-94c9-07e03fa4af68
-  modified: 2026-10-10T14:13:52.925Z
+  modified: 2026-10-10T21:55:46.317Z
 ---
 
 The Claude Code command sandbox distorts git, filesystem, transcript and IPC
@@ -13,9 +13,9 @@ operations. The sandbox-lies plugin owns that knowledge: its hooks annotate a
 Bash result showing a known symptom, and its `sandbox-lies:sandbox-lies` skill
 carries what has no symptom in the output — `excludedCommands` semantics, the
 escapes and their costs, `$TMPDIR` scoping, cleanliness gates, merge recovery,
-`ps`, `claude -p` and `--resume` under the sandbox. The zellij effect has no
-detector, and the phantom-dotfile leak below is not yet in the skill; this file
-carries both.
+`ps`, `claude -p` and `--resume` under the sandbox. This file keeps two
+sections: the phantom-dotfile leak, and the zellij effect, which has no
+detector.
 
 ## Phantom dotfiles that outlive their command are a leak
 
