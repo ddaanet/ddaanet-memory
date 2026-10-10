@@ -1,11 +1,11 @@
 ---
 name: cc-mods-api
-description: "Claude Code mods (v2.1.287+): JS/TS module via `hooks.json` `modules`; `$.command.run` runs built-in slash commands but rejects inside a hook the turn awaits; `$.fs` has no rename/delete; every `$` call is stubbed in `claude plugin test`"
+description: "plugin JS/TS `modules` (v2.1.287+): `$.command.run` runs built-ins (`clear`/`compact`/`rename`) but rejects inside a hook the turn awaits; `$.fs` has no rename/delete, non-atomic write; `claude plugin test` stubs every `$` call; `/restart` is built-in"
 metadata:
   node_type: memory
   type: reference
   originSessionId: 4ed9b2a0-c9e5-477c-b4b0-766a8b813b72
-  modified: 2026-10-08T17:55:00.964Z
+  modified: 2026-10-09T14:53:02.856Z
 ---
 
 A **mod** is a plugin whose `hooks/hooks.json` carries
@@ -22,8 +22,8 @@ Facts that change designs (d.ts read 2026-10-08, CC 2.1.294 installed):
 - **`$.command.run({command, args})`** "runs a slash command as if the person
   typed `/command args`" — built-ins included (`clear`, `compact <focus>`,
   `rename <title>`). "Rejects an unknown name, and inside a hook the turn is
-  waiting on" — so from `classic.Stop` return `next(e)` and defer with
-  `$.clock.after(0, …)`.
+  waiting on" — and a `$.clock.after` deferral does not escape that: drive
+  from `on('turn.complete')` ([[cc-mods-driving-commands]]).
 - **`$.session.compact({instructions})`** "rejects while a turn runs".
 - **`$.prompt.submit({text, asUser})`** runs when the session is idle;
   `asUser: true` drops the "sent by mod X" preamble.
