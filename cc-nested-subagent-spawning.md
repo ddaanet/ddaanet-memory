@@ -1,11 +1,11 @@
 ---
 name: cc-nested-subagent-spawning
-description: "a subagent can call `Agent` (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, three layers verified) but the delegating layer must be `general-purpose`: `edify:*` agents enumerate tools without `Agent`, `claude` narrates background jobs; one opus delegate holds about one `/orchestrate` phase, its brief caps context at ~200k with a committed Resume section, phase-boundary resume blocks are the handoff unit; a skill's approval gate returns as the delegate's final message, answered with `SendMessage`"
+description: "a subagent can call `Agent` (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, three layers verified) but the delegating layer must be `general-purpose`: `edify:*` agents enumerate tools without `Agent`, `claude` narrates background jobs; one opus delegate holds about one `/orchestrate` phase, its brief caps context at ~200k with a committed Resume section, phase-boundary resume blocks are the handoff unit; a skill's approval gate returns as the delegate's final message, answered with `SendMessage`; a named delegate idling \"Waiting for …\" while its dispatch's `SubagentHandback` lands in the main session — relay it by `SendMessage`"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 78c01ada-e3fc-450c-b044-3f914c0034dc
-  modified: 2026-09-28T12:22:59.429Z
+  modified: 2026-10-10T14:13:59.200Z
 ---
 
 Verified against the Claude Code docs and a live probe on CC 2.1.278: an
@@ -38,6 +38,13 @@ Constraints on the delegating layer:
   [[cc-named-delegate-handback-lost]].
 - The delegate's Bash runs in the main session's sandbox, so a dispatch that
   has to fetch names its hosts in `allowed_domains` up front.
+- **A named delegate's own dispatches come back to the main session.** Observed
+  on CC 2.1.283 (edify build-defects leg 6): a delegate spawned with a `name`
+  joins a flat team roster and cannot name its dispatches, so it resumes them
+  by agentId. Their `SubagentHandback` reports reach the main session and not
+  the delegate; the delegate only sees an idle "waiting for …". The main session
+  relays each report by `SendMessage`, or the dispatch writes its report to a
+  file the delegate reads.
 - A delegate that runs `git stash` to compare two states takes the parent's
   staged files with it; the dispatch prompt rules out `git stash`, `git reset`
   and blanket `git add`, and names any pre-staged files.
