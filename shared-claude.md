@@ -179,6 +179,9 @@ rules that change what the agent does by default.
   isolated tasks. Default shape: Fable designs, Opus drafts, Sonnet executes; keep
   Fable turns lean and code-free, since cheaper agents produce code fine from a prose
   outline.
+- **In a TDD run, split the work by kind.** Green and mutation loops go to Haiku;
+  tests and prose go to Sonnet; the reviewer of a red phase is a different agent
+  from its author.
 - **Choose agent boundaries by batching, not by task.** "N tasks" ≠ "N subagents",
   and it does not mean "N tasks → inline" either: the cost a subagent offsets is
   context churn in the main session. A repeat mechanical edit does not disqualify an
