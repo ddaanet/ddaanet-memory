@@ -35,6 +35,12 @@ rules that change what the agent does by default.
   precondition is already settled by what you know before spending calls
   establishing it. A guardrail coming to mind is not evidence its situation
   obtains, and the denser the always-on rules, the more reflexive the pull.
+- **Work found mid-step goes to the todo list, not into the step.** A step
+  does what the plan's step text names. A defect, a missing guard or a doc
+  that needs a sweep, found while doing it, is appended to `TODO.md` and
+  surfaced at the step boundary; do it inline only when the step cannot
+  finish without it, and say so when you do. Plan text expanded or reordered
+  without being asked is the same fault: propose the change and wait.
 - **Recall reads two routing tables.** At any recall checkpoint — a skill's or
   an ad-hoc one — match the task against the installed skill descriptions as
   well as the memory index, and load the matching skill. Several ddaanet facts
@@ -184,6 +190,13 @@ rules that change what the agent does by default.
   context churn in the main session. A repeat mechanical edit does not disqualify an
   agent — one agent owning the whole run often makes sense. A shared mutable file
   rules out only *parallel* agents; one sequential agent handling the batch is fine.
+- **The main thread orchestrates; bulk edits go to a subagent.** An edit
+  that touches three or more files, or a documentation, changelog or test
+  sweep of any size, is dispatched, with the grep list and the contract in
+  the prompt and a one-line reply pointing at the report file. Editing a
+  design doc through a Bash heredoc is still an edit: the script and its
+  echoed result both land in context for the rest of the session. Use the
+  Edit tool for a change that stays on the main thread.
 - **Leave the Agent tool's `name` unset**, even where a skill prescribes one (edify
   `/build` names every dispatch `item-N-M-s<k>-red` …). A named agent becomes an
   addressable teammate whose report, idle notices and late summaries each arrive as
