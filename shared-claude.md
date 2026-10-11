@@ -272,6 +272,13 @@ rules that change what the agent does by default.
   working directories, both read as authorization and are not. Beyond the note or
   brief permitted above, ask before each write, however mechanical: another session
   may be live in that tree, and a clean `git status` is not evidence that none is.
+- **A private repository's content is private; its name and existence are not.**
+  A report, survey or changelog committed to a public repository may name a
+  private repository as a source and count things in it, under its real name.
+  It never reproduces or describes what is in it: no task-file text, no
+  excerpts, no sentence saying what the work there is about. Keep data derived
+  from one to identifiers, dates, sizes and labels. Whether a repository is
+  private is read from its remote, not guessed from its name.
 - **Never hand-edit a vendored subtree.** `<consumer>/plugin-dev/` is read-only
   generated content: edit claude-plugin-dev, cut a tagged release, then
   `just update-plugin-dev dist-vX.Y.Z`. Always pin a dist tag, never `main` and
