@@ -184,6 +184,12 @@ rules that change what the agent does by default.
   context churn in the main session. A repeat mechanical edit does not disqualify an
   agent — one agent owning the whole run often makes sense. A shared mutable file
   rules out only *parallel* agents; one sequential agent handling the batch is fine.
+  **Reviewers batch the same way:** one reviewer per stage re-runs every pin or
+  mutation of that stage and lands one review commit, since each commit pays the
+  full precommit gate. A reviewer of its own is for a code change — that is where
+  a review catches a regression — not for a test-only or prose item, and "a
+  reviewer re-checks each X" in a task file names what is checked, not one agent
+  per X.
 - **Leave the Agent tool's `name` unset**, even where a skill prescribes one (edify
   `/build` names every dispatch `item-N-M-s<k>-red` …). A named agent becomes an
   addressable teammate whose report, idle notices and late summaries each arrive as
