@@ -189,6 +189,18 @@ rules that change what the agent does by default.
   call-intensive work. Drafting can be high or low uncertainty, so the word does
   not pick the tier. Keep Fable turns lean and code-free, since cheaper agents
   produce code fine from a prose outline.
+- **In a TDD run, split the work by kind.** Green and mutation loops go to Haiku;
+  tests and prose go to Sonnet; the reviewer of a red phase is a different agent
+  from its author.
+- **Reuse a loop's agents across slices; respawn only at ~150k tokens of
+  context or a plan seam.** The loop keeps its roles — one red author, one red
+  reviewer, one green implementer, each a different agent — and each slice goes
+  to the same agent by `SendMessage` to its returned id. A fresh spawn per slice
+  re-pays the brief and the orientation reads every time. Judge the 150k from
+  the usage the agent's last return reports; a plan seam is the boundary between
+  plans or between a plan's phases. My human partner's words: "keep the loop,
+  but reuse agents until they reach 150ktok context or a plan seam, and only
+  then, respawn."
 - **Choose agent boundaries by batching, not by task.** "N tasks" ≠ "N subagents",
   and it does not mean "N tasks → inline" either: the cost a subagent offsets is
   context churn in the main session. A repeat mechanical edit does not disqualify an
