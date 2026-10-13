@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 86dd0f9f-ce94-4f31-bf3a-2ff5f119ad1a
-  modified: 2026-10-13T11:13:54.957Z
+  modified: 2026-10-13T15:07:19.427Z
 ---
 
 An agent definition shipped under a plugin's `agents/` directory gets none
@@ -33,9 +33,21 @@ exemption never gets a chance to apply.
 from its own frontmatter once it ships in a plugin. The two routes left:
 
 - a plugin-level `hooks/hooks.json` whose scripts read the payload's
-  `agent_type` and act only for the plugin's own agents. `agent_type` is
-  present on hook payloads fired from inside a subagent; the exact value
-  for a plugin agent is worth one probe before relying on it.
+  `agent_type` and act only for the plugin's own agents. Measured on
+  CC 2.1.296 with the plugin loaded through `CLAUDE_CODE_PLUGIN_DIRS`:
+  the hooks fire for tool calls made inside the plugin's own agent, and
+  `PreToolUse` and `SubagentStart` both carry
+  `agent_type: "<plugin>:<agent>"` plus an `agent_id`; the main thread's
+  payloads carry neither key. A dispatch `name` leaves the value alone —
+  the `.meta.json` keeps `agentType` and gains a separate `name` key —
+  so this route does not inherit the named-dispatch gate. An exit 2
+  gated on that value denies the call inside the agent (tool result
+  `PreToolUse:Bash hook error: … This hook comes from the <plugin>
+  plugin.`) while the same command on the main thread runs. The hook
+  process gets `CLAUDE_PLUGIN_ROOT` and `CLAUDE_PROJECT_DIR`. Such a
+  hook runs on every matching tool call of every session that enables
+  the plugin, so its script must pass through first when `agent_type`
+  is not one of its own.
 - definitions installed into the consumer project's `.claude/agents/`,
   where frontmatter hooks do attach — subject to both gates in
   [[frontmatter-hooks-two-silent-gates]].
