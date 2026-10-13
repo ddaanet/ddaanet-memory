@@ -180,11 +180,15 @@ rules that change what the agent does by default.
 ## Dispatch
 
 - **Reviewer one rung above the implementer**, and **Sonnet is the floor for any
-  reviewer or `claude-code-guide` query** — Haiku misses subtle issues, omits
-  information and hallucinates. Haiku is fine as an implementer on mechanical,
-  isolated tasks. Default shape: Fable designs, Opus drafts, Sonnet executes; keep
-  Fable turns lean and code-free, since cheaper agents produce code fine from a prose
-  outline.
+  reviewer** — Haiku misses subtle issues. A `claude-code-guide` query is fine on
+  Haiku.
+- **Pick the tier by how much the task leaves open.** Fable advises. Opus takes
+  high uncertainty. Sonnet takes low uncertainty, prose, and tests that are not
+  fully specified, and is the floor for agentic prose edits. Haiku takes fully
+  specified tasks, TDD and mutation loops, haystack ingestion and well-specified,
+  call-intensive work. Drafting can be high or low uncertainty, so the word does
+  not pick the tier. Keep Fable turns lean and code-free, since cheaper agents
+  produce code fine from a prose outline.
 - **Choose agent boundaries by batching, not by task.** "N tasks" ≠ "N subagents",
   and it does not mean "N tasks → inline" either: the cost a subagent offsets is
   context churn in the main session. A repeat mechanical edit does not disqualify an
