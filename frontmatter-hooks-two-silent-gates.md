@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 0e54e20b-7997-422c-b864-72737115682c
-  modified: 2026-08-12T10:53:54.532Z
+  modified: 2026-10-13T11:13:05.065Z
 ---
 
 A project subagent's frontmatter `hooks:` can be dropped by **two
@@ -49,9 +49,9 @@ there is none to find. Check
 `projects["<exact project path>"].hasTrustDialogAccepted` in
 `~/.claude.json` and write it `true` (the product's own error message
 sanctions this), then restart. Alternatively move the definitions to
-`~/.claude/agents/` or ship them as a plugin, both exempt sources, or
-register the hook in `.claude/settings.json` where no trust check
-applies.
+`~/.claude/agents/`, an exempt source, or register the hook in
+`.claude/settings.json` where no trust check applies. Shipping them as
+a plugin is not an alternative: see [[plugin-agent-hooks-ignored]].
 
 ## Gate 2 — a dispatch `name` demotes the agent type
 
