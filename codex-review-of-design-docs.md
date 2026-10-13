@@ -14,6 +14,8 @@ plugin 1.0.6, codex-cli 0.154.0) against a plan or outline:
 - **`/codex:review <path>` fails.** A positional argument is parsed as focus
   text, which native review refuses. It reviews only a diff (working tree, or
   `--base <ref>`), so a committed doc on a clean tree needs `--base HEAD~1`.
+- **`/codex:review` takes no effort flag**, and `/codex:adversarial-review` is
+  user-invoked only: the agent cannot start it, so the user types the command.
 - **Native review is useless on docs.** It is a code-defect reviewer: on a
   docs-only diff it reports "no executable code … no actionable defects"
   without checking any claim.
