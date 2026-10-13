@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 0e54e20b-7997-422c-b864-72737115682c
-  modified: 2026-09-26T15:17:00.491Z
+  modified: 2026-10-13T11:13:05.065Z
 ---
 
 A project subagent's frontmatter `hooks:` can be dropped by **two independent
@@ -23,6 +23,10 @@ Which one, by what you can observe:
 - Hooks inert for a dispatch given a custom `name`, `agentType` in the
   subagent's `.meta.json` holding the name rather than the definition →
   `memory/ddaanet/frontmatter-hooks-dispatch-name-demotes.md`.
+- Hooks inert for a plugin-shipped agent (`<plugin>:<agent>`), `sets hooks,
+  which is ignored for plugin agents` in the debug log — neither gate, and no
+  trust key or unnamed dispatch fixes it →
+  `memory/ddaanet/plugin-agent-hooks-ignored.md`.
 
 **Verify by dispatch shape, never by asking.** An agent cannot observe a hook
 that was never attached, so it reasons from its definition and reports itself

@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 2f7bce41-1003-4688-8245-cf58734a7bc4
-  modified: 2026-09-26T15:15:31.846Z
+  modified: 2026-10-13T18:25:15.632Z
 ---
 
 Gate 1 of [[frontmatter-hooks-two-silent-gates]]. Claude Code has **two
@@ -37,6 +37,8 @@ the hook scripts or agent files are wrong, and do not go looking for a trust
 dialog to accept — under an already-trusted parent there is none to find. Check
 `projects["<exact project path>"].hasTrustDialogAccepted` in `~/.claude.json`
 and write it `true` (the product's own error message sanctions this), then
-restart. Alternatively move the definitions to `~/.claude/agents/` or ship them
-as a plugin, both exempt sources, or register the hook in
-`.claude/settings.json`, where no trust check applies.
+restart. Alternatively move the definitions to `~/.claude/agents/`, an exempt
+source, or register the hook in `.claude/settings.json`, where no trust check
+applies. Shipping them as a plugin is not an alternative: the plugin source is
+exempt from this check, but its agents' frontmatter `hooks:` are dropped anyway
+— see [[plugin-agent-hooks-ignored]].
