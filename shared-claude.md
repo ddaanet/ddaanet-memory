@@ -279,10 +279,10 @@ rules that change what the agent does by default.
   dependency. Reserve compatibility work for genuine published API boundaries.
 - **400 lines caps any artifact a reader takes in at one go** — source files,
   `references/` nodes, plans, design docs and PRs — and **~200 a `SKILL.md` hub**,
-  which is paid on every invocation while a node is opt-in. It is a *soft* guideline
-  in local self-review: a bounded overage on one cohesive doc beats a reflexive split
-  whose cross-referencing costs the reader more than the overage saved. Never satisfy
-  it quietly, by cramming 150–300-character lines or by shaving docstrings and prose —
+  which is paid on every invocation while a node is opt-in. The 400 is a *hard*
+  limit: it exists for context management, and a file that reaches it usually holds
+  cohesive content to spin off — find that seam rather than arguing the overage.
+  Never satisfy it quietly, by cramming 150–300-character lines or by shaving docstrings and prose —
   that is borrowing against the split, and a file parked at exactly its cap has
   stopped emitting the signal. A count is only honest once a hard-wrapping formatter
   has run, so wire one into the same gate ahead of the checker: `rumdl` with MD013
