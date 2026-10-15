@@ -12,7 +12,7 @@ A containment allowlist must permit the contained system's **primary
 operation**, and that has to be checked against a real command string —
 not a synthetic probe, and not by reasoning about the pattern.
 
-ghmem's `ghmem-only.sh` PreToolUse hook is a positive character
+ghmem's `ghmem-only` PreToolUse hook (`hooks/scripts/hook.sh ghmem-only`) was a positive character
 allowlist, `^ghmem([ \t][A-Za-z0-9_./:=-]+)*$`. The class has no space,
 quote or backtick. But `ghmem route` **requires** a note on every topic
 verdict, and a note is multi-word quoted prose. So the hook blocks the
