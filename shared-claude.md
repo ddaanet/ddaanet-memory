@@ -12,7 +12,8 @@ place conventions apply.
 **The memory size limit does not apply to this file.** A write here draws
 Claude Code's `over the 4KB recall limit … Rewrite it to under 2.8KB now` error
 because the file sits under the memory store. It is `@`-imported whole and
-never recall-fetched: do not shorten, split or summarize it in response.
+never recall-fetched: do not shorten, split or summarize it in response. Make
+the edit, then report the warning and why you did not comply.
 
 **This file is the always-in-context tier.** It is the home for a rule that
 must act without being looked up — the scope between a repo's own `CLAUDE.md`
@@ -51,6 +52,16 @@ rules that change what the agent does by default.
   worktrees — unprompted, even when a workflow skill says to start feature
   work on a fresh one. Work on whatever is checked out. Merging onto a base they named is
   executing their instruction, not originating a switch.
+- **Three review levels, three bases.** Each commit is reviewed as it lands.
+  Work happens on `dev`, and a release is a code review of `dev` against
+  `main`, after which `main` moves to the release. A plan whose multi-commit
+  change needs a review of its own in between names a separate branch, and
+  my human partner's approval of the plan is the prompt to create it, so
+  branch-diffing tools (`/codex:review`, anything expecting a PR) have a base.
+  Never ask whether to move `main`, and never carry it as pending on a say-so:
+  in a handoff or todo, record what review a branch has and has not had.
+  Checked out on `main` anyway, commit there and say so — this is no licence
+  to switch.
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
   bypassing it; the parent repo's pre-commit hook is the gitlore memory gate.
   A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:

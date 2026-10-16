@@ -34,7 +34,7 @@ command line:
 
 The env form survives a git hook's `unset $(git rev-parse --local-env-vars)`:
 that list carries `GIT_DIR`, `GIT_WORK_TREE`, `GIT_INDEX_FILE` and friends, but
-no `GIT_CONFIG_*` ([[git-hook-env-leak]]).
+no `GIT_CONFIG_*` (the `shell-scripting:shell-gotchas` skill, `references/environments.md`).
 
 Loosening it is a **test-fixture** move, not a production one — it is the same
 transport-policy dial as [[git-ext-transport]], and `file` is on that

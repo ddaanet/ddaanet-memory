@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: a9bf3102-9e37-4a28-86a7-939d19b02f31
-  modified: 2026-09-26T14:21:31.434Z
+  modified: 2026-10-16T14:47:22.692Z
 ---
 
 The Bash tool's `timeout` (default 120000 ms, max 600000 ms) bounds how long a
@@ -20,8 +20,9 @@ abort, or — for a subagent — when the agent gives its final response, since
 that ends the subagent's context.
 
 Verified against CC 2.1.261 by decompiling the Bun-embedded bundle (the gitlore
-repo's `plans/index-edit-propagation/background-run-timeout-probe.md`), then
-operationally: a nine-minute gate launched in the background survived the main
+repo's
+`plans/2026-09-05-index-edit-propagation/background-run-timeout-probe.md`),
+then operationally: a nine-minute gate launched in the background survived the main
 agent ending its turn, completed, and recorded its sentinel.
 
 **The completion notification does reach a subagent** (CC 2.1.282, read from

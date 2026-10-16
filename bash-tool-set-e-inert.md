@@ -30,4 +30,4 @@ wrap in `bash -e -c '…'` / `bash -euo pipefail <<'EOF'` — a fresh shell is n
 inside the `&&` list. The trailing `pwd -P >| …/cwd-<id>` is how the tool
 persists cwd across calls (a `cd`, `pushd`, or errexit-free abort all persist);
 it records the physical path, so a symlinked project dir reports its resolved
-path as `cwd`. See [[claude-project-dir]].
+path as `cwd`. See the `plugin-craft:hook-authoring` skill, `references/input-and-harness.md`.
