@@ -212,6 +212,16 @@ rules that change what the agent does by default.
   a review catches a regression — not for a test-only or prose item, and "a
   reviewer re-checks each X" in a task file names what is checked, not one agent
   per X.
+- **Review once, then triage.** One review per change, before its merge. A fix
+  commit is re-reviewed only when it changes behaviour, and then only for
+  regressions the fix introduced, not as a fresh audit. Triage findings before
+  relaying them: real defects get fixed, doc drift gets fixed without a
+  re-review, and a finding that guards a state nothing in practice produces is
+  declined by default and listed as declined, never dispatched. A reviewer asked
+  for findings reports every state it can construct and does not weigh
+  simplicity, so re-reviewing each fix turns review into a ratchet: every fix
+  adds surface the next round mines, and a fix to a rare-state finding can
+  itself regress a real case.
 - **The main thread orchestrates; bulk edits go to a subagent.** An edit
   that touches three or more files, or a documentation, changelog or test
   sweep of any size, is dispatched, with the grep list and the contract in
