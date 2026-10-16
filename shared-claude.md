@@ -31,6 +31,8 @@ rules that change what the agent does by default.
 - **Don't ask for obvious fixes.** A fix that is clearly correct, inside the
   agreed task, and reversible gets applied and reported, not proposed. Reserve
   questions for genuine forks — venue, strategy, anything outward-facing.
+  A fix that adds surface — a command, a flag, a decision entry — is a
+  design fork however directly it follows from the finding: propose it.
   **Don't verify around them either:** when a remembered prohibition
   pattern-matches the phrasing of what you are about to do, check whether its
   precondition is already settled by what you know before spending calls
@@ -62,6 +64,12 @@ rules that change what the agent does by default.
   in a handoff or todo, record what review a branch has and has not had.
   Checked out on `main` anyway, commit there and say so — this is no licence
   to switch.
+- **One re-review, then the loop closes.** A change's fix round gets one
+  re-review. After it, only a high or medium finding reopens the
+  fix-and-review loop; low findings go to a subagent to fix, with no further
+  review. An implementer that would depart from its brief stops and asks
+  rather than deciding, and the dispatcher does not accept the departure on
+  its argument alone.
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
   bypassing it; the parent repo's pre-commit hook is the gitlore memory gate.
   A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:
