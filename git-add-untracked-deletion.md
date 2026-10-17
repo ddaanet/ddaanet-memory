@@ -23,7 +23,7 @@ lists, deletions included. Every genuinely tracked path stages fine; the only
 128 comes from a removal of a file that was never tracked, where there is also
 nothing to stage. A hook that reports staging failures loudly — as it should —
 will report this one, and the noise is what tempts the next reader to put a
-`2>/dev/null` back on the whole loop ([[no-stderr-suppression]]), re-blinding
+`2>/dev/null` back on the whole loop (the `shell-scripting:shell-gotchas` skill, `references/robustness.md`), re-blinding
 every real failure (a stranded `index.lock`, whose error the `sandbox-lies`
 plugin annotates).
 

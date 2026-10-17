@@ -12,7 +12,8 @@ place conventions apply.
 **The memory size limit does not apply to this file.** A write here draws
 Claude Code's `over the 4KB recall limit … Rewrite it to under 2.8KB now` error
 because the file sits under the memory store. It is `@`-imported whole and
-never recall-fetched: do not shorten, split or summarize it in response.
+never recall-fetched: do not shorten, split or summarize it in response. Make
+the edit, then report the warning and why you did not comply.
 
 **This file is the always-in-context tier.** It is the home for a rule that
 must act without being looked up — the scope between a repo's own `CLAUDE.md`
@@ -30,6 +31,8 @@ rules that change what the agent does by default.
 - **Don't ask for obvious fixes.** A fix that is clearly correct, inside the
   agreed task, and reversible gets applied and reported, not proposed. Reserve
   questions for genuine forks — venue, strategy, anything outward-facing.
+  A fix that adds surface — a command, a flag, a decision entry — is a
+  design fork however directly it follows from the finding: propose it.
   **Don't verify around them either:** when a remembered prohibition
   pattern-matches the phrasing of what you are about to do, check whether its
   precondition is already settled by what you know before spending calls
@@ -51,6 +54,30 @@ rules that change what the agent does by default.
   worktrees — unprompted, even when a workflow skill says to start feature
   work on a fresh one. Work on whatever is checked out. Merging onto a base they named is
   executing their instruction, not originating a switch.
+- **Three review levels, three bases.** Each commit is reviewed as it lands.
+  Work happens on `dev`, and a release is a code review of `dev` against
+  `main`, after which `main` moves to the release. A plan whose multi-commit
+  change needs a review of its own in between names a separate branch, and
+  my human partner's approval of the plan is the prompt to create it, so
+  branch-diffing tools (`/codex:review`, anything expecting a PR) have a base.
+  Never ask whether to move `main`, and never carry it as pending on a say-so:
+  in a handoff or todo, record what review a branch has and has not had.
+  Checked out on `main` anyway, commit there and say so — this is no licence
+  to switch.
+- **Review once, triage, then at most one re-review.** One review per change,
+  before its merge. Its fix round gets at most one re-review, and only when a
+  fix changes behaviour — then only for regressions the fix introduced, not as
+  a fresh audit. After it, only a high or medium finding reopens the
+  fix-and-review loop. Triage findings before relaying them: real defects get
+  fixed, low ones by a subagent with no further review; doc drift gets fixed
+  without a re-review; and a finding that guards a state nothing in practice
+  produces is declined by default and listed as declined, never dispatched. A
+  reviewer asked for findings reports every state it can construct and does
+  not weigh simplicity, so re-reviewing each fix turns review into a ratchet:
+  every fix adds surface the next round mines, and a fix to a rare-state
+  finding can itself regress a real case. An implementer that would depart
+  from its brief stops and asks rather than deciding, and the dispatcher does
+  not accept the departure on its argument alone.
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
   bypassing it; the parent repo's pre-commit hook is the gitlore memory gate.
   A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:
@@ -212,16 +239,6 @@ rules that change what the agent does by default.
   a review catches a regression — not for a test-only or prose item, and "a
   reviewer re-checks each X" in a task file names what is checked, not one agent
   per X.
-- **Review once, then triage.** One review per change, before its merge. A fix
-  commit is re-reviewed only when it changes behaviour, and then only for
-  regressions the fix introduced, not as a fresh audit. Triage findings before
-  relaying them: real defects get fixed, doc drift gets fixed without a
-  re-review, and a finding that guards a state nothing in practice produces is
-  declined by default and listed as declined, never dispatched. A reviewer asked
-  for findings reports every state it can construct and does not weigh
-  simplicity, so re-reviewing each fix turns review into a ratchet: every fix
-  adds surface the next round mines, and a fix to a rare-state finding can
-  itself regress a real case.
 - **The main thread orchestrates; bulk edits go to a subagent.** An edit
   that touches three or more files, or a documentation, changelog or test
   sweep of any size, is dispatched, with the grep list and the contract in

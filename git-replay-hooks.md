@@ -38,7 +38,7 @@ hook down rather than just the part that writes.
 `CHERRY_PICK_HEAD`, `REVERT_HEAD` via `git rev-parse --git-path <name>`.
 `--git-path` is per-worktree, which is what replay state is. Resolve them
 *before* any `unset $(git rev-parse --local-env-vars)`, same reason
-`GIT_INDEX_FILE` is captured there ([[git-hook-env-leak]]).
+`GIT_INDEX_FILE` is captured there (the `shell-scripting:shell-gotchas` skill, `references/environments.md`).
 
 **`MERGE_HEAD` is not a replay marker.** A merge commit is authored now and
 must record current state; so must a plain `--amend` on the tip. Both belong in
