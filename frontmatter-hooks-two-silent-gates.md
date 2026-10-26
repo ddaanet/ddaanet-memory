@@ -25,8 +25,8 @@ Which one, by what you can observe:
   `memory/ddaanet/frontmatter-hooks-dispatch-name-demotes.md`.
 - Hooks inert for a plugin-shipped agent (`<plugin>:<agent>`), `sets hooks,
   which is ignored for plugin agents` in the debug log — neither gate, and no
-  trust key or unnamed dispatch fixes it →
-  `memory/ddaanet/plugin-agent-hooks-ignored.md`.
+  trust key or unnamed dispatch fixes it → the `plugin-craft:hook-authoring`
+  skill, which covers containing a plugin's agents.
 
 **Verify by dispatch shape, never by asking.** An agent cannot observe a hook
 that was never attached, so it reasons from its definition and reports itself

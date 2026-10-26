@@ -40,5 +40,5 @@ and write it `true` (the product's own error message sanctions this), then
 restart. Alternatively move the definitions to `~/.claude/agents/`, an exempt
 source, or register the hook in `.claude/settings.json`, where no trust check
 applies. Shipping them as a plugin is not an alternative: the plugin source is
-exempt from this check, but its agents' frontmatter `hooks:` are dropped anyway
-— see [[plugin-agent-hooks-ignored]].
+exempt from this check, but its agents' frontmatter `hooks:` are dropped anyway;
+the `plugin-craft:hook-authoring` skill covers containing a plugin's agents.
