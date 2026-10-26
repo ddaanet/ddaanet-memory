@@ -1,11 +1,11 @@
 ---
 name: codex-review-of-design-docs
-description: "`/codex:review <path>` refused / \"no actionable defects\" on docs: use adversarial-review --base with a focus file; companion needs sandbox off (`mkdir …/jobs` ENOENT); \"codex-code-mode-host is missing\" despite setup ready"
+description: "`/codex:review <path>` refused / \"no actionable defects\" on docs: use adversarial-review --base with a focus file; companion needs sandbox off (`mkdir …/jobs` ENOENT, EROFS); review model via `--model` (slugs in `~/.codex/models_cache.json`), no `--effort`, effort only from config; \"codex-code-mode-host is missing\" despite setup ready"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 82e309ea-799a-45ff-9c2d-026fd7e696cd
-  modified: 2026-09-15T18:01:03.846Z
+  modified: 2026-10-17T12:51:28.979Z
 ---
 
 Running the `openai-codex` Claude Code plugin (companion `codex-companion.mjs`,
@@ -14,8 +14,12 @@ plugin 1.0.6, codex-cli 0.154.0) against a plan or outline:
 - **`/codex:review <path>` fails.** A positional argument is parsed as focus
   text, which native review refuses. It reviews only a diff (working tree, or
   `--base <ref>`), so a committed doc on a clean tree needs `--base HEAD~1`.
-- **`/codex:review` takes no effort flag**, and `/codex:adversarial-review` is
-  user-invoked only: the agent cannot start it, so the user types the command.
+- **Both reviews take `--model <slug>` (`-m`)**, absent from the usage text
+  but parsed and passed through; no `--effort` (only `task` has it), so a
+  review runs at `model_reasoning_effort` in `~/.codex/config.toml`. The
+  model slugs are in `~/.codex/models_cache.json` (`.models[].slug`,
+  `visibility: list`). `/codex:adversarial-review` is user-invoked only: the
+  agent cannot start it, so the user types the command.
 - **Native review is useless on docs.** It is a code-defect reviewer: on a
   docs-only diff it reports "no executable code … no actionable defects"
   without checking any claim.
@@ -27,7 +31,9 @@ plugin 1.0.6, codex-cli 0.154.0) against a plan or outline:
   human partner's correction.
 - **The companion must run with the sandbox disabled.** It writes job state
   under `~/.claude/plugins/data/codex-openai-codex/`, which the sandbox denies
-  (`ENOENT … mkdir …/jobs`). Unsandboxed, `$TMPDIR` is unset, so don't
+  (`ENOENT … mkdir …/jobs`, or `EROFS … jobs/review-….log`). The
+  `/codex:cancel` slash command runs its `!` shell sandboxed and failed the
+  same way (seen 2026-10-16). Unsandboxed, `$TMPDIR` is unset, so don't
   redirect output there — let the background task log capture stdout.
 - Codex's own sandbox cannot create scratch repos, so its git-behaviour
   findings come back inferred, not reproduced — verify them before folding.
