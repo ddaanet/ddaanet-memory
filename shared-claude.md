@@ -79,7 +79,8 @@ rules that change what the agent does by default.
   from its brief stops and asks rather than deciding, and the dispatcher does
   not accept the departure on its argument alone.
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
-  bypassing it; the parent repo's pre-commit hook is the gitlore memory gate.
+  bypassing it; the parent repo's pre-push hook is what publishes memory with
+  the push, so skipping it strands the memory commits the push records.
   A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:
   not found` is a stale hook path, not a reason to bypass: run
   `(cd /path/to/repo && claude -p ping)` to let the SessionStart hook rewrite
