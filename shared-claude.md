@@ -64,20 +64,22 @@ rules that change what the agent does by default.
   in a handoff or todo, record what review a branch has and has not had.
   Checked out on `main` anyway, commit there and say so — this is no licence
   to switch.
-- **Review once, triage, then at most one re-review.** One review per change,
-  before its merge. Its fix round gets at most one re-review, and only when a
-  fix changes behaviour — then only for regressions the fix introduced, not as
-  a fresh audit. After it, only a high or medium finding reopens the
-  fix-and-review loop. Triage findings before relaying them: real defects get
-  fixed, low ones by a subagent with no further review; doc drift gets fixed
-  without a re-review; and a finding that guards a state nothing in practice
-  produces is declined by default and listed as declined, never dispatched. A
-  reviewer asked for findings reports every state it can construct and does
-  not weigh simplicity, so re-reviewing each fix turns review into a ratchet:
-  every fix adds surface the next round mines, and a fix to a rare-state
-  finding can itself regress a real case. An implementer that would depart
-  from its brief stops and asks rather than deciding, and the dispatcher does
-  not accept the departure on its argument alone.
+- **Review every commit at medium, fix only high and medium.** Each slice
+  that generates, modifies or deletes content gets a `/code-review medium`
+  of its commit after it lands; its findings are self-fixed in a separate
+  commit, and that fix commit is reviewed the same way. An `xhigh` review of
+  `dev` against `main` runs once, before a release. A reviewer asked for
+  findings always returns some, and every fix adds surface the next round
+  mines, so low findings are the exhaust: list them as declined, never
+  dispatch them. Severity is assigned at triage, not read off the reviewer,
+  which often reports none: a finding is high or medium when a reader
+  following the text would do the wrong thing — a command that fails, a
+  claim a probe or primary source contradicts, two places prescribing
+  opposite actions. Phrasing, wrapping, placement, redundancy and "could be
+  clearer" are low. A finding that guards a state nothing in practice
+  produces is declined as well. An implementer that would depart from its
+  brief stops and asks rather than deciding, and the dispatcher does not
+  accept the departure on its argument alone.
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
   bypassing it; the parent repo's pre-commit hook is the gitlore memory gate.
   A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:
