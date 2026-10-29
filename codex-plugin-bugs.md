@@ -1,6 +1,6 @@
 ---
 name: codex-plugin-bugs
-description: "`/codex:review` refused or \"no actionable defects\"/\"no regressions\" after a skim: use adversarial-review --base with a focus file as its own argv (template leaves `$(cat …)` unquoted); companion and `/codex:cancel` need sandbox off (`mkdir …/jobs` ENOENT, EROFS, `error building bubblewrap command`); `--model` slugs in `~/.codex/models_cache.json`, no `--effort`; \"codex-code-mode-host is missing\""
+description: "`/codex:review` refused or \"no actionable defects\"/\"no regressions\" after a skim: use adversarial-review --base with a focus file as its own argv (template leaves `$(cat …)` unquoted); companion and `/codex:cancel` need sandbox off (`mkdir …/jobs` ENOENT, EROFS, `error building bubblewrap command`); `--model` takes full slugs from `~/.codex/models_cache.json` (short `astra`/`sol` fail \"not supported when using Codex with a ChatGPT account\"), no `--effort`; \"codex-code-mode-host is missing\""
 metadata:
   node_type: memory
   type: reference
@@ -24,8 +24,16 @@ metadata:
   unquoted (split, globbed); run the companion with flags and
   `"$(cat file)"` as separate argv — with more than one argument it uses
   them as-is (`normalizeArgv`).
-- **`--model <slug>`** works on both reviews (slugs: `.models[].slug` in
-  `~/.codex/models_cache.json`); no `--effort`, effort comes from
+- **`--model <slug>`** works on both reviews, but only with a full ID
+  (`gpt-6-astra`, `gpt-6.1-sol`, …). A short name (`--model astra`, `sol`)
+  fails at the first turn with `The 'astra' model is not supported when
+  using Codex with a ChatGPT account.` (`model_not_found`): the message
+  blames the account, and re-logging in or upgrading the plan changes
+  nothing. List the IDs with
+  `jq -r '.models[] | .slug // .id' ~/.codex/models_cache.json`; the default
+  is the `model =` line in `~/.codex/config.toml`. When a short name matches
+  several IDs (`gpt-6.1-sol`, `gpt-6-sol`, `gpt-5.6-sol`), pick the newest
+  and say so (seen 2026-10-29). No `--effort`: effort comes from
   `~/.codex/config.toml`. `/codex:adversarial-review` is user-invoked only.
 - **Run the companion unsandboxed.** Sandboxed it fails on job state under
   `~/.claude/plugins/data/codex-openai-codex/` (`ENOENT … mkdir …/jobs`,
