@@ -80,6 +80,14 @@ rules that change what the agent does by default.
   produces is declined as well. An implementer that would depart from its
   brief stops and asks rather than deciding, and the dispatcher does not
   accept the departure on its argument alone.
+- **Triage first, then the reviewer fixes.** The orchestrator triages a
+  review's findings before anything is fixed, and sends out only high and
+  medium. The fix goes back to the reviewer that found them, by `SendMessage`
+  to its returned id, while its context is under ~150k tokens; past that, a
+  fresh agent with `name` unset takes it.
+- **A fix lists cases only when the list is closed.** A list in prose reads
+  as complete, so each case it misses is the next review's medium finding.
+  Where the cases are open-ended, state the rule that produces them.
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
   bypassing it; the parent repo's pre-commit hook is the gitlore memory gate.
   A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:
@@ -107,6 +115,10 @@ rules that change what the agent does by default.
   Content written *in their name* for an external audience follows the
   project's own voice instead, and git authorship carries their public
   identity by design.
+- **A summary of a change points at the diff, it does not narrate it.** For
+  a simple, self-contained change, name the file (a line only if needed) and
+  say why; anything that repeats the diff in other words goes. Applies to
+  commit messages and memory commit summaries.
 - **Drafts go to a file**, not inline in the reply — GitHub comments, emails,
   documents, copy. Edit the file across iterations and describe only what
   changed.
