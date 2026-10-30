@@ -87,7 +87,13 @@ rules that change what the agent does by default.
   fresh agent with `name` unset takes it.
 - **A fix lists cases only when the list is closed.** A list in prose reads
   as complete, so each case it misses is the next review's medium finding.
-  Where the cases are open-ended, state the rule that produces them.
+  Where the cases are open-ended, state the rule that produces them. Where
+  no probe-backed rule exists, or a second review round running hits the same
+  sentence, drop the list or the stated cause instead of refining it — keep
+  what the reader acts on, hedge any effect that must stay ("can … or fail"),
+  and grep every copy of the dropped wording in the same fix. My human
+  partner, after refining one sentence failed to converge over four rounds:
+  "just drop the enumeration or claim and have green review".
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
   bypassing it; the parent repo's pre-commit hook is the gitlore memory gate.
   A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:
