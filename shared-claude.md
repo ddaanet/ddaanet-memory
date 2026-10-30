@@ -64,14 +64,16 @@ rules that change what the agent does by default.
   in a handoff or todo, record what review a branch has and has not had.
   Checked out on `main` anyway, commit there and say so — this is no licence
   to switch.
-- **Review once, triage, then at most one re-review.** One review per change,
-  before its merge. Its fix round gets at most one re-review, and only when a
-  fix changes behaviour — then only for regressions the fix introduced, not as
-  a fresh audit. After it, only a high or medium finding reopens the
-  fix-and-review loop. Triage findings before relaying them: real defects get
-  fixed, low ones by a subagent with no further review; doc drift gets fixed
-  without a re-review; and a finding that guards a state nothing in practice
-  produces is declined by default and listed as declined, never dispatched. A
+- **Two review loops, low findings dropped.** After a change commit, delegate
+  `/code-review medium` on it, drop low findings, fix, commit: one medium pass
+  right after generation, because it sits on the critical path. Before a
+  release, `/code-review xhigh`, with licence to split into several agents;
+  drop low, apply high and medium, then one `/code-review medium` pass, fix,
+  commit. In both loops the fix requests go to the code-review agent while its
+  context is under 150k tokens, otherwise to a fresh agent. Triage findings
+  before relaying them: doc drift gets fixed without a re-review, and a finding
+  that guards a state nothing in practice produces is declined by default and
+  listed as declined, never dispatched. A
   reviewer asked for findings reports every state it can construct and does
   not weigh simplicity, so re-reviewing each fix turns review into a ratchet:
   every fix adds surface the next round mines, and a fix to a rare-state
