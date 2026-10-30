@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: 751463d2-2bff-4bb6-8d21-adf62316e635
-  modified: 2026-10-16T17:30:13.688Z
+  modified: 2026-10-26T18:17:54.050Z
 ---
 
 Simplicity is the governing principle: write no code that is not needed.
@@ -28,5 +28,5 @@ dedup pass, state what goes wrong without it. If the answer is "nothing, the
 unguarded form is inert", drop it. When reviewing a proposal or a subagent's
 diff, look for guards of this kind and propose removing them. Defending a
 guard with a consistency argument ("no release produces that state") is not
-enough on its own when the guard also costs a restart or a branch. Related:
-[[removing-cleanly]].
+enough on its own when the guard also costs a restart or a branch. Related: the
+`craft:removing-cleanly` skill.

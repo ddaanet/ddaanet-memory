@@ -65,31 +65,40 @@ rules that change what the agent does by default.
   Checked out on `main` anyway, commit there and say so — this is no licence
   to switch.
 - **Review every commit at medium, fix only high and medium.** Each slice
-  that generates, modifies or deletes content gets a `/code-review medium`
-  of its commit after it lands; its findings are self-fixed in a separate
-  commit, and that fix commit is reviewed the same way. An `xhigh` review of
-  `dev` against `main` runs once, before a release. A reviewer asked for
-  findings always returns some, and every fix adds surface the next round
-  mines, so low findings are the exhaust: list them as declined, never
-  dispatch them. Severity is assigned at triage, not read off the reviewer,
-  which often reports none: a finding is high or medium when a reader
-  following the text would do the wrong thing — a command that fails, a
-  claim a probe or primary source contradicts, two places prescribing
-  opposite actions. Phrasing, wrapping, placement, redundancy and "could be
-  clearer" are low. A finding that guards a state nothing in practice
-  produces is declined as well. An implementer that would depart from its
-  brief stops and asks rather than deciding, and the dispatcher does not
-  accept the departure on its argument alone.
-- **Triage first, then the reviewer fixes.** The orchestrator triages a
-  review's findings before anything is fixed, and sends out only high and
-  medium. The fix goes back to the reviewer that found them, by `SendMessage`
-  to its returned id, while its context is under ~150k tokens; past that, a
-  fresh agent with `name` unset takes it.
+  that generates, modifies or deletes content gets a delegated
+  `/code-review medium` of its commit right after it lands, because that
+  review sits on the critical path; its findings are self-fixed in a separate
+  commit, and that fix commit is reviewed the same way. Doc drift is the
+  exception: it is fixed without a re-review. Before a release, an `xhigh`
+  review of `dev` against `main` runs once, with licence to split into
+  several agents; its high and medium findings are fixed, then one
+  `/code-review medium` pass runs on the fixes, and its findings are fixed and
+  committed with no further round: re-reviewing each fix of a release turns
+  review into a ratchet. A reviewer asked for findings always returns some and does not
+  weigh simplicity, and every fix adds surface the next round mines, so low
+  findings are the exhaust: list them as declined, never dispatch them.
+  Severity is assigned at triage, not read off the reviewer, which often
+  reports none: a finding is high or medium when a reader following the text
+  would do the wrong thing — a command that fails, a claim a probe or primary
+  source contradicts, two places prescribing opposite actions. Phrasing,
+  wrapping, placement, redundancy and "could be clearer" are low. A finding
+  that guards a state nothing in practice produces is declined as well, since
+  a fix to a rare-state finding can itself regress a real case. An
+  implementer that would depart from its brief stops and asks rather than
+  deciding, and the dispatcher does not accept the departure on its argument
+  alone.
+- **Triage first, then the reviewer fixes.** In both the per-commit and the
+  release loop, the orchestrator triages a review's findings before anything
+  is fixed, and sends out only high and medium. The fix goes back to the
+  reviewer that found them, by `SendMessage` to its returned id, while its
+  context is under ~150k tokens; past that, a fresh agent with `name` unset
+  takes it.
 - **A fix lists cases only when the list is closed.** A list in prose reads
   as complete, so each case it misses is the next review's medium finding.
   Where the cases are open-ended, state the rule that produces them.
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
-  bypassing it; the parent repo's pre-commit hook is the gitlore memory gate.
+  bypassing it; the parent repo's pre-push hook is what publishes memory with
+  the push, so skipping it strands the memory commits the push records.
   A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:
   not found` is a stale hook path, not a reason to bypass: run
   `(cd /path/to/repo && claude -p ping)` to let the SessionStart hook rewrite
