@@ -1,11 +1,11 @@
 ---
 name: markdown-reflow-gate
-description: "wiring a markdown hard-wrap gate (rumdl 0.2.74): the gate is `rumdl fmt --check -q --no-cache`, never `rumdl check` — permanently red on a line it cannot wrap; `include = [\"*.md\"]` is not root-anchored, the `*` crosses `/` and pulls in `plans/`, `memory/`, `.claude/` — root-level files are `/*.md`; without `--no-cache` a `.rumdl_cache/` dir appears in the tree; `reflow = true` alone only breaks over-limit lines and never converges widths (a ~70-col doc comes out *longer*) — `reflow-mode = \"normalize\"` re-fills paragraphs and is what a line-count cap is measured against, formatter check ahead of the line guard; reflow adds `>` to wrapped blockquote continuations, realigns table separators, and breaks any checker that greps a `- ` bullet line for content"
+description: "wiring a markdown hard-wrap gate (rumdl 0.2.74): the gate is `rumdl fmt --check -q --no-cache`, never `rumdl check` — permanently red on a line it cannot wrap; `include = [\"*.md\"]` is not root-anchored, the `*` crosses `/` and pulls in `plans/`, `memory/`, `.claude/` — root-level files are `/*.md`; without `--no-cache` a `.rumdl_cache/` dir appears in the tree; `reflow = true` alone only breaks over-limit lines and never converges widths (a ~70-col doc comes out *longer*) — `reflow-mode = \"normalize\"` re-fills paragraphs and is what a line-count cap is measured against, formatter check ahead of the line guard (the ddaanet size cap counts bytes and needs no reflow); reflow adds `>` to wrapped blockquote continuations, realigns table separators, and breaks any checker that greps a `- ` bullet line for content"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 71b27bc8-eb7a-4d9a-ae83-506402f30720
-  modified: 2026-09-26T12:27:54.540Z
+  modified: 2026-10-31T19:26:24.109Z
 ---
 
 Measured on rumdl 0.2.74. The working config is `enable = ["MD013"]` with
@@ -21,10 +21,14 @@ document hand-wrapped at ~70 columns comes out 2 lines *longer*.
 tree, 85 lines changed under the default, 276 across 31 files under `normalize`.
 
 A line-count cap is honest only against `normalize`, since prose wrapped at 60
-sits at ~1.3x the line count of the same words at 80. So the formatter check
-runs *ahead* of the line guard in the same gate, and any ceiling is taken from
+sits at ~1.3x the line count of the same words at 80. So a line-count gate runs
+the formatter check *ahead* of the line guard, and any ceiling is taken from
 post-reflow counts — a file carrying 300-character lines gains most of its line
 count from the reflow, not from new words.
+
+The ddaanet size cap counts bytes as `wc -c` counts them, not lines; a re-wrap
+barely moves a byte count, so it needs no formatter ahead of it
+([[shared-claude]], Code). rumdl stays for readability.
 
 ## The gate is `fmt --check`, never `check`
 

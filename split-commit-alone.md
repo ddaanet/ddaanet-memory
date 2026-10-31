@@ -1,6 +1,6 @@
 ---
 name: split-commit-alone
-description: "splitting a file (a doc over its line cap, a module): the split lands in its own commit carrying only the move and the inbound citation updates it forces — never mixed with a reflow, an edit or any other change"
+description: "splitting a file (a doc over its size cap, a module): the split lands in its own commit carrying only the move and the inbound citation updates it forces — never mixed with a reflow, an edit or any other change"
 metadata:
   node_type: memory
   type: feedback
@@ -8,7 +8,7 @@ metadata:
   modified: 2026-10-30T16:51:29.613Z
 ---
 
-A split — moving a section of a file into a new file, for a line cap or a
+A split — moving a section of a file into a new file, for a size cap or a
 seam — lands in a clean commit of its own. That commit carries the move and
 the inbound references the move forces (links, section citations, a design
 doc naming where something lives), and nothing else: no reflow, no rewording,

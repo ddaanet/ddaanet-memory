@@ -333,18 +333,20 @@ rules that change what the agent does by default.
   symbol means patching every in-repo caller directly, even if that is more files.
   Anything kept only to spare the callers is dead weight that hides the real
   dependency. Reserve compatibility work for genuine published API boundaries.
-- **400 lines caps any artifact a reader takes in at one go** — source files,
-  `references/` nodes, plans, design docs and PRs — and **~200 a `SKILL.md` hub**,
-  which is paid on every invocation while a node is opt-in. For design docs and
-  implementation the 400 is a *hard* limit; for plans it is a soft cap. It exists
-  for context management, and a file that reaches it usually holds
-  cohesive content to spin off — find that seam rather than arguing the overage.
-  Never satisfy it quietly, by cramming 150–300-character lines or by shaving docstrings and prose —
-  that is borrowing against the split, and a file parked at exactly its cap has
-  stopped emitting the signal. A count is only honest once a hard-wrapping formatter
-  has run, so wire one into the same gate ahead of the checker: `rumdl` with MD013
-  reflow at 80 columns, then a checker reporting `oversized-file: <n> lines > <cap>`
-  with the cap picked from the path. The full argument ships in
+- **20000 bytes caps any artifact a reader takes in at one go** — source files,
+  `references/` nodes, plans, design docs and PRs — and **10000 a `SKILL.md`
+  hub**, which is paid on every invocation while a node is opt-in. Bytes as
+  `wc -c` counts them, whitespace included: about 10k and 5k tokens as the Read
+  tool presents a file. For design docs and implementation the cap is *hard*; for
+  plans it is soft. It exists for context management, and a file that reaches it
+  usually holds cohesive content to spin off — find that seam rather than arguing
+  the overage. Never satisfy it quietly by shaving docstrings and prose — that is
+  borrowing against the split, and a file parked at exactly its cap has stopped
+  emitting the signal. A byte count barely moves on a re-wrap, so no formatter
+  has to run ahead of it. The plugin-dev toolkit ships the checker as
+  `check-size`, wired `precommit: check-refs check-size`, reporting
+  `oversized-file: <path>: <n> bytes > <cap>`; a root `size.exempt` names a file
+  kept over on purpose, with its reason. The full argument ships in
   `craft:plan-contracts`.
 - **A quiet gate signs off with the list of checks that passed**, accumulated as they
   run — never a bare "OK" or "Green". Silence is ambiguous: a check that printed
