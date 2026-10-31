@@ -95,7 +95,12 @@ rules that change what the agent does by default.
   takes it.
 - **A fix lists cases only when the list is closed.** A list in prose reads
   as complete, so each case it misses is the next review's medium finding.
-  Where the cases are open-ended, state the rule that produces them. Where
+  Where the cases are open-ended, state the rule that produces them. Test
+  for it at triage, before dispatching a fix: a finding that names a case
+  the text missed, or one that lands on what the previous fix added, means
+  the space is open and the fix is the rule, not one more case. Such rounds
+  read as progress, because every probe in them is real, so the count of
+  rounds is no signal; only the test is. Where
   no probe-backed rule exists, or a second review round running hits the same
   sentence, drop the list or the stated cause instead of refining it — keep
   what the reader acts on, hedge any effect that must stay ("can … or fail"),
