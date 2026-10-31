@@ -300,6 +300,11 @@ rules that change what the agent does by default.
 - **Encode behavior in the suite, never a hand-run throwaway fixture.** Grep the
   suite first — the path is often already covered. Manual runs are for dogfooding the
   real product end to end, which is a different thing from testing a script.
+- **Skipped tests are dead tests.** A test that cannot run on some platform for
+  want of a tool (macOS ships no `timeout`) is made portable: replace the
+  dependency with something the suite owns, and pin that replacement with a test
+  of its own. Neither `skip` it nor branch per platform, since a skip reports
+  green while checking nothing, and a branch is a skip on every machine but one.
 - **Dogfood the day it ships.** Run a self-contained slice on the real target the
   same day; do not wait for the next plan to validate the last one. Fixtures encode
   what you expected to vary; the real environment includes what you did not think to
