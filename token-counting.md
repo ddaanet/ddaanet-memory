@@ -1,11 +1,11 @@
 ---
 name: token-counting
-description: "no exact offline tokenizer for Claude 3+ (offline BPE is approximate); `messages.count_tokens` or `cc-token`; report bytes for small artifacts"
+description: "counting a file's tokens: `edify tokens --model opus --json FILE...` (count_tokens, no key in env needed), never a `claude -p` usage round-trip; offline BPE is approximate; report bytes for small artifacts"
 metadata: 
   node_type: memory
   type: reference
   originSessionId: 45acd379-a2c1-4cfc-8f7b-e506ad744d38
-  modified: 2026-08-11T20:03:00.035Z
+  modified: 2026-10-31T14:31:26.333Z
 ---
 
 State of token-counting tooling as of 2026-05-19 (surveyed during
@@ -25,11 +25,21 @@ it still returns an *estimate*, not ground truth).
 `--no-cache` to bypass. Closest off-the-shelf fit for "small CLI
 with cache."
 
-**ddaa's own implementation:** [[claude-plugin-dev]]-adjacent —
-[edify](https://github.com/ddaanet/edify) has `tokens.py` +
-`token_cache.py` (SQLAlchemy keyed on MD5+model), and a `tokens`
-CLI. Heavyweight for a bash hook (Python + anthropic SDK + sqlalchemy)
-but useful as reference for the API-call+cache shape.
+**Counting tokens from a session: `edify tokens`.** It is on PATH
+(`~/.local/bin/edify`): `edify tokens --model opus --json FILE...`
+returns per-file counts and a total in one call (verified 2026-10-31,
+`claude-opus-5-5`), and it works with `ANTHROPIC_API_KEY` unset in the
+session env. Each count carries a constant +7 tokens of request
+overhead, and haiku and opus counts agree exactly (measured over 131
+files). Never measure tokens by a model round-trip — `claude -p
+--output-format json` usage minus an empty-prompt baseline: it gives
+the same numbers but pays for a generation per file, one file per
+call; my human partner called it "remarkably stupid" next to the CLI
+that exists. The implementation
+([edify](https://github.com/ddaanet/edify) `tokens.py` +
+`token_cache.py`, SQLAlchemy keyed on MD5+model) is heavyweight for a
+bash hook (Python + anthropic SDK + sqlalchemy) but useful as
+reference for the API-call+cache shape.
 
 **Practical takeaway for plugin hooks:** if the artifact is small
 (1–5 KiB), reporting **bytes** answers my human partner's "is this
