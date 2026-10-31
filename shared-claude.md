@@ -340,7 +340,10 @@ rules that change what the agent does by default.
   tool presents a file. For design docs and implementation the cap is *hard*; for
   plans it is soft. It exists for context management, and a file that reaches it
   usually holds cohesive content to spin off — find that seam rather than arguing
-  the overage. Never satisfy it quietly by shaving docstrings and prose — that is
+  the overage. The seam is a when-needed one: content loaded at one moment
+  apart from content loaded at another. Getting a file under the cap is always
+  that split, so do not offer `size.exempt` as the alternative or ask which.
+  Never satisfy it quietly by shaving docstrings and prose — that is
   borrowing against the split, and a file parked at exactly its cap has stopped
   emitting the signal. A byte count barely moves on a re-wrap, so no formatter
   has to run ahead of it. The plugin-dev toolkit ships the checker as
