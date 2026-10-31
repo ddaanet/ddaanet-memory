@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: feedback
   originSessionId: ee5f9d2f-0cc7-4f76-8ba3-176a7cc25936
-  modified: 2026-10-08T23:28:11.531Z
+  modified: 2026-10-31T13:58:24.222Z
 ---
 
 The `security-guidance@claude-code-plugins` background reviewer watches the
@@ -34,5 +34,5 @@ slipped past.
 - Do not dismiss a commit-review finding just because its details are
   missing. Probe the class it names.
 
-Related: [[guardrail-must-permit-real-commands]],
-[[guard-safety-visible-in-the-pattern]].
+Related: [[guard-safety-visible-in-the-pattern]]; a guard's ALLOW case is
+covered by `craft:test-discipline` ("Assert the invocation contract").
