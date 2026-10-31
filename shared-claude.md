@@ -69,7 +69,9 @@ rules that change what the agent does by default.
   `/code-review medium` of its commit right after it lands, because that
   review sits on the critical path; its findings are self-fixed in a separate
   commit, and that fix commit is reviewed the same way. Doc drift is the
-  exception: it is fixed without a re-review. Before a release, an `xhigh`
+  exception: it is fixed without a re-review. Before a release, `/simplify`
+  runs over `dev` against `main` first, its edits committed and reviewed like
+  any commit, so the release review sees them. Then an `xhigh`
   review of `dev` against `main` runs once, with licence to split into
   several agents; its high and medium findings are fixed, then one
   `/code-review medium` pass runs on the fixes, and its findings are fixed and
