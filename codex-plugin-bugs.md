@@ -1,6 +1,6 @@
 ---
 name: codex-plugin-bugs
-description: "`/codex:review` refused or \"no actionable defects\"/\"no regressions\" after a skim: use adversarial-review --base with a focus file as its own argv (template leaves `$(cat …)` unquoted); companion and `/codex:cancel` need sandbox off (`mkdir …/jobs` ENOENT, EROFS, `error building bubblewrap command`); `--model` takes full slugs from `~/.codex/models_cache.json` (short `astra`/`sol` fail \"not supported when using Codex with a ChatGPT account\"), no `--effort`; \"codex-code-mode-host is missing\""
+description: "`/codex:review` refused or \"no actionable defects\"/\"no regressions\" after a skim: use adversarial-review --base with a focus file as its own argv (template leaves `$(cat …)` unquoted); companion and `/codex:cancel` need sandbox off (`mkdir …/jobs` ENOENT, EROFS, `error building bubblewrap command`); `--model` needs a full slug from `~/.codex/models_cache.json` (short `astra`/`sol` fail \"not supported when using Codex with a ChatGPT account\"), no `--effort`; \"codex-code-mode-host is missing\""
 metadata:
   node_type: memory
   type: reference
