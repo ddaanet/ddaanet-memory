@@ -58,10 +58,8 @@ rules that change what the agent does by default.
 - **Three review levels, three bases.** Each commit is reviewed as it lands.
   Work happens on `dev`, and a release is a code review of `dev` against
   `main`, after which `main` moves to the release. The release sequence is
-  standing consent to switch: once the prerelease review pass (`/simplify`,
-  the `xhigh` `/code-review`, and `/codex:adversarial-review --base main`
-  on the astra model, whose `--model` takes the full slug from
-  `~/.codex/models_cache.json`) and its fix rounds have landed,
+  standing consent to switch: once the prerelease review pass (`/simplify`
+  and the release review, in the next item) and its fix rounds have landed,
   check out `main` and fast-forward it to `dev`, run `/ddaa:preflight`, then
   release; after the release, check out `dev` and fast-forward it to `main`,
   which carries the release commit. A plan whose multi-commit
@@ -79,9 +77,13 @@ rules that change what the agent does by default.
   commit, and that fix commit is reviewed the same way. Doc drift is the
   exception: it is fixed without a re-review. Before a release, `/simplify`
   runs over `dev` against `main` first, its edits committed and reviewed like
-  any commit, so the release review sees them. Then an `xhigh`
-  review of `dev` against `main` runs once, with licence to split into
-  several agents; its high and medium findings are fixed, then one
+  any commit, so the release review sees them. Then the release review of
+  `dev` against `main` runs once, as parallel reviews of that same delta: an
+  `xhigh` `/code-review`, with licence to split into several agents, and
+  `/codex:adversarial-review --base main` on the astra model, whose `--model`
+  takes the full slug from `~/.codex/models_cache.json`, plus in a plugin repo
+  `plugin-dev:skill-reviewer` and `plugin-dev:plugin-validator`, whose
+  findings get special attention. The high and medium findings are fixed, then one
   `/code-review medium` pass runs on the fixes, and its findings are fixed and
   committed with no further round: re-reviewing each fix of a release turns
   review into a ratchet. A reviewer asked for findings always returns some and does not
