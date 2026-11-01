@@ -61,8 +61,9 @@ rules that change what the agent does by default.
   standing consent to switch: once the prerelease review pass (`/simplify`,
   the `xhigh` `/code-review`, and `/codex:adversarial-review --base main`
   on the astra model, whose `--model` takes the full slug from
-  `~/.codex/models_cache.json`) and its fix rounds have landed,
-  check out `main` and fast-forward it to `dev`, run `/ddaa:preflight`, then
+  `~/.codex/models_cache.json`, plus, in a plugin repo, the
+  `plugin-dev:plugin-validator` and `plugin-dev:skill-reviewer` agents) and its
+  fix rounds have landed, check out `main` and fast-forward it to `dev`, run `/ddaa:preflight`, then
   release; after the release, check out `dev` and fast-forward it to `main`,
   which carries the release commit. A plan whose multi-commit
   change needs a review of its own in between names a separate branch, and
