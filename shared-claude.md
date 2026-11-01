@@ -53,17 +53,25 @@ rules that change what the agent does by default.
 - **My human partner owns branching.** Never create or switch branches — or
   worktrees — unprompted, even when a workflow skill says to start feature
   work on a fresh one. Work on whatever is checked out. Merging onto a base they named is
-  executing their instruction, not originating a switch.
+  executing their instruction, not originating a switch, and the release
+  sequence below is standing consent to its two switches.
 - **Three review levels, three bases.** Each commit is reviewed as it lands.
   Work happens on `dev`, and a release is a code review of `dev` against
-  `main`, after which `main` moves to the release. A plan whose multi-commit
+  `main`, after which `main` moves to the release. The release sequence is
+  standing consent to switch: once the prerelease review pass (`/simplify`,
+  the `xhigh` `/code-review`, and `/codex:adversarial-review --base main`
+  on the astra model, whose `--model` takes the full slug from
+  `~/.codex/models_cache.json`) and its fix rounds have landed,
+  check out `main` and fast-forward it to `dev`, run `/ddaa:preflight`, then
+  release; after the release, check out `dev` and fast-forward it to `main`,
+  which carries the release commit. A plan whose multi-commit
   change needs a review of its own in between names a separate branch, and
   my human partner's approval of the plan is the prompt to create it, so
   branch-diffing tools (`/codex:review`, anything expecting a PR) have a base.
   Never ask whether to move `main`, and never carry it as pending on a say-so:
   in a handoff or todo, record what review a branch has and has not had.
-  Checked out on `main` anyway, commit there and say so — this is no licence
-  to switch.
+  Checked out on `main` anyway, commit there and say so — outside the
+  release sequence, this is no licence to switch.
 - **Review every commit at medium, fix only high and medium.** Each slice
   that generates, modifies or deletes content gets a delegated
   `/code-review medium` of its commit right after it lands, because that
@@ -97,7 +105,12 @@ rules that change what the agent does by default.
   takes it.
 - **A fix lists cases only when the list is closed.** A list in prose reads
   as complete, so each case it misses is the next review's medium finding.
-  Where the cases are open-ended, state the rule that produces them. Where
+  Where the cases are open-ended, state the rule that produces them. Test
+  for it at triage, before dispatching a fix: a finding that names a case
+  the text missed, or one that lands on what the previous fix added, means
+  the space is open and the fix is the rule, not one more case. Such rounds
+  read as progress, because every probe in them is real, so the count of
+  rounds is no signal; only the test is. Where
   no probe-backed rule exists, or a second review round running hits the same
   sentence, drop the list or the stated cause instead of refining it — keep
   what the reader acts on, hedge any effect that must stay ("can … or fail"),
