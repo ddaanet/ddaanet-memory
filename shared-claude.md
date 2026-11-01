@@ -71,9 +71,12 @@ rules that change what the agent does by default.
   commit, and that fix commit is reviewed the same way. Doc drift is the
   exception: it is fixed without a re-review. Before a release, `/simplify`
   runs over `dev` against `main` first, its edits committed and reviewed like
-  any commit, so the release review sees them. Then an `xhigh`
-  review of `dev` against `main` runs once, with licence to split into
-  several agents; its high and medium findings are fixed, then one
+  any commit, so the release review sees them. Then the release review of
+  `dev` against `main` runs once, as parallel reviews of that same delta: an
+  `xhigh` `/code-review`, with licence to split into several agents, and
+  `/codex:adversarial-review` on the astra model, plus in a plugin repo
+  `plugin-dev:skill-reviewer` and `plugin-dev:plugin-validator`, whose
+  findings get special attention. The high and medium findings are fixed, then one
   `/code-review medium` pass runs on the fixes, and its findings are fixed and
   committed with no further round: re-reviewing each fix of a release turns
   review into a ratchet. A reviewer asked for findings always returns some and does not
