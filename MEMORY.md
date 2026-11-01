@@ -87,4 +87,4 @@ the project's own memory store.
 - [Simplicity: no unneeded code](simplicity-no-unneeded-code.md) — before adding an existence probe, "only when" branch or dedup check, ask whether the unguarded form is already harmless (a PATH entry for a missing dir is inert); a guard against a harmless state usually also blocks a useful one
 - [Release is the default next step on plugin repos](feedback_plugin_release_is_default.md) — for ddaanet plugin repos with release-worthy commits, "next?" means the full release cascade, not just push
 - [settings.json rejects unknown top-level keys](feedback_settings_json_unknown_field_validator.md) — validator is a Zod schema strict at root; for plugin config use `pluginConfigs[plugin@marketplace].options.{key}`, not a custom top-level key
-- [MARKETPLACE_DIR already in direnv](feedback_marketplace_dir_in_direnv.md) — don't prefix `MARKETPLACE_DIR=...` when running `just release`; `~/.envrc` already exports it
+- [MARKETPLACE_DIR already in direnv](feedback_marketplace_dir_in_direnv.md) — don't prefix `MARKETPLACE_DIR=...` when running `just release`; `~/code/.envrc` already exports it

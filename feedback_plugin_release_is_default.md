@@ -4,12 +4,14 @@ description: "For ddaanet plugin repos, when local commits are release-worthy, t
 metadata:
   type: feedback
   originSessionId: f1e8f285-ade0-4db8-9054-af47c3d0bc93
+  modified: 2026-11-01T16:03:33.278Z
 ---
 
 When my human partner asks "next?" on a ddaanet plugin repo (gitmoji, handoff,
-skills, edify) with unpushed release-worthy commits on `main`,
-default to the **full release cascade** (`just release patch --yes`
-→ marketplace bump → push), not just `git push`.
+skills, edify) with release-worthy commits on `dev` not yet on `main`,
+default to the **full release cascade** (the release review of `dev`
+against `main`, then `just release patch --yes` → marketplace bump →
+push), not just `git push`.
 
 **Why:** A bare push to a plugin repo doesn't reach users — installs
 resolve through `claude-plugins/.claude-plugin/marketplace.json`, so
@@ -17,7 +19,7 @@ shipping requires the tag + release + marketplace bump cascade.
 My human partner confirmed: "I meant both" after I offered push-or-release as
 alternatives. The two aren't peers; release subsumes push.
 
-**How to apply:** On these repos, if `git log origin/main..HEAD`
+**How to apply:** On these repos, if `git log main..dev`
 shows commits suitable for a patch release (features, fixes,
 refactors, tests — not just WIP), propose the full
 release-and-marketplace flow as the primary path. Offer "push only"
