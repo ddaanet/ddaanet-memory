@@ -182,6 +182,13 @@ rules that change what the agent does by default.
 
 ## Working with my human partner
 
+- **A design question opens with the problem, in terms they can check.** One at a
+  time: what they do, what happens, why that is wrong, and only then a proposal.
+  Internal predicates, helper names and probe ids are not a problem statement, and
+  a problem that cannot be said this way is doubted before it is asked. My human
+  partner, handed five compressed questions with ready defaults: "They seem to have
+  sensible answers, but experience tells me that 'sensible-sounding solution to
+  gibberish problem' is where AI bugs and overengineering goes to reproduce."
 - **Technical claims about LLM mechanism must be grounded.** No casual mechanism
   claims ("the model thinks X because Y") without checking against actual
   transformer/training/API behaviour; cost math specific and checkable — input vs
