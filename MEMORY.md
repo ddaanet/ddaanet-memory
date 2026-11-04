@@ -88,3 +88,4 @@ the project's own memory store.
 - [Release is the default next step on plugin repos](feedback_plugin_release_is_default.md) — for ddaanet plugin repos with release-worthy commits, "next?" means the full release cascade, not just push
 - [settings.json rejects unknown top-level keys](feedback_settings_json_unknown_field_validator.md) — validator is a Zod schema strict at root; for plugin config use `pluginConfigs[plugin@marketplace].options.{key}`, not a custom top-level key
 - [MARKETPLACE_DIR already in direnv](feedback_marketplace_dir_in_direnv.md) — don't prefix `MARKETPLACE_DIR=...` when running `just release`; `~/code/.envrc` already exports it
+- [atomic commits](feedback-atomic-commits.md) — atomic commits per topic, never commit plans/ without being asked, a same-topic follow-up amends, TASK.md and TODO.md amend into the previous commit (handoff, precompact, direct commit) or ride with substantive pending changes
