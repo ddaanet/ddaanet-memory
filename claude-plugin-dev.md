@@ -1,11 +1,11 @@
 ---
 name: claude-plugin-dev
-description: "shared release infra vendored by `git subtree` at a `dist-vX.Y.Z` tag into `plugin-dev/`; the shipped manual `plugin-dev/README.md` owns install, update, dist-tag and gate rules — `unknown dependency prerelease`, the post-pull `just --list`, `plugin-dev/migrations/` — and `plugin-craft:toolkit-release` owns the failure modes; the changelog does not ship"
+description: "shared release infra vendored by `git subtree` at a `dist-vX.Y.Z` tag into `plugin-dev/`; the shipped manual `plugin-dev/README.md` owns install, update, dist-tag and gate rules — `unknown dependency prerelease`, the post-pull `just --list`, `plugin-dev/migrations/` — and `plugin-craft:toolkit-release` owns the failure modes"
 metadata:
   node_type: memory
   type: project
   originSessionId: 65f754d8-cdbe-42af-8461-7c22a89d764a
-  modified: 2026-09-07T13:41:34.361Z
+  modified: 2026-11-02T00:05:23.045Z
 ---
 
 `claude-plugin-dev` (https://github.com/ddaanet/claude-plugin-dev) is the
@@ -33,9 +33,3 @@ tag — caught only at release time.
   skill** — the sandbox and classifier failures that leave a release
   half-landed rather than failed, and what `error: uncommitted changes`
   actually excludes.
-- **The changelog does not ship.** A pull crossing more than a patch is worth
-  reading `docs/changelog.md` for: its pointer lines say outright when a release
-  is breaking, which the optional per-release migration note may not. It exists
-  only in the source repo —
-  `git -C ~/code/claude-plugin-dev show <tag>:docs/changelog.md` — never under
-  `plugin-dev/`, whose tree is the dist split and carries no `docs/`.
