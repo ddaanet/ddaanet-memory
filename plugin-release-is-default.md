@@ -18,8 +18,8 @@ not contain recipe`.
 **Why:** A bare push to a plugin repo doesn't reach users — installs
 resolve through `claude-plugins/.claude-plugin/marketplace.json`, so
 shipping requires the tag + release + marketplace bump cascade.
-My human partner confirmed: "I meant both" after I offered push-or-release as
-alternatives. The two aren't peers; release subsumes push.
+Offered push or release as alternatives, my human partner answered that both
+were meant. The two aren't peers; release subsumes push.
 
 **How to apply:** On these repos, if `git log main..dev`
 shows commits suitable for a patch release (features, fixes,
