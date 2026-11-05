@@ -25,7 +25,7 @@ of anything committed to a public one.
 | gitlore | gitlore | skills memory-writing, merge, push, recall, resolve; agent memory-merger; hooks | yes |
 | handoff | autodrive-handoff | skills autoname, handoff, pending, precompact; hooks | yes |
 | craft | craft | skills design-doc-writing, directive-writing, plan-contracts, removing-cleanly, test-discipline | yes |
-| plugin-craft | plugin-craft | skills hook-authoring, skill-authoring, toolkit-release, verifying-plugin-changes | yes |
+| plugin-craft | plugin-craft | skills hook-authoring, plugin-creation, skill-authoring, toolkit-release, verifying-plugin-changes | yes |
 | sandbox-lies | sandbox-lies | skill sandbox-lies; hooks | yes |
 | shell-gotchas | shell-scripting | skill shell-gotchas; hooks | yes |
 | ghmem | ghmem | agents ghmem-synthesize, ghmem-triage; hooks | yes |
