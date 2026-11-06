@@ -106,7 +106,8 @@ rules that change what the agent does by default.
   is fixed, and sends out only high and medium. The fix goes back to the
   reviewer that found them, by `SendMessage` to its returned id, while its
   context is under ~150k tokens; past that, a fresh agent with `name` unset
-  takes it.
+  takes it. A Fable reviewer's findings go to a fresh agent instead, so Fable
+  stays code-free.
 - **A fix lists cases only when the list is closed.** A list in prose reads
   as complete, so each case it misses is the next review's medium finding.
   Where the cases are open-ended, state the rule that produces them. Test
