@@ -76,17 +76,20 @@ rules that change what the agent does by default.
   review sits on the critical path; its findings are self-fixed in a separate
   commit, and that fix commit is reviewed the same way. Doc drift is the
   exception: it is fixed without a re-review. Before a release, `/simplify`
-  runs over `dev` against `main` first, its edits committed and reviewed like
-  any commit, so the release review sees them. Then the release review of
-  `dev` against `main` runs once, as parallel reviews of that same delta: an
-  `xhigh` `/code-review`, with licence to split into several agents, and
+  runs over `dev` against `main` first, its edits committed with no review
+  of their own: the release review covers them. Then the release review of
+  `dev` against `main` runs once, as parallel reviews of that same delta: a
+  `high` `/code-review` on the Fable model (an agent dispatched with
+  `model: fable`, since the skill takes no model argument), and
   `/codex:adversarial-review --base main` on the astra model, whose `--model`
   takes the full slug from `~/.codex/models_cache.json`, plus in a plugin repo
   `plugin-dev:skill-reviewer` and `plugin-dev:plugin-validator`, whose
-  findings get special attention. The high and medium findings are fixed, then one
-  `/code-review medium` pass runs on the fixes, and its findings are fixed and
-  committed with no further round: re-reviewing each fix of a release turns
-  review into a ratchet. A reviewer asked for findings always returns some and does not
+  findings get special attention. The high and medium findings are fixed in
+  parallel agents, partitioned by file so no two share one, then
+  `/code-review medium` runs over the fix commits and its high and medium
+  findings are fixed the same way, repeated until a pass returns only lows.
+  The user skill `/release-ritual` runs this sequence end to end. A
+  reviewer asked for findings always returns some and does not
   weigh simplicity, and every fix adds surface the next round mines, so low
   findings are the exhaust: list them as declined, never dispatch them.
   Severity is assigned at triage, not read off the reviewer, which often
