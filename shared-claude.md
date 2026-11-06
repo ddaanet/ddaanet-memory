@@ -88,9 +88,8 @@ rules that change what the agent does by default.
   parallel agents, partitioned by file so no two share one, then
   `/code-review medium` runs over the fix commits and its high and medium
   findings are fixed the same way, repeated until a pass returns only lows.
-  The user skill `/release-ritual` runs this sequence end to end. A
-  reviewer asked for findings always returns some and does not
-  weigh simplicity, and every fix adds surface the next round mines, so low
+  A reviewer asked for findings always returns some and does not weigh
+  simplicity, and every fix adds surface the next round mines, so low
   findings are the exhaust: list them as declined, never dispatch them.
   Severity is assigned at triage, not read off the reviewer, which often
   reports none: a finding is high or medium when a reader following the text
