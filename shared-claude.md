@@ -294,7 +294,9 @@ rules that change what the agent does by default.
   a review catches a regression — not for a test-only or prose item, and "a
   reviewer re-checks each X" in a task file names what is checked, not one agent
   per X.
-- **The main thread orchestrates; bulk edits go to a subagent.** An edit
+- **The main thread orchestrates; bulk edits go to a subagent.** Do on the
+  main thread only what would take more tokens to delegate than to do; my
+  human partner's standing rule. An edit
   that touches three or more files, or a documentation, changelog or test
   sweep of any size, is dispatched, with the grep list and the contract in
   the prompt and a one-line reply pointing at the report file. Editing a
