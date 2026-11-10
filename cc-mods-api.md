@@ -1,11 +1,11 @@
 ---
 name: cc-mods-api
-description: "plugin JS/TS `modules` (v2.1.287+): `$.command.run` runs built-ins (`clear`/`compact`/`rename`) but rejects inside a hook the turn awaits; `$.fs` has no rename/delete, non-atomic write; `claude plugin test` stubs every `$` call; `/restart` is built-in"
+description: "plugin JS/TS `modules` (v2.1.287+): `$.command.run` runs built-ins (`clear`/`compact`/`rename`) but rejects inside a hook the turn awaits; `$.fs` has no rename/delete, non-atomic write; `hook skipped: ran past its 10s budget` (`prompt.submit`), `$.process.run` aborted after 30000ms; `claude plugin test` stubs every `$` call; `/restart` is built-in"
 metadata:
   node_type: memory
   type: reference
   originSessionId: 4ed9b2a0-c9e5-477c-b4b0-766a8b813b72
-  modified: 2026-10-09T14:53:02.856Z
+  modified: 2026-11-10T15:38:42.133Z
 ---
 
 A **mod** is a plugin whose `hooks/hooks.json` carries
@@ -34,7 +34,11 @@ Facts that change designs (d.ts read 2026-10-08, CC 2.1.294 installed):
 - **`$.fs`** = `read, write, list, exists, stat, ancestors` — no rename, no
   delete, and `write` is not atomic. Atomic state files need `$.process.run`.
 - **`$.process.run(argv)`** — no shell, 30s default timeout, resolves
-  `{exitCode, stdout, stderr}`.
+  `{exitCode, stdout, stderr}`. A child past 30s is aborted and the awaiting
+  hook throws.
+- **Per-event budget** (observed 2.1.322): a `prompt.submit` hook running past
+  10s is skipped (`hook skipped: ran past its 10s budget`) and the prompt
+  passes untouched, so anything awaited there (a lock wait, a spawn) must fit.
 - **Testing:** `claude plugin test` runs `*.test.ts` importing
   `claude-code/testing`; *every* mods API call the mod makes needs a stub
   (`on('process.run', …)` returning `{value}`), so the kit alone is not an
