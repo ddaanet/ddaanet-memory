@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 71b27bc8-eb7a-4d9a-ae83-506402f30720
-  modified: 2026-10-31T19:26:24.109Z
+  modified: 2026-11-10T13:34:30.756Z
 ---
 
 Measured on rumdl 0.2.74. The working config is `enable = ["MD013"]` with
@@ -36,7 +36,8 @@ barely moves a byte count, so it needs no formatter ahead of it
 clean tree, exit 1 with a unified diff when `fmt` would change a file.
 
 `rumdl check` is unusable as a gate — a line it cannot wrap (one long code span,
-a URL) is reported every run, so it is permanently red. The two subcommands also
+a URL) is reported every run, so it is permanently red. Clearing a long code
+span: [[rumdl-unwrappable-span]]. The two subcommands also
 disagree there: `rumdl fmt` exits 0 with unwrappable lines left, `check --fix`
 exits 1.
 
