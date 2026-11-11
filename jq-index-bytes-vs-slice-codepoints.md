@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 826ecad8-b84e-451e-ae20-0a6b9308f8ec
-  modified: 2026-08-14T16:23:46.601Z
+  modified: 2026-11-10T10:15:59.330Z
 ---
 
 jq's `index($sub)` on a **string** haystack returns a **byte** offset, while
@@ -39,4 +39,4 @@ wants. Verified against jq 1.7.
 The reason to be in jq for this at all is `--rawfile`, which binds a whole file
 as one string with its final byte intact — `$(cat f)` strips the trailing
 newline, and in a file format where a newline is the separator that byte is
-usually the one that matters. See [[parse-dont-regex-structured-formats]].
+usually the one that matters.

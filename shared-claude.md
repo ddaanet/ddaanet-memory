@@ -154,6 +154,21 @@ rules that change what the agent does by default.
   a simple, self-contained change, name the file (a line only if needed) and
   say why; anything that repeats the diff in other words goes. Applies to
   commit messages and memory commit summaries.
+- **A commit carries everything that belongs to its change.** Related
+  working-tree changes stay in: never drop a file from a commit silently —
+  name the exclusion and let my human partner decide. A memory note rides the
+  commit of the change it documents, never one carrying unrelated pending
+  memory work, and a `.claude/settings.json` change rides the feature it
+  enables. Bookkeeping with no content of its own — a pointer bump, settings
+  noise — goes with the commit it relates to: amended into the last one when
+  that is the one and it is unpushed, otherwise left uncommitted for the next.
+  A diff that changes behavior is still named in the report (dropped
+  `permissions.allow` entries mean those tools prompt again).
+- **A file split travels alone.** Moving part of a file into a new one, for a
+  size cap or a seam, is a commit of its own: the move and the reference
+  updates it forces, with no reflow, rewording or content edit riding along,
+  sequenced before or after the edit that motivated it. An edit hidden among
+  hundreds of moved lines is invisible in review.
 - **Drafts go to a file**, not inline in the reply — GitHub comments, emails,
   documents, copy. Edit the file across iterations and describe only what
   changed.
@@ -209,6 +224,12 @@ rules that change what the agent does by default.
   partner, handed five compressed questions with ready defaults: "They seem to have
   sensible answers, but experience tells me that 'sensible-sounding solution to
   gibberish problem' is where AI bugs and overengineering goes to reproduce."
+- **"next?" asks what is next; it does not say to start it.** Answer with the
+  next step and wait. On a plugin repo with release-worthy commits on `dev`
+  not yet on `main`, that answer is the full release cascade, not a bare
+  push: installs resolve through the marketplace, so a push alone reaches no
+  user, and release subsumes push. Name push-only when the commits are
+  deliberately not release-worthy (docs-only, in-flight work).
 - **Technical claims about LLM mechanism must be grounded.** No casual mechanism
   claims ("the model thinks X because Y") without checking against actual
   transformer/training/API behaviour; cost math specific and checkable — input vs
@@ -303,7 +324,13 @@ rules that change what the agent does by default.
   the prompt and a one-line reply pointing at the report file. Editing a
   design doc through a Bash heredoc is still an edit: the script and its
   echoed result both land in context for the rest of the session. Use the
-  Edit tool for a change that stays on the main thread.
+  Edit tool for a change that stays on the main thread. In a red/green
+  dispatch loop the main thread reads and reviews no implementation diff
+  either: a reviewer subagent does, reporting to a file, and the main thread
+  orchestrates, starts the gate, commits and talks to my human partner. A plan
+  naming the main thread as diff reviewer is overridden by this. My human
+  partner: "don't review diffs, delegate, you just orchestrate and talk to the
+  human."
 - **Leave the Agent tool's `name` unset**, even where a skill prescribes one (edify
   `/build` names every dispatch `item-N-M-s<k>-red` …). A named agent becomes an
   addressable teammate whose report, idle notices and late summaries each arrive as
@@ -380,6 +407,18 @@ rules that change what the agent does by default.
   `oversized-file: <path>: <n> bytes > <cap>`; a root `size.exempt` names a file
   kept over on purpose, with its reason. The full argument ships in
   `craft:plan-contracts`.
+- **A format with a grammar goes through its parser, never a regex** — YAML,
+  JSON, TOML, HTML, even for "just one field"; a regex over a grammar matches
+  the wrong thing silently on quoting, escapes or nesting. If the parser needs
+  a dependency, add it. Regex is for token extraction from freeform prose,
+  validated against real data, and splitting on an unambiguous delimiter line
+  (the `---` frontmatter fence) by explicit line handling is fine.
+- **Write no code that is not needed.** Before adding an existence check, an
+  "only when" branch or a dedup pass, state what goes wrong without it; if the
+  unguarded form is inert (a PATH entry naming a missing directory), drop the
+  guard, and propose removing such guards in review. A guard against a
+  harmless state usually also blocks a useful one, so "nothing produces that
+  state" does not defend one that costs a branch or a restart.
 - **A quiet gate signs off with the list of checks that passed**, accumulated as they
   run — never a bare "OK" or "Green". Silence is ambiguous: a check that printed
   nothing looks exactly like one that never ran. A recap resolves it because a
