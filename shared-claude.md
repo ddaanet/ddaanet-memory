@@ -54,15 +54,17 @@ rules that change what the agent does by default.
   worktrees — unprompted, even when a workflow skill says to start feature
   work on a fresh one. Work on whatever is checked out. Merging onto a base they named is
   executing their instruction, not originating a switch, and the release
-  sequence below is standing consent to its two switches.
+  sequence below is standing consent to the switches it names.
 - **Three review levels, three bases.** Each commit is reviewed as it lands.
   Work happens on `dev`, and a release is a code review of `dev` against
-  `main`, after which `main` moves to the release. The release sequence is
-  standing consent to switch: once the prerelease review pass (`/simplify`
-  and the release review, in the next item) and its fix rounds have landed,
-  check out `main` and fast-forward it to `dev`, run `/ddaa:preflight`, then
-  release; after the release, check out `dev` and fast-forward it to `main`,
-  which carries the release commit. A plan whose multi-commit
+  `main`, after which `main` moves to the release. Once the prerelease review
+  pass (`/simplify` and the release review, in the next item) and its fix
+  rounds have landed, run `/ddaa:preflight`, then release. In
+  claude-plugin-dev and in a plugin whose `plugin-dev/VERSION` is 0.16.0 or
+  later, both run on `dev`, and the release moves `main` itself. Anywhere else
+  the sequence is standing consent to two switches: check out `main` and
+  fast-forward it to `dev` before `/ddaa:preflight`, and after the release
+  check out `dev` and fast-forward it to `main`. A plan whose multi-commit
   change needs a review of its own in between names a separate branch, and
   my human partner's approval of the plan is the prompt to create it, so
   branch-diffing tools (`/codex:review`, anything expecting a PR) have a base.
