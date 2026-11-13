@@ -24,6 +24,7 @@ YACC="<byacc>/yacc -d" CC="gcc -std=gnu89 -fpermissive -w"
 CC_FOR_BUILD="<same>"`.
 
 **Running a bats suite under it:** put a `bash` symlink to the build first on
-`PATH`; bats and `#!/usr/bin/env bash` scripts all follow it (sandbox-lies
-`scripts/run-bats-under.sh`). macOS ctype traps still need a Mac: glibc never
-shows them.
+`PATH`; bats and `#!/usr/bin/env bash` scripts all follow it. The sandbox-lies
+source checkout carries a script that does this, `scripts/run-bats-under.sh
+[<bash>] [<bats-args>]`; the installed plugin (0.3.0) does not ship it. macOS
+ctype traps still need a Mac: glibc never shows them.
