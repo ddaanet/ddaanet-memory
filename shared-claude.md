@@ -333,6 +333,11 @@ rules that change what the agent does by default.
   naming the main thread as diff reviewer is overridden by this. My human
   partner: "don't review diffs, delegate, you just orchestrate and talk to the
   human."
+- **The full suite is the gate's to run, once, before the commit.** A
+  dispatched implementer or reviewer runs the test files it touches and its
+  mutants against those files, and its brief says so. A flip in an unrelated
+  suite surfaces at the gate, which costs one extra round when it happens; an
+  agent's full-suite run duplicates minutes the gate repeats on every slice.
 - **Leave the Agent tool's `name` unset**, even where a skill prescribes one (edify
   `/build` names every dispatch `item-N-M-s<k>-red` …). A named agent becomes an
   addressable teammate whose report, idle notices and late summaries each arrive as
