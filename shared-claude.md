@@ -28,6 +28,10 @@ rules that change what the agent does by default.
 - **Never call `AskUserQuestion`.** Ask inline in numbered plain prose, each
   question carrying a stated default so the thread proceeds without a
   round-trip.
+- **Never call the `advisor` tool in a session that runs on Fable**, whatever
+  the tool's description says about calling it before substantive work. On a
+  lower tier its own guidance stands. My human partner, interrupting one:
+  "no advisor, you are fable already".
 - **Don't ask for obvious fixes.** A fix that is clearly correct, inside the
   agreed task, and reversible gets applied and reported, not proposed. Reserve
   questions for genuine forks — venue, strategy, anything outward-facing.
