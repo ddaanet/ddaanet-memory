@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: c7552bfd-42e8-494d-9267-e79406b2fbd0
-  modified: 2026-10-26T17:40:19.156Z
+  modified: 2026-11-17T22:58:22.000Z
 ---
 
 Projects my human partner owns, by checkout under `~/code/`. A fact that one of
@@ -25,9 +25,9 @@ of anything committed to a public one.
 | gitlore | gitlore | skills memory-writing, merge, push, recall, resolve; agent memory-merger; hooks | yes |
 | handoff | autodrive-handoff | skills autoname, handoff, pending, precompact; hooks | yes |
 | craft | craft | skills design-doc-writing, directive-writing, plan-contracts, removing-cleanly, test-discipline | yes |
-| plugin-craft | plugin-craft | skills hook-authoring, plugin-creation, skill-authoring, toolkit-release, verifying-plugin-changes | yes |
+| plugin-craft | plugin-craft | skills hook-authoring, plugin-creation, session-transcripts, skill-authoring, toolkit-release, verifying-plugin-changes | yes |
 | sandbox-lies | sandbox-lies | skill sandbox-lies; hooks | yes |
-| shell-gotchas | shell-scripting | skill shell-gotchas; hooks | yes |
+| shell-gotchas | shell-scripting | skills bats-gotchas, git-gotchas, just-gotchas, shell-gotchas; hooks | yes |
 | ghmem | ghmem | agents ghmem-synthesize, ghmem-triage; hooks | yes |
 | gitmoji | gitmoji | hooks (commit-msg) | yes |
 | onekeys | onekeys | hooks | yes |
@@ -36,7 +36,7 @@ of anything committed to a public one.
 | candidature | candidature | skill candidature; hooks | yes |
 | claude-plugin-dev | — | the vendored `plugin-dev/` toolkit (gates, run-bats, release) | yes |
 | claude-plugins | — | the `ddaanet` marketplace | no |
-| edify | — | Claude Code toolkit: Python CLI and skills | yes |
+| edify | edify | skills dispatch, review, release, token-counting, markdown, ground; agent brainstorm-name; bins edify-count-tokens, edify-markdown | yes |
 | micro-craft | — | design knowledge about the micro editor | yes |
 | pytest-md | — | pytest markdown report plugin | no |
 | micro-contrib | — | private | no |

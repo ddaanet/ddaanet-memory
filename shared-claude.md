@@ -47,106 +47,34 @@ rules that change what the agent does by default.
 - **Recall reads two routing tables.** At any recall checkpoint — a skill's or
   an ad-hoc one — match the task against the installed skill descriptions as
   well as the memory index, and load the matching skill. Several ddaanet facts
-  now ship as `craft` skills, and where both exist the skill is the maintained
+  now ship as installed plugin skills, and where both exist the skill is the maintained
   copy. Be selective: a skill body costs more than a memory file, so load what
   names the moment you are in, not everything adjacent.
 - **My human partner owns branching.** Never create or switch branches — or
   worktrees — unprompted, even when a workflow skill says to start feature
   work on a fresh one. Work on whatever is checked out. Merging onto a base they named is
   executing their instruction, not originating a switch, and the release
-  sequence below is standing consent to the switches it names.
-- **Three review levels, three bases.** Each commit is reviewed as it lands.
-  Work happens on `dev`, and a release is a code review of `dev` against
-  `main`, after which `main` moves to the release. Once the prerelease review
-  pass (`/simplify` and the release review, in the next item) and its fix
-  rounds have landed, run `/ddaa:preflight`, then release. In
-  claude-plugin-dev and in a plugin whose `plugin-dev/VERSION` is 0.16.0 or
-  later, both run on `dev`, and the release moves `main` itself. Anywhere else
-  the sequence is standing consent to two switches: check out `main` and
-  fast-forward it to `dev` before `/ddaa:preflight`, and after the release
-  check out `dev` and fast-forward it to `main`. A plan whose multi-commit
-  change needs a review of its own in between names a separate branch, and
-  my human partner's approval of the plan is the prompt to create it, so
-  branch-diffing tools (`/codex:review`, anything expecting a PR) have a base.
-  Never ask whether to move `main`, and never carry it as pending on a say-so:
-  in a handoff or todo, record what review a branch has and has not had.
-  Checked out on `main` anyway, commit there and say so — outside the
-  release sequence, this is no licence to switch.
-- **Review every commit at medium, fix only high and medium.** Each slice
-  that generates, modifies or deletes content gets a delegated
-  `/code-review medium` of its commit right after it lands, because that
-  review sits on the critical path; its findings are self-fixed in a separate
-  commit, and that fix commit is reviewed the same way. Doc drift is the
-  exception: it is fixed without a re-review. Before a release, `/simplify`
-  runs over `dev` against `main` first, its edits committed with no review
-  of their own: the release review covers them. Then the release review of
-  `dev` against `main` runs once, as parallel reviews of that same delta: a
-  `high` `/code-review` on the Fable model (an agent dispatched with
-  `model: fable`, since the skill takes no model argument), and
-  `/codex:adversarial-review --base main` on the astra model, whose `--model`
-  takes the full slug from `~/.codex/models_cache.json`, plus in a plugin repo
-  `plugin-dev:skill-reviewer` and `plugin-dev:plugin-validator`, whose
-  findings get special attention. The high and medium findings are fixed in
-  parallel agents, partitioned by file so no two share one, then
-  `/code-review medium` runs over the fix commits and its high and medium
-  findings are fixed the same way, repeated until a pass returns only lows.
-  A reviewer asked for findings always returns some and does not weigh
-  simplicity, and every fix adds surface the next round mines, so low
-  findings are the exhaust: list them as declined, never dispatch them.
-  Severity is assigned at triage, not read off the reviewer, which often
-  reports none: a finding is high or medium when a reader following the text
-  would do the wrong thing — a command that fails, a claim a probe or primary
-  source contradicts, two places prescribing opposite actions. Phrasing,
-  wrapping, placement, redundancy and "could be clearer" are low. A finding
-  that guards a state nothing in practice produces is declined as well, since
-  a fix to a rare-state finding can itself regress a real case. An
-  implementer that would depart from its brief stops and asks rather than
-  deciding, and the dispatcher does not accept the departure on its argument
-  alone.
-- **Triage first, then the reviewer fixes.** In both the per-commit and the
-  release loop, the orchestrator triages a review's findings before anything
-  is fixed, and sends out only high and medium. The fix goes back to the
-  reviewer that found them, by `SendMessage` to its returned id, while its
-  context is under ~150k tokens; past that, a fresh agent with `name` unset
-  takes it. A Fable reviewer's findings go to a fresh agent instead, so Fable
-  stays code-free.
-- **A fix lists cases only when the list is closed.** A list in prose reads
-  as complete, so each case it misses is the next review's medium finding.
-  Where the cases are open-ended, state the rule that produces them. Test
-  for it at triage, before dispatching a fix: a finding that names a case
-  the text missed, or one that lands on what the previous fix added, means
-  the space is open and the fix is the rule, not one more case. Such rounds
-  read as progress, because every probe in them is real, so the count of
-  rounds is no signal; only the test is. Where
-  no probe-backed rule exists, or a second review round running hits the same
-  sentence, drop the list or the stated cause instead of refining it — keep
-  what the reader acts on, hedge any effect that must stay ("can … or fail"),
-  and grep every copy of the dropped wording in the same fix. My human
-  partner, after refining one sentence failed to converge over four rounds:
-  "just drop the enumeration or claim and have green review".
+  sequence in `edify:release` is standing consent to the switches it names.
+  A plan my human partner approved that names a separate branch is the prompt
+  to create it.
+- **Each content commit is reviewed as it lands.** Every commit that generates,
+  modifies or deletes content gets a delegated `/code-review medium` right after
+  it lands, its high and medium findings fixed in a commit of their own and its
+  lows declined; doc drift is fixed without a re-review. Load `edify:review`
+  before triaging findings. A release is `edify:release`; in claude-plugin-dev
+  and in a plugin whose `plugin-dev/VERSION` is 0.16.0 or later everything runs
+  on `dev` and the release moves `main`. Never ask whether to move `main`.
 - **Never `--no-verify`.** Let every hook run and surface a block instead of
   bypassing it; the parent repo's pre-push hook is what publishes memory with
   the push, so skipping it strands the memory commits the push records.
-  A push failing with `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push:
-  not found` is a stale hook path, not a reason to bypass: run
-  `(cd /path/to/repo && claude -p ping)` to let the SessionStart hook rewrite
-  the shim and repoint `git config gitlore.hooksDir`.
-- **Phantom dotfiles are sandbox masks.** Zero-byte or char-device `.bashrc`,
-  `.zshrc`, `.gitconfig`, `.mcp.json`, `.claude/*` and the like, showing
-  untracked in a repo root or in the directory a sandboxed call ran from, come
-  from the command sandbox and say nothing about the repo. Never delete, commit
-  or report them. A slash command's `` !`git status` `` context block runs
-  sandboxed with no hook to annotate it: never act on its listing — re-run
-  `git status` unsandboxed first. The `sandbox-lies:sandbox-lies` skill's
-  `references/masks-and-gates.md` has the mechanism.
+- **Phantom dotfiles are sandbox masks.** Zero-byte or char-device dotfiles
+  and `.claude/*` entries showing untracked in a repo root, or in the directory
+  a sandboxed call ran from, are masks the command sandbox leaves and say
+  nothing about the repo: never delete, commit or report them, and never act on
+  a slash command's `git status` block without re-running it unsandboxed.
+  Mechanism: `sandbox-lies:sandbox-lies`.
 - **Run the repo's precommit gate before committing**, unprompted — it is a
   required step, not a suggestion to float. In micro that is `just precommit`.
-- **After a compaction, verify the session root before acting.** Check `PWD`,
-  `CLAUDE_PROJECT_DIR` and the gitStatus block against the work the summary
-  describes — a summary says what was being done, not where the session lives.
-  If they disagree, say so and stop; never reconcile by `cd`-ing. A guard
-  refusal, or an untouched file reported as externally modified, is evidence of
-  a concurrent session rather than noise.
 - **Refer to the user as "my human partner"**, never by name, in anything I
   author as myself: memory files, gate summaries, handoffs, internal docs.
   Content written *in their name* for an external audience follows the
@@ -161,11 +89,7 @@ rules that change what the agent does by default.
   name the exclusion and let my human partner decide. A memory note rides the
   commit of the change it documents, never one carrying unrelated pending
   memory work, and a `.claude/settings.json` change rides the feature it
-  enables. Bookkeeping with no content of its own — a pointer bump, settings
-  noise — goes with the commit it relates to: amended into the last one when
-  that is the one and it is unpushed, otherwise left uncommitted for the next.
-  A diff that changes behavior is still named in the report (dropped
-  `permissions.allow` entries mean those tools prompt again).
+  enables.
 - **A file split travels alone.** Moving part of a file into a new one, for a
   size cap or a seam, is a commit of its own: the move and the reference
   updates it forces, with no reflow, rewording or content edit riding along,
@@ -184,27 +108,10 @@ rules that change what the agent does by default.
   placeholder. When the block exists to preserve something, state the check
   that proves it worked — a mid-block failure is silent when the commands
   either side succeed.
-- **Directives emitted for a subagent must be self-contained**: absolute
-  paths, an explicit `cd "<dir>" &&` where CWD matters, every `$VAR` resolved
-  at emit time. A subagent shell inherits neither the environment nor the CWD.
-  Bats tests with `set -e` and pre-set env vars routinely mask this; verify by
-  running the directive verbatim under `env -i` from an unrelated CWD.
-- **A dispatch whose output matters names an output file.** The subagent
-  writes its report there and replies with one line pointing at it; read the
-  file, not the message. An idle reply is not evidence the agent died — check
-  the artifact, `git log`, and the tree before re-dispatching. A gate near the
-  Bash tool's 10-minute cap is backgrounded by the harness however it is
-  launched, and the executor does receive the task-notification: tell it to
-  wait for that and build no watcher. An executor idle "waiting for the
-  watcher" already has the verdict: one `SendMessage` telling it to
-  `TaskStop` the watcher, then read the gates and commit, recovers it; finish
-  the slice yourself only if that resume returns without progress. Never fall back
-  to reading the subagent's transcript: it is the full JSONL conversation and
-  overflows the context window. **A reviewer with no `Write` tool cannot name one**,
-  and its reply is cut at ~4000 characters, so ask it at spawn for the report in
-  parts under that size, each part ending with a continuation line and the last
-  with a fixed end marker — without the marker a truncated report reads as a
-  complete one.
+- **Dispatch through `edify:dispatch`.** An edit that touches three or more
+  files, or a sweep of any size, is dispatched rather than done on the main
+  thread. Load `edify:dispatch` before any Agent call. Leave the Agent tool's
+  `name` unset.
 - **No volatile git state in memory files** — no commit ids, branch tips, or
   "uncommitted as of" notes. Identify things by durable names: branches,
   paths, issue numbers. Upstream-main shas are stable but still discouraged.
@@ -255,6 +162,10 @@ rules that change what the agent does by default.
   open") are the rotting class: nothing writes back when the state moves. Name the
   source of truth for the claim's kind and spend one command on it. If it cannot be
   confirmed, downgrade it and say so rather than silently complying.
+- **A brief's recommendation is input, not a decision.** Its preference order
+  and constraints are another agent's assumptions. Verify the recommendation
+  cheaply, surface the choice and get my human partner's call before writing
+  code; keep non-contingent work going meanwhile.
 
 ## Deciding and planning
 
@@ -263,126 +174,15 @@ rules that change what the agent does by default.
   unforced question as open, state what evidence would settle it, and do not write
   code that presupposes the unsettled answer. Write a plan right before executing it,
   and plan only the iteration in front of you — pre-writing is fine only when asked.
-- **Deterministic mechanical work belongs in the harness, not the agent.** First rule
-  of skill design: a script or hook does detection, branching and decisions and emits
-  a structured result; the skill body is for judgement only. Splitting mechanical
-  logic between body and harness also obscures the mechanism.
-- **Self-triggering skill when the condition is mechanical and detectable**; a
-  command only for an action the user must consciously initiate. A command
-  requires the user to know when to run it, so a missed trigger is always
-  possible; a skill whose `description` names the trigger pattern invokes
-  itself when the condition appears.
 - **Always-on context takes prohibitions; procedures defer to their trigger.** A
   guardrail against something the agent would otherwise do unprompted must be
-  front-loaded — nothing downstream discloses it in time. A recipe resident in
-  context reads as a process you must run, so the agent performs ceremony where the
-  happy path was meant to be seamless. **A gate that emits its own instructions is
-  invoked, not pre-satisfied** — its refusal *is* the report, carrying the format,
-  the path and the next command, so triggering it costs one call while
-  reconstructing it by hand costs several and still gets details wrong. That holds
-  for gates that are cheap, reversible and self-describing; it is not a licence to
-  fire a destructive command and read the error.
-
-## Dispatch
-
-- **Reviewer one rung above the implementer**, and **Sonnet is the floor for any
-  reviewer** — Haiku misses subtle issues. A `claude-code-guide` query is fine on
-  Haiku.
-- **Pick the tier by how much the task leaves open.** Fable advises. Opus takes
-  high uncertainty. Sonnet takes low uncertainty, prose, and tests that are not
-  fully specified, and is the floor for agentic prose edits. Haiku takes fully
-  specified tasks, TDD and mutation loops, haystack ingestion and well-specified,
-  call-intensive work. Drafting can be high or low uncertainty, so the word does
-  not pick the tier. Keep Fable turns lean and code-free, since cheaper agents
-  produce code fine from a prose outline.
-- **In a TDD run, split the work by kind.** Green and mutation loops go to Haiku;
-  tests and prose go to Sonnet; the reviewer of a red phase is a different agent
-  from its author.
-- **Reuse a loop's agents across slices; respawn only at ~150k tokens of
-  context or a plan seam.** The loop keeps its roles — one red author, one red
-  reviewer, one green implementer, each a different agent — and each slice goes
-  to the same agent by `SendMessage` to its returned id. A fresh spawn per slice
-  re-pays the brief and the orientation reads every time. Judge the 150k from
-  the usage the agent's last return reports; a plan seam is the boundary between
-  plans or between a plan's phases. My human partner's words: "keep the loop,
-  but reuse agents until they reach 150ktok context or a plan seam, and only
-  then, respawn."
-- **Choose agent boundaries by batching, not by task.** "N tasks" ≠ "N subagents",
-  and it does not mean "N tasks → inline" either: the cost a subagent offsets is
-  context churn in the main session. A repeat mechanical edit does not disqualify an
-  agent — one agent owning the whole run often makes sense. A shared mutable file
-  rules out only *parallel* agents; one sequential agent handling the batch is fine.
-  **Reviewers batch the same way:** one reviewer per stage re-runs every pin or
-  mutation of that stage and lands one review commit, since each commit pays the
-  full precommit gate. A reviewer of its own is for a code change — that is where
-  a review catches a regression — not for a test-only or prose item, and "a
-  reviewer re-checks each X" in a task file names what is checked, not one agent
-  per X.
-- **The main thread orchestrates; bulk edits go to a subagent.** Do on the
-  main thread only what would take more tokens to delegate than to do; my
-  human partner's standing rule. An edit
-  that touches three or more files, or a documentation, changelog or test
-  sweep of any size, is dispatched, with the grep list and the contract in
-  the prompt and a one-line reply pointing at the report file. Editing a
-  design doc through a Bash heredoc is still an edit: the script and its
-  echoed result both land in context for the rest of the session. Use the
-  Edit tool for a change that stays on the main thread. In a red/green
-  dispatch loop the main thread reads and reviews no implementation diff
-  either: a reviewer subagent does, reporting to a file, and the main thread
-  orchestrates, starts the gate, commits and talks to my human partner. A plan
-  naming the main thread as diff reviewer is overridden by this. My human
-  partner: "don't review diffs, delegate, you just orchestrate and talk to the
-  human."
-- **The full suite is the gate's to run, once, before the commit.** A
-  dispatched implementer or reviewer runs the test files it touches and its
-  mutants against those files, and its brief says so. A flip in an unrelated
-  suite surfaces at the gate, which costs one extra round when it happens; an
-  agent's full-suite run duplicates minutes the gate repeats on every slice.
-- **Leave the Agent tool's `name` unset**, even where a skill prescribes one (edify
-  `/build` names every dispatch `item-N-M-s<k>-red` …). A named agent becomes an
-  addressable teammate whose report, idle notices and late summaries each arrive as
-  a separate message; an unnamed one returns once. Resume by the returned agent id.
-- **Never bundle a red task into a green-task subagent.** The red-phase review is
-  what proves the test fails against unchanged code, i.e. that it exercises the
-  behaviour the implementation will change. "They share a commit" is a packaging
-  detail; the review boundary is a correctness check.
-- **Route a plugin action by what a denial would cost, not by whether one is
-  possible.** Intent file plus hook when a denial would strand something unrepeatable
-  — a user approval, an ordering guarantee. Direct agent call when it costs one turn.
-
-## Tests
-
-- **Automated by default.** Manual tests do not compound; each is a recurring tax.
-  Reserve manual for judgement that cannot be expressed deterministically, and
-  re-evaluate each plan — yesterday's "too hard to automate" is often trivial once a
-  fixture exists.
-- **If you have spent 80% writing the test cases, the last 20% to automate them is a
-  small markup.** Do not propose agent-driven tests where assertion-based shell tests
-  work. Reserve eyeball testing for what genuinely resists assertion: TUI rendering,
-  screenshot diffs, smoke output on real data.
-- **Encode behavior in the suite, never a hand-run throwaway fixture.** Grep the
-  suite first — the path is often already covered. Manual runs are for dogfooding the
-  real product end to end, which is a different thing from testing a script.
-- **Skipped tests are dead tests.** A test that cannot run on some platform for
-  want of a tool (macOS ships no `timeout`) is made portable: replace the
-  dependency with something the suite owns, and pin that replacement with a test
-  of its own. Neither `skip` it nor branch per platform, since a skip reports
-  green while checking nothing, and a branch is a skip on every machine but one.
-- **Dogfood the day it ships.** Run a self-contained slice on the real target the
-  same day; do not wait for the next plan to validate the last one. Fixtures encode
-  what you expected to vary; the real environment includes what you did not think to
-  parameterize. Treat surprises as patches to the just-shipped plan.
-- **Never skip failure-reporting because the run you watched went fine.** A clean run
-  is evidence about behaviour, never about observability. Enumerate the failure paths
-  and ask who learns about each: silent-to-everyone must be fixed;
-  visible-to-the-user-but-not-the-agent is weaker; a path whose signal would be
-  inferred rather than observed is worth leaving silent if inferring it produces
-  false alarms.
-- **Whitespace safety is essential — never a nit.** Treat splitting on whitespace as
-  a defect on sight. Severity claims from reading are guesses: run it against a
-  spaced input first. Default to NUL-delimited forms (`git config -z --get-regexp`,
-  `find -print0`, `read -r -d ''`). State a residual bound in a comment rather than
-  implying full coverage.
+  front-loaded — nothing downstream discloses it in time. **A gate that emits
+  its own instructions is invoked, not pre-satisfied** — its refusal *is* the
+  report, carrying the format, the path and the next command, so triggering it
+  costs one call while reconstructing it by hand costs several and still gets
+  details wrong. That holds for gates that are cheap, reversible and
+  self-describing; it is not a licence to fire a destructive command and read
+  the error.
 
 ## Code
 
@@ -396,24 +196,12 @@ rules that change what the agent does by default.
   symbol means patching every in-repo caller directly, even if that is more files.
   Anything kept only to spare the callers is dead weight that hides the real
   dependency. Reserve compatibility work for genuine published API boundaries.
-- **20000 bytes caps any artifact a reader takes in at one go** — source files,
-  `references/` nodes, plans, design docs and PRs — and **10000 a `SKILL.md`
-  hub**, which is paid on every invocation while a node is opt-in. Bytes as
-  `wc -c` counts them, whitespace included: about 10k and 5k tokens as the Read
-  tool presents a file. For design docs and implementation the cap is *hard*; for
-  plans it is soft. It exists for context management, and a file that reaches it
-  usually holds cohesive content to spin off — find that seam rather than arguing
-  the overage. The seam is a when-needed one: content loaded at one moment
-  apart from content loaded at another. Getting a file under the cap is always
-  that split, so do not offer `size.exempt` as the alternative or ask which.
-  Never satisfy it quietly by shaving docstrings and prose — that is
-  borrowing against the split, and a file parked at exactly its cap has stopped
-  emitting the signal. A byte count barely moves on a re-wrap, so no formatter
-  has to run ahead of it. The plugin-dev toolkit ships the checker as
-  `check-size`, wired `precommit: check-refs check-size`, reporting
-  `oversized-file: <path>: <n> bytes > <cap>`; a root `size.exempt` names a file
-  kept over on purpose, with its reason. The full argument ships in
-  `craft:plan-contracts`.
+- **20000 bytes caps any artifact a reader takes in at one go, 10000 a
+  `SKILL.md` hub** — as `wc -c` counts, hard for design docs and implementation,
+  soft for plans. Over the cap, split on a when-needed seam; never shave prose
+  to fit. A `size.exempt` entry is never the alternative to the split; it may
+  only hold a split already planned, with its end named in the entry's reason.
+  `check-size` enforces it; the argument is in `craft:plan-contracts`.
 - **A format with a grammar goes through its parser, never a regex** — YAML,
   JSON, TOML, HTML, even for "just one field"; a regex over a grammar matches
   the wrong thing silently on quoting, escapes or nesting. If the parser needs
@@ -430,6 +218,11 @@ rules that change what the agent does by default.
   run — never a bare "OK" or "Green". Silence is ambiguous: a check that printed
   nothing looks exactly like one that never ran. A recap resolves it because a
   missing check is visibly missing. Failure stays terse.
+- **Whitespace safety is essential — never a nit.** Treat splitting on whitespace as
+  a defect on sight. Severity claims from reading are guesses: run it against a
+  spaced input first. Default to NUL-delimited forms (`git config -z --get-regexp`,
+  `find -print0`, `read -r -d ''`). State a residual bound in a comment rather than
+  implying full coverage.
 
 ## Boundaries
 
@@ -456,21 +249,3 @@ rules that change what the agent does by default.
   `just update-plugin-dev dist-vX.Y.Z`. Always pin a dist tag, never `main` and
   never the bare `vX.Y.Z` source tag — that one is refused, because its root tree
   is the toolkit's own working environment rather than the shipped files.
-
-## A brief's recommendation is input, not a decision
-
-A brief that enumerates options and recommends one has not decided anything.
-Surface the choice and get my human partner's call before writing code, even
-when the brief's own stated constraints appear to settle it.
-
-Briefs are usually written by an agent in another repo, so both the
-recommendation and the constraints justifying it are that agent's assumptions
-rather than verified requirements. A constraint can be flatly untrue —
-"backward compatibility matters more than elegance" reads as decisive and is
-the opposite of how the plugin-dev toolkit is designed. Implementing the
-recommended option on that basis costs a full cycle and lands the wrong design.
-
-Treat a brief's preference order and constraint list as input. Verify the
-recommendation cheaply — empirical probes are worth running whichever option
-wins — then ask which to implement. Keep doing the non-contingent work while
-waiting rather than blocking outright.

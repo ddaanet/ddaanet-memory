@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 6fdf0ecf-96bd-4ca8-aab2-d54dc98d915a
-  modified: 2026-08-27T11:49:46.186Z
+  modified: 2026-11-17T23:14:03.000Z
 ---
 
 Claude Code's in-process worktree feature (the `EnterWorktree` tool) is incompatible
@@ -57,6 +57,7 @@ empirically 2026-06-10 (CC 2.1.170); re-verified against the 2.1.219 bundle 2026
   reach the same in-process `chdir`, so the env-freeze above applies to every route.
   See the `plugin-craft:hook-authoring` skill.
 
-See [[cc-project-dir-encoding]] and the `plugin-craft:hook-authoring` skill;
-the launch-time `--settings autoMemoryDirectory` redirect itself is D10 in
-`docs/design.md`.
+The `~/.claude/projects/<encoded>/` path encoding is in the
+`plugin-craft:session-transcripts` skill, `references/locating.md`; the
+launch-time `--settings autoMemoryDirectory` redirect itself is D10 in
+gitlore's `docs/design.md`.

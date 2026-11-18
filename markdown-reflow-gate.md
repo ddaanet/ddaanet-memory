@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 71b27bc8-eb7a-4d9a-ae83-506402f30720
-  modified: 2026-11-10T13:34:30.756Z
+  modified: 2026-11-17T22:58:22.000Z
 ---
 
 Measured on rumdl 0.2.74. The working config is `enable = ["MD013"]` with
@@ -28,7 +28,8 @@ count from the reflow, not from new words.
 
 The ddaanet size cap counts bytes as `wc -c` counts them, not lines; a re-wrap
 barely moves a byte count, so it needs no formatter ahead of it
-([[shared-claude]], Code). rumdl stays for readability.
+(the `craft:plan-contracts` skill,
+`references/contracts-and-size.md`). rumdl stays for readability.
 
 ## The gate is `fmt --check`, never `check`
 
