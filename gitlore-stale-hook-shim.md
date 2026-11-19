@@ -4,7 +4,8 @@ description: "`git push` prints `gitlore skipped: hooks dir is stale` and exits 
 metadata:
   node_type: memory
   type: reference
-  modified: 2026-11-17T23:53:57.000Z
+  modified: 2026-11-19T18:48:38.765Z
+  originSessionId: 658c21ad-fde1-4465-bfc1-6c696237e8aa
 ---
 
 A `git push` that prints `gitlore skipped: hooks dir is stale (plugin
@@ -15,9 +16,7 @@ blocking the push. An older shim fails the push instead, with
 `.git/gitlore-pre-push: exec: …/scripts/git-hooks/pre-push: not found`; the
 remedy below is the same for both.
 
-The remedy the shim prints, relaunching with `claude -c`, is for a human.
-The agent-runnable one is `(cd /abs/path/to/repo && claude -p ping)`, run
-unsandboxed: its SessionStart hook rewrites the shim and repoints
+The remedy is `(cd /abs/path/to/repo && claude -p ping)`, run unsandboxed: its SessionStart hook rewrites the shim and repoints
 `git config gitlore.hooksDir` at the installed plugin. Then repeat the push,
 which publishes the memory commits the first one left behind. `claude -p ping`
 is a fresh process, so its SessionStart hook does re-fire; the mid-session
