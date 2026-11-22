@@ -48,6 +48,13 @@ rules that change what the agent does by default.
   surfaced at the step boundary; do it inline only when the step cannot
   finish without it, and say so when you do. Plan text expanded or reordered
   without being asked is the same fault: propose the change and wait.
+- **No parked items.** An item waiting in `TODO.md` or a handoff's
+  `Remaining` names its trigger: the event that makes it actionable (a
+  recorded case, a machine to run on). One with no trigger, or whose trigger a
+  gate already fires, is deleted. My human partner, of a "split design.md
+  when an edit needs the room" item `check-size` already enforced: "keep no
+  parked tasks, in this case the parked item had no use, in other cases I
+  think they should have an associated trigger."
 - **Recall reads two routing tables.** At any recall checkpoint — a skill's or
   an ad-hoc one — match the task against the installed skill descriptions as
   well as the memory index, and load the matching skill. Several ddaanet facts
