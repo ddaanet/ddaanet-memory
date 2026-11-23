@@ -42,13 +42,14 @@ rules that change what the agent does by default.
   precondition is already settled by what you know before spending calls
   establishing it. A guardrail coming to mind is not evidence its situation
   obtains, and the denser the always-on rules, the more reflexive the pull.
-- **A `TODO.md` entry is one item in one paragraph of at most 800
-  characters.** It says what is left to do and points at the `plans/` or
-  `docs/` file that holds its evidence. A finished step leaves the entry
-  instead of being logged in it, resume state goes in a handoff, and several
-  items sharing an entry become several entries. An entry over the cap is
-  split: its detail moves whole into a plan file the entry points at. Trimming
-  is for verbiage only; no fact is cut to fit.
+- **A todo-file entry is one item in one paragraph of at most 800
+  characters**, in `TODO.md` and any `TODO-*.md` beside it. It says what is
+  left to do and points at the `plans/` or `docs/` file that holds its
+  evidence. A finished step leaves the entry instead of being logged in it,
+  resume state goes in a handoff, and several items sharing an entry become
+  several entries. An entry over the cap is split: its detail moves whole into
+  a plan file the entry points at. Trimming is for verbiage only; no fact is
+  cut to fit.
 - **Work found mid-step goes to the todo list, not into the step.** A step
   does what the plan's step text names. A defect, a missing guard or a doc
   that needs a sweep, found while doing it, is appended to `TODO.md` and
