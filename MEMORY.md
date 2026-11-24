@@ -4,7 +4,7 @@ description: Cross-project facts shared by all ddaanet repositories
 metadata: 
   node_type: memory
   originSessionId: 559f871e-4271-4a30-a460-4ed106886f7e
-  modified: 2026-11-13T11:29:55.099Z
+  modified: 2026-11-24T10:42:24.481Z
 ---
 
 # ddaanet tier index
@@ -23,7 +23,6 @@ facts stay in the project's own memory store.
 - [rumdl unwrappable span](rumdl-unwrappable-span.md) — `[MD013] Line length N exceeds 80` left by `rumdl fmt` on a long code span or `*`/`**` emphasis run: fmt re-joins a hand split; move the span into a fenced block — punctuation after the closing backtick is lost and a hand-wrapped span's newline becomes a real break
 - [uv: sync only, direnv venv](uv-direnv-venv.md) — no `uv run` under Claude; `uv sync` only + direnv exports VIRTUAL_ENV & PATH prefix; recipes call bare `pytest`; the venv python3 shadows the system one, so every module scripts on PATH probe for goes in the dev group (`need … PyYAML`); a symlink to the venv's python3 resolves to the base interpreter and loses site-packages — borrow it with an `exec` wrapper and probe through the shim
 - [detect liveness, not presence](detect-liveness-not-presence.md) — probing a foreign tool's state file: why `[ -f known/path ]` false-positives
-- [placeholder memory remote is by design](gitlore-placeholder-remote-is-by-design.md) — a store with no `origin` on a `./.git/gitlore-placeholder` url is a finished install, not a stalled migration: the parent has no remote, so read the PARENT's `git remote -v` before filing it as pending work
 - [a guard reveals a singleton](guard-reveals-singleton.md) — a finding ending in "add a mutual check" means a singleton is modelled as N *named* instances
 - [Transcripts are ground truth](transcripts-are-ground-truth.md) — a corrupted subagent artifact: transcripts hold the verbatim tool inputs to diff against
 - [Migration backfill needs a runnable window](migration-backfill-needs-window.md) — pairing a NOT NULL schema change with a backfill-by-event script: verify the backfill can run against real legacy data before the reducer enforces the field, not after merging
@@ -32,7 +31,6 @@ facts stay in the project's own memory store.
 - [Codex plugin bugs and workarounds](codex-plugin-bugs.md) — `/codex:review` refused or "no actionable defects"/"no regressions" after a skim: use adversarial-review --base with a focus file as its own argv (template leaves `$(cat …)` unquoted); companion and `/codex:cancel` need sandbox off (`mkdir …/jobs` ENOENT, EROFS, `error building bubblewrap command`); `--model` needs a full slug from `~/.codex/models_cache.json` (short `astra`/`sol` fail "not supported when using Codex with a ChatGPT account"), no `--effort`; "codex-code-mode-host is missing"
 - [Codex image generation](codex-image-generation.md) — need an image, icon or PNG drawn (Claude has no image output): `codex exec` generates them (`image_generation` feature) unsandboxed; its own resize/quantize flattens drafts into blobs, so ask for originals unchanged and downscale with magick; `-i` ref before the prompt swallows it (`No prompt provided via stdin.`); exact shapes (rotated arrowheads) drawn after with `magick -draw`
 - [Auditing a contract across its surfaces](audit-a-contract-across-its-surfaces.md) — reviewing against a finding list, or a contract whose rule, enforcer and consumer live in separate files: read the three surfaces against each other — per-site verification passes while every seam goes unchecked
-- [memory frontmatter stamping](cc-memory-frontmatter-stamping.md) — who writes `node_type`/`originSessionId`/`modified`: one function, `stampNewMemoryContent`, on the Edit/Write/memory-write handlers only — never a Bash write; `originSessionId` is written only when absent, so it names the first tool write, not the creator; skips log `not stamping provenance`/`not dating` at warn
 - [reflow joins field lines](reflow-joins-field-lines.md) — a bullet with one field per continuation line (`Requirements:`, `Model:`, `Change:`) is one paragraph to markdown, so `just format-docs`/rumdl MD013 re-fills it into prose; write a field list as a nested list
 - [security review flags red-check mutations](security-review-flags-red-check-mutations.md) — `Background security review found: guard-bypass`/`fail-open` on an uncommitted guard line is usually a delegate's red-check mutation: mark mutations `MUTATION`, gate commits on the grep; a finding on committed or unmarked code is real until probed
 - [bash 3.2 on Linux](bash32-macos-traps.md) — building Mac's bash 3.2.57 on Debian and running bats under it; the 3.2/macOS traps are in shell-gotchas' shell-versions and portability references

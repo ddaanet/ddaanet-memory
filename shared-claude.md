@@ -56,12 +56,6 @@ rules that change what the agent does by default.
   surfaced at the step boundary; do it inline only when the step cannot
   finish without it, and say so when you do. Plan text expanded or reordered
   without being asked is the same fault: propose the change and wait.
-- **Recall reads two routing tables.** At any recall checkpoint — a skill's or
-  an ad-hoc one — match the task against the installed skill descriptions as
-  well as the memory index, and load the matching skill. Several ddaanet facts
-  now ship as installed plugin skills, and where both exist the skill is the maintained
-  copy. Be selective: a skill body costs more than a memory file, so load what
-  names the moment you are in, not everything adjacent.
 - **My human partner owns branching.** Never create or switch branches — or
   worktrees — unprompted, even when a workflow skill says to start feature
   work on a fresh one. Work on whatever is checked out. Merging onto a base they named is
@@ -124,14 +118,6 @@ rules that change what the agent does by default.
   files, or a sweep of any size, is dispatched rather than done on the main
   thread. Load `edify:dispatch` before any Agent call. Leave the Agent tool's
   `name` unset.
-- **No volatile git state in memory files** — no commit ids, branch tips, or
-  "uncommitted as of" notes. Identify things by durable names: branches,
-  paths, issue numbers. Upstream-main shas are stable but still discouraged.
-  Tags and version numbers are stable too and still rot the moment they assert
-  currency — "latest tag vX", "since vX", "as of vX", "N repos migrated" —
-  because what ages is the claim, not the ref. A version that *grounds* an
-  observation (`verified against CC 2.1.220`) stays.
-  A session that needs exact volatile state puts it in a handoff, not memory.
 - **"Turn" means a user turn** — one user message and everything that follows
   it until the next user message — not an API round-trip and not a tool call;
   "call" covers both API and tool calls.
