@@ -36,9 +36,13 @@ an execution adapter yet". Probed live 2026-11-25 (Vibe 3.0.1, headless
 bindings. **A plugin cannot carry hooks; hooks ship as foreign `hooks.toml`:**
 
 - `<repo>/.vibe/hooks.toml` (trusted folder) fires; `~/.vibe/hooks.toml` fires
-  too. Run in the **session cwd** under the **command sandbox** — a hook
-  writing outside the workdir failed silently (fail-open, stderr unexamined);
-  an in-workdir write succeeded — so hook state files belong inside the
+  too, and a same-named user entry wins over the project one (probed
+  2026-11-25, the name in both scopes: only the user hook ran) — a user-side
+  shadow removes a hook from every repo at once, no per-repo opt-out. Run in
+  the **session cwd** under the **command sandbox**, failing open: a hook
+  writing outside the workdir failed silently (stderr unexamined), an
+  in-workdir write succeeded, and a command path that does not exist leaves
+  the session clean — so hook state files belong inside the
   boundary, and a hook script must be found by absolute path, not
   `$PLUGIN_ROOT` (that env is only injected for plugin components, which
   cannot run).
