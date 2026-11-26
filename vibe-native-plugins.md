@@ -1,6 +1,6 @@
 ---
 name: vibe-native-plugins
-description: "porting a Claude Code plugin to Mistral Vibe: a root `plugin.json` with the Agent Plugins 1.0 `$schema` loads natively and wins over a `.claude-plugin/` marker in the same tree; plugin `ai.mistral.vibe/hooks.toml` hooks are parsed but never executed in 3.0.1 — hooks must ship as project `.vibe/hooks.toml` foreign hooks, which fire in the session cwd under the command sandbox (cwd on stdin, `pre_tool` rewrites `tool_input`); plugin `bin/` is never on PATH — the skill load's 'Base directory' line is the entry-point anchor; `.git` is ignored in the plugin digest, so a release-tag clone installs as-is; a subagent dispatch travels as `agents.spawn` (hooks observe it via `tool_input` `{name,message}`, rewrites are inert on it, deny works) and the authorable foreign points are pre_tool/post_tool/post_agent only — no session-start hook; on text delivery `systemMessage` is dropped at both tool points and pre_tool's `additional_context` too (rewrite and deny only), post_tool `additional_context` is the one working text channel, and a resumed `vibe -c` reloads `.vibe/hooks.toml`"
+description: "porting a Claude Code plugin to Mistral Vibe: a root `plugin.json` with the Agent Plugins 1.0 `$schema` loads natively and wins over a `.claude-plugin/` marker in the same tree; plugin `ai.mistral.vibe/hooks.toml` hooks are parsed but never executed in 3.0.1 — hooks must ship as project `.vibe/hooks.toml` foreign hooks, which fire in the session cwd under the command sandbox (cwd on stdin, `pre_tool` rewrites `tool_input`); plugin `bin/` is never on PATH — the skill load's 'Base directory' line is the entry-point anchor; `.git` is ignored in the plugin digest, so a release-tag clone installs as-is; a subagent dispatch travels as `agents.spawn` (hooks observe it via `tool_input` `{name,message}`, rewrites are inert on it, deny works) and the authorable foreign points are pre_tool/post_tool/post_agent only — no session-start hook; on text delivery `systemMessage` is dropped at both tool points and pre_tool's `additional_context` too (rewrite and deny only), post_tool `additional_context` is the one working text channel (the snake `system_message` is the user's notice channel — shown, never model-read; camel spellings have no parser reader), and a resumed `vibe -c` reloads `.vibe/hooks.toml`"
 metadata:
   node_type: memory
   type: reference
@@ -65,7 +65,13 @@ bindings. **A plugin cannot carry hooks; hooks ship as foreign `hooks.toml`:**
   rewrite and `deny`. **post_tool `additional_context` is the one working
   text channel**: it is appended to the tool's result, reaches the model
   verbatim, works at user and project scope, and fires on read, write and
-  bash calls alike.
+  bash calls alike. The parser's user channel is the snake `system_message` —
+  read on both tool points, shown as a hook notice the user sees and the
+  model never reads (no camelCase fallback anywhere in `_foreign_hooks.py`);
+  the camel spellings (`systemMessage`, `suppressOutput`, `hookSpecificOutput`)
+  have no reader at all, so a sysmsg-only report reaches the user alone and a
+  camel-emitting hook must be aliased (the D94 `_shim` translation does
+  exactly this).
 - `vibe -c` resumes with the same session id **and reloads
   `.vibe/hooks.toml` at resume** — a hook whose command changed between the
   runs fires in its new form (probed 2026-11-26), so hook wiring is re-read
