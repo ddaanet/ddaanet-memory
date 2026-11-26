@@ -1,6 +1,6 @@
 ---
 name: vibe-native-plugins
-description: "porting a Claude Code plugin to Mistral Vibe: a root `plugin.json` with the Agent Plugins 1.0 `$schema` loads natively and wins over a `.claude-plugin/` marker in the same tree, extra markers load as foreign (skills + MCP servers only); plugin hooks live in `ai.mistral.vibe/hooks.toml` and run in the plugin root with `$PLUGIN_ROOT` exported, learning the session cwd only from stdin JSON; plugin `bin/` is never on PATH — the skill load's 'Base directory' line is the entry-point anchor; `.git` is ignored in the plugin digest, so a release-tag clone installs as-is"
+description: "porting a Claude Code plugin to Mistral Vibe: a root `plugin.json` with the Agent Plugins 1.0 `$schema` loads natively and wins over a `.claude-plugin/` marker in the same tree, extra markers load as foreign (skills + MCP servers only); plugin `ai.mistral.vibe/hooks.toml` hooks are parsed into the snapshot but never executed in 3.0.1 (Core gets no hook bindings — no execution adapter yet), so hooks must ship as the project `.vibe/hooks.toml` foreign hooks, which do fire in the session cwd under the command sandbox; plugin `bin/` is never on PATH — the skill load's 'Base directory' line is the entry-point anchor; `.git` is ignored in the plugin digest, so a release-tag clone installs as-is"
 metadata:
   node_type: memory
   type: reference
@@ -23,16 +23,31 @@ Claude Code reads the latter, Vibe the former, and the same `dist` branch and
 root files (verified on gitlore's dogfood tree, 2026-11-25). Mixing two
 *foreign* markers is the fatal AMBIGUOUS case.
 
-## Hooks: no SessionStart-class event, plugin-root cwd
+## Hooks: plugin hooks.toml is parsed but never executed
 
-Native hook events are `post_agent`, `pre_tool`, `post_tool` only. A plugin's
-`ai.mistral.vibe/hooks.toml` hooks run **in the plugin root** with
-`PLUGIN_ROOT`/`PLUGIN_DATA` exported — the session cwd arrives only in the
-stdin JSON's `cwd` field, so a CC hook port that leans on
-`CLAUDE_PROJECT_DIR` must instead read cwd from stdin. `pre_tool` can rewrite
-`tool_input` (composes across hooks); `post_tool` can append
-`additional_context`; subagents route through `task`, so `pre_tool match
-"task"` reaches their prompts.
+Native hook events are `post_agent`, `pre_tool`, `post_tool`. The plugin-loader
+side exists: `_load_runtime_hooks` (`vibe/core/plugins/_native.py`) parses
+`ai.mistral.vibe/hooks.toml`, caps it at 128 hooks / 64 KiB, and prefixes each
+name with the plugin name. But the harness never runs any of it:
+`core_plugins` (`vibe/app_server/_plugins.py`, 3.0.1) withholds tool groups
+and hook bindings from Core — "Core calls what it advertises, and neither has
+an execution adapter yet". Probed live 2026-11-25 (Vibe 3.0.1, headless
+`vibe -p`): the loaded plugin contributed all six skills and zero hook
+bindings. **A plugin cannot carry hooks; hooks ship as foreign `hooks.toml`:**
+
+- `<repo>/.vibe/hooks.toml` (trusted folder) fires; `~/.vibe/hooks.toml` fires
+  too. Run in the **session cwd** under the **command sandbox** — a hook
+  writing outside the workdir failed silently (fail-open, stderr unexamined);
+  an in-workdir write succeeded — so hook state files belong inside the
+  boundary, and a hook script must be found by absolute path, not
+  `$PLUGIN_ROOT` (that env is only injected for plugin components, which
+  cannot run).
+- stdin JSON carries `cwd`, `session_id`, `parent_session_id`, `tool_name`,
+  `tool_input`, `tool_status` — the session cwd is on stdin, and a pre_tool
+  hook may return `{"decision":"allow","hook_specific_output":{"tool_input":
+  {...}}}` for a full **rewrite** (verified end-to-end: a re-written
+  `read_file` `path` is what the tool read); `post_tool` may append
+  `hook_specific_output.additional_context`.
 
 ## Skills: no plugin bin on PATH
 
