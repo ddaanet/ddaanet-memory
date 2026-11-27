@@ -5,7 +5,7 @@ metadata:
   node_type: memory
   type: reference
   originSessionId: 8d5debc5-274f-1d8a-16d1-611896bee9f8
-  modified: 2026-11-25T11:50:07.000Z
+  modified: 2026-11-27T19:14:09.978Z
 ---
 
 Pinned 2026-11-25 against the installed mistral-vibe source
@@ -36,9 +36,11 @@ an execution adapter yet". Probed live 2026-11-25 (Vibe 3.0.1, headless
 bindings. **A plugin cannot carry hooks; hooks ship as foreign `hooks.toml`:**
 
 - `<repo>/.vibe/hooks.toml` (trusted folder) fires; `~/.vibe/hooks.toml` fires
-  too, and a same-named user entry wins over the project one (probed
-  2026-11-25, the name in both scopes: only the user hook ran) — a user-side
-  shadow removes a hook from every repo at once, no per-repo opt-out. Run in
+  too; a hook named in both fires once, from the project entry in a trusted
+  folder (the user one is dropped as `Duplicate hook name`, logged only in the
+  session export; `vibe/core/hooks/config.py` loads project-first, probed
+  2026-11-27), from the user entry in an untrusted one, and differently named
+  hooks in both scopes all fire. Run in
   the **session cwd** under the **command sandbox**, failing open: a hook
   writing outside the workdir failed silently (stderr unexamined), an
   in-workdir write succeeded — and as of 2026-11-26 `/tmp` writes (append,

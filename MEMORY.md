@@ -13,6 +13,7 @@ Portable facts that hold across every ddaanet project — tool and Claude Code
 behaviour, design and review lessons, commit conventions. Project-specific
 facts stay in the project's own memory store.
 
+- [fix execution capped at Sonnet](fix-execution-sonnet-cap.md) — choosing `model` for a dispatched agent in a review/fix cascade: reviewers inherit Opus, a well-specified fix runs on Sonnet at most
 - [Vibe background gate stalls stopped](vibe-bg-process-stops.md) — a gate raised through the Vibe session's background-process tooling that spawns its own job-control groups hangs with workers in state `T`/`do_signal_stop` and `SIGCONT` never sticks: relaunch `setsid bash -c '… </dev/null'` detached and poll the log
 - [sandbox effects](sandbox-effects.md) — `There is no active session!` from `zellij run` under the Bash tool, or `/revdiff:revdiff` / `launch-revdiff.sh` exiting 1 with no output inside zellij (`ZELLIJ` set): the sandbox hides zellij's socket
 - [examine evidence for drift and lineage](examine-evidence-drift.md) — two co-maintained artifacts diverge, or one is cited as evidence about the other (a sibling, a prior version): establish the relationship from git history, never assumption
