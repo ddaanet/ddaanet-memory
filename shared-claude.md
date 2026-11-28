@@ -142,8 +142,10 @@ rules that change what the agent does by default.
   next step and wait. On a plugin repo with release-worthy commits on `dev`
   not yet on `main`, that answer is the full release cascade, not a bare
   push: installs resolve through the marketplace, so a push alone reaches no
-  user, and release subsumes push. Name push-only when the commits are
-  deliberately not release-worthy (docs-only, in-flight work).
+  user, and release subsumes push. Never offer a bare push as the next step:
+  when the commits are not release-worthy (docs-only, in-flight work), the
+  answer is the next work item. My human partner, offered a push-only next
+  step again: "stop pushing push".
 - **Technical claims about LLM mechanism must be grounded.** No casual mechanism
   claims ("the model thinks X because Y") without checking against actual
   transformer/training/API behaviour; cost math specific and checkable — input vs
